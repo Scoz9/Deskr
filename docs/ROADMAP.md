@@ -27,6 +27,11 @@ lo starter kit con le decisioni del §2–§6.
 
 ## Fase 1 — Modello dati
 
+Chiusi gli step 5–8: enum del dominio, `Organization`, `User` legato
+all'organizzazione con i ruoli allineati a Deskr, `Team` e la pivot
+`team_user`. Ogni step è un commit di squash su `main`, con il perché nel
+corpo del messaggio.
+
 5. Enum `TicketStatus` (inclusi `annullato`, escluso `riaperto`),
    `TicketPriority`, `TicketChannel` e `UserRole`. Test.
    `UserRole` è l'**elenco** dei ruoli spatie seedati (`superAdmin`, `admin`,
