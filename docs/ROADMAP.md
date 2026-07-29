@@ -33,10 +33,13 @@ lo starter kit con le decisioni del §2–§6.
    `agent`, `requester`), non una colonna su `users`: vedi la decisione sui
    ruoli nel §3.
 6. `Organization`: migration, model, factory.
-7. `User`: appartenenza a `Organization`, seeder dei tre ruoli spatie, factory
+7. `User`: appartenenza a `Organization`, seeder dei ruoli spatie, factory
    con stati `admin()`, `agent()`, `requester()` che assegnano il ruolo via
    `assignRole()`. Il model `User` esiste già: qui si aggiunge
-   `organization_id` e si estendono factory e seeder dei permessi.
+   `organization_id` e si estendono factory e seeder dei permessi. I due ruoli
+   dello starter kit sono rinominati con una migration di dati
+   (`amministratore` → `admin`, `operatore` → `agent`) invece di essere
+   affiancati dai nomi di Deskr: vedi la decisione sui ruoli nel §3.
 8. `Team` e pivot `team_user`.
 9. `Category`, con `team_id` per l'instradamento.
 10. `Ticket`: migration con **tutti gli attributi del §4**, generazione della

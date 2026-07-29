@@ -39,7 +39,7 @@ fuori scope come qualsiasi altra.
 | Database | **PostgreSQL**, con `pgvector` previsto nell'immagine Docker fin dal primo step | Embedding per ticket simili e duplicati nello stesso database, senza un servizio vettoriale da mantenere. Più full-text nativo con configurazione italiana (copre la ricerca in console senza Meilisearch) e indici parziali per la query di backlog, che MySQL non ha |
 | Interfaccia | **Inertia + React + TypeScript** per tutto: portale pubblico, console operatore e amministrazione. **Niente Livewire, niente Filament** | Uno stack solo, una pipeline di build, nessun paradigma misto. Il CRUD amministrativo si scrive a mano: costa qualche step in più ed è il punto in cui il progetto insegna di più |
 | Autenticazione richiedenti | Nessuna registrazione: `Features::registration()` di Fortify è **disattivata**. L'ingresso crea o collega l'utente dall'email; l'accesso al portale avviene via **magic link** (URL firmato) | Nessun utente di helpdesk si registra, e un helpdesk con la registrazione aperta è un modulo di iscrizione per spam. Operatori e admin nascono da invito, i richiedenti da un ticket |
-| Ruoli e permessi | `spatie/laravel-permission` con la gerarchia di `scrapkit/laravel-permission-hierarchy`, entrambi già nello starter kit. L'enum `UserRole` **elenca** i ruoli seedati, non li implementa | Un unico modello `User` e un'unica autorità sull'autorizzazione. Un enum su `users.role` accanto a spatie sono due fonti di verità che divergono al primo permesso fine, e nessuna delle due sa dell'altra |
+| Ruoli e permessi | `spatie/laravel-permission` con la gerarchia di `scrapkit/laravel-permission-hierarchy`, entrambi già nello starter kit. L'enum `UserRole` **elenca** i ruoli seedati, non li implementa. I due ruoli dello starter kit sono stati **rinominati** ai nomi di Deskr (`amministratore` → `admin`, `operatore` → `agent`), non affiancati | Un unico modello `User` e un'unica autorità sull'autorizzazione. Un enum su `users.role` accanto a spatie sono due fonti di verità che divergono al primo permesso fine, e nessuna delle due sa dell'altra |
 | SLA | Implementazione in fase 5, ma i campi `first_response_at`, `resolved_at`, `closed_at`, `due_at` esistono dalla **prima migration** | Retrofittare timestamp su ticket già esistenti costa più di prevederli |
 | Stati | Enum PHP su colonna `string` + classe di transizioni esplicita che valida ogni passaggio ed emette un evento | Niente stringhe libere, niente `if` sparsi. Colonna `string` e non enum nativo PG: `ALTER TYPE` in migration non ha rollback pulito |
 | Assegnatario | `assignee_id` è un **attributo**, non uno stato. La riassegnazione non altera lo stato del ticket | Riassegnare un ticket `in lavorazione` non deve farlo retrocedere e falsare le metriche |
@@ -150,7 +150,11 @@ Restano qui solo le convenzioni proprie di Deskr:
   secondo sistema di ruoli su una colonna di `users`. `superAdmin` è il ruolo
   dello starter kit, bypassato da `Gate::before` e non assegnabile
   dall'interfaccia: sta nell'elenco perché è seedato, non perché sia un ruolo
-  di Deskr.
+  di Deskr. Ogni caso porta il proprio `hierarchy_rank`, così seeder e factory
+  non possono divergere: `admin` ha tutti i permessi, `agent` tutti tranne
+  quelli su ruoli e permessi, `requester` e `superAdmin` nessuno — il primo
+  perché il portale è difeso dalle policy sui propri ticket, il secondo perché
+  `Gate::before` risponde già per lui.
 - **Design system:** Tailwind e le primitive in `resources/js/components/ui` sono
   il default. MUI e `material-react-table` restano confinati alle tabelle dati
   della console e dell'amministrazione — dove sono già in uso e dove pagano

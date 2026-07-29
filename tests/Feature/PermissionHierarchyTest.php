@@ -10,23 +10,23 @@ beforeEach(function () {
 
 test('the seeded roles carry their hierarchy rank', function () {
     expect(Role::where('name', 'superAdmin')->firstOrFail()->hierarchy_rank)->toBe(0)
-        ->and(Role::where('name', 'amministratore')->firstOrFail()->hierarchy_rank)->toBe(1)
-        ->and(Role::where('name', 'operatore')->firstOrFail()->hierarchy_rank)->toBe(2);
+        ->and(Role::where('name', 'admin')->firstOrFail()->hierarchy_rank)->toBe(1)
+        ->and(Role::where('name', 'agent')->firstOrFail()->hierarchy_rank)->toBe(2);
 });
 
-test('an amministratore can manage an operatore but not the other way around', function () {
-    $amministratore = User::factory()->create()->assignRole('amministratore');
-    $operatore = User::factory()->create()->assignRole('operatore');
+test('an admin can manage an agent but not the other way around', function () {
+    $admin = User::factory()->create()->assignRole('admin');
+    $agent = User::factory()->create()->assignRole('agent');
 
-    expect($amministratore->canManage($operatore))->toBeTrue()
-        ->and($amministratore->can('users.manage', $operatore))->toBeTrue()
-        ->and($operatore->canManage($amministratore))->toBeFalse()
-        ->and($operatore->can('users.manage', $amministratore))->toBeFalse();
+    expect($admin->canManage($agent))->toBeTrue()
+        ->and($admin->can('users.manage', $agent))->toBeTrue()
+        ->and($agent->canManage($admin))->toBeFalse()
+        ->and($agent->can('users.manage', $admin))->toBeFalse();
 });
 
 test('users with the same role cannot manage each other', function () {
-    $first = User::factory()->create()->assignRole('operatore');
-    $second = User::factory()->create()->assignRole('operatore');
+    $first = User::factory()->create()->assignRole('agent');
+    $second = User::factory()->create()->assignRole('agent');
 
     expect($first->can('users.manage', $second))->toBeFalse()
         ->and($second->can('users.manage', $first))->toBeFalse();
@@ -34,11 +34,11 @@ test('users with the same role cannot manage each other', function () {
 
 test('a user without roles cannot manage anyone but can be managed', function () {
     $withoutRoles = User::factory()->create();
-    $operatore = User::factory()->create()->assignRole('operatore');
+    $agent = User::factory()->create()->assignRole('agent');
 
     expect($withoutRoles->hierarchyRank())->toBeNull()
-        ->and($withoutRoles->can('users.manage', $operatore))->toBeFalse()
-        ->and($operatore->can('users.manage', $withoutRoles))->toBeTrue();
+        ->and($withoutRoles->can('users.manage', $agent))->toBeFalse()
+        ->and($agent->can('users.manage', $withoutRoles))->toBeTrue();
 });
 
 test('a superAdmin bypasses the hierarchy gate via Gate::before', function () {

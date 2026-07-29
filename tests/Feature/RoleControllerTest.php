@@ -34,7 +34,7 @@ test('superAdmin users can access the roles index via Gate::before', function ()
 
 test('the superAdmin role is not included in the index', function () {
     Role::createOrFirst(['name' => 'superAdmin'], ['hierarchy_rank' => 0]);
-    Role::createOrFirst(['name' => 'operatore'], ['hierarchy_rank' => 2]);
+    Role::createOrFirst(['name' => 'agent'], ['hierarchy_rank' => 2]);
 
     $this->actingAs(userWithPermissions(['role:viewAny']))
         ->get(route('roles.index'))
@@ -67,7 +67,7 @@ test('a role can be created with permissions', function () {
 
 test('a created role is placed at the bottom of the hierarchy', function () {
     Role::createOrFirst(['name' => 'superAdmin'], ['hierarchy_rank' => 0]);
-    Role::createOrFirst(['name' => 'operatore'], ['hierarchy_rank' => 2]);
+    Role::createOrFirst(['name' => 'agent'], ['hierarchy_rank' => 2]);
 
     $this->actingAs(userWithPermissions(['role:create']))
         ->post(route('roles.store'), ['name' => 'redattore'])
@@ -197,14 +197,14 @@ test('the superAdmin role cannot be deleted, even by superAdmin users', function
     $this->assertDatabaseHas('roles', ['name' => 'superAdmin']);
 });
 
-test('the operatore role is seeded without role and permission management permissions', function () {
+test('the agent role is seeded without role and permission management permissions', function () {
     $this->seed([PermissionSeeder::class, RoleSeeder::class]);
 
-    $operatore = Role::where('name', 'operatore')->first();
-    $amministratore = Role::where('name', 'amministratore')->first();
+    $agent = Role::where('name', 'agent')->first();
+    $admin = Role::where('name', 'admin')->first();
 
-    expect($operatore->permissions->pluck('name')
+    expect($agent->permissions->pluck('name')
         ->filter(fn (string $name) => str_starts_with($name, 'role:') || str_starts_with($name, 'permission:'))
     )->toBeEmpty()
-        ->and($amministratore->permissions->pluck('name'))->toContain('role:viewAny');
+        ->and($admin->permissions->pluck('name'))->toContain('role:viewAny');
 });
