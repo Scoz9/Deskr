@@ -2,24 +2,25 @@
 
 use Laravel\Fortify\Features;
 
-beforeEach(function () {
-    $this->skipUnlessFortifyHas(Features::registration());
+/*
+ * Deskr non ha registrazione: operatori e admin nascono da invito, i richiedenti
+ * dal primo ticket (§3 di docs/PROJECT.md). Questi test guardano la decisione —
+ * riattivare `Features::registration()` li fa fallire, che è esattamente il punto.
+ */
+
+test('the registration feature is disabled', function () {
+    expect(Features::enabled(Features::registration()))->toBeFalse();
 });
 
-test('registration screen can be rendered', function () {
-    $response = $this->get(route('register'));
+test('the registration routes do not exist', function () {
+    $this->get('/register')->assertNotFound();
 
-    $response->assertOk();
-});
-
-test('new users can register', function () {
-    $response = $this->post(route('register.store'), [
+    $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ]);
+    ])->assertNotFound();
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertGuest();
 });

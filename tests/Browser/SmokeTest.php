@@ -3,7 +3,7 @@
 use App\Models\User;
 
 test('guest pages load without javascript errors', function () {
-    $pages = visit(['/', '/login', '/register', '/forgot-password']);
+    $pages = visit(['/', '/login', '/forgot-password']);
 
     $pages->assertNoSmoke();
 });

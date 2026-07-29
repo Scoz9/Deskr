@@ -160,8 +160,12 @@ return [
     |
     */
 
+    /*
+     * `Features::registration()` è deliberatamente assente: in Deskr nessuno si
+     * registra. Operatori e admin nascono da invito, i richiedenti dal primo
+     * ticket (§3 di docs/PROJECT.md).
+     */
     'features' => [
-        Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
