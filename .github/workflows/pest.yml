@@ -14,12 +14,6 @@ on:
       - "phpunit.xml"
       - ".github/workflows/pest.yml"
   pull_request:
-    paths:
-      - "**/*.php"
-      - "composer.json"
-      - "composer.lock"
-      - "phpunit.xml"
-      - ".github/workflows/pest.yml"
 
 jobs:
   pest:

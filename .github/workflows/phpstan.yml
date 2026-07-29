@@ -10,12 +10,6 @@ on:
       - "phpstan.neon*"
       - ".github/workflows/phpstan.yml"
   pull_request:
-    paths:
-      - "**/*.php"
-      - "composer.json"
-      - "composer.lock"
-      - "phpstan.neon*"
-      - ".github/workflows/phpstan.yml"
 
 jobs:
   phpstan:

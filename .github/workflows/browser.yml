@@ -17,17 +17,6 @@ on:
       - "vite.config.ts"
       - ".github/workflows/browser.yml"
   pull_request:
-    paths:
-      - "app/**"
-      - "routes/**"
-      - "resources/**"
-      - "tests/Browser/**"
-      - "composer.json"
-      - "composer.lock"
-      - "package.json"
-      - "package-lock.json"
-      - "vite.config.ts"
-      - ".github/workflows/browser.yml"
 
 jobs:
   pest-browser:

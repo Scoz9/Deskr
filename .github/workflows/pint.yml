@@ -10,12 +10,6 @@ on:
       - "pint.json"
       - ".github/workflows/pint.yml"
   pull_request:
-    paths:
-      - "**/*.php"
-      - "composer.json"
-      - "composer.lock"
-      - "pint.json"
-      - ".github/workflows/pint.yml"
 
 jobs:
   pint:

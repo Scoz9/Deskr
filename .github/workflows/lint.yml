@@ -13,15 +13,6 @@ on:
       - "eslint.config.js"
       - ".github/workflows/lint.yml"
   pull_request:
-    paths:
-      - "**/*.js"
-      - "**/*.jsx"
-      - "**/*.ts"
-      - "**/*.tsx"
-      - "package.json"
-      - "package-lock.json"
-      - "eslint.config.js"
-      - ".github/workflows/lint.yml"
 
 jobs:
   eslint:

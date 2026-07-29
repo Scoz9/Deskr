@@ -10,12 +10,6 @@ on:
       - "vitest.config.ts"
       - ".github/workflows/vitest.yml"
   pull_request:
-    paths:
-      - "resources/js/**"
-      - "package.json"
-      - "package-lock.json"
-      - "vitest.config.ts"
-      - ".github/workflows/vitest.yml"
 
 jobs:
   vitest:

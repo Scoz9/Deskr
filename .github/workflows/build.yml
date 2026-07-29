@@ -12,14 +12,6 @@ on:
       - "tsconfig.json"
       - ".github/workflows/build.yml"
   pull_request:
-    paths:
-      - "resources/**"
-      - "routes/**"
-      - "package.json"
-      - "package-lock.json"
-      - "vite.config.ts"
-      - "tsconfig.json"
-      - ".github/workflows/build.yml"
 
 jobs:
   build:
