@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
     paths:
       - "resources/**"
       - "routes/**"
@@ -26,4 +26,4 @@ jobs:
     uses: Scrapkit/ci-pipeline/.github/workflows/vite-build.yml@v1
     with:
       node-version: "22"
-      php-version: "8.3"
+      php-version: "8.4"

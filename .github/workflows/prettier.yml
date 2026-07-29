@@ -2,10 +2,10 @@ name: Prettier
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
     paths:
       - "resources/**"
-      - ".prettierrc"
+      - "prettier.config.js"
       - ".prettierignore"
       - "package.json"
       - "package-lock.json"
@@ -13,7 +13,7 @@ on:
   pull_request:
     paths:
       - "resources/**"
-      - ".prettierrc"
+      - "prettier.config.js"
       - ".prettierignore"
       - "package.json"
       - "package-lock.json"

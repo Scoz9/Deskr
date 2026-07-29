@@ -1,8 +1,12 @@
+# Workflow locale, non riusabile: Scrapkit/ci-pipeline offre solo
+# `database: none | mariadb`, e Deskr gira su PostgreSQL con pgvector (§3 di
+# docs/PROJECT.md). Quando il servizio pgsql arriverà in ci-pipeline, questo file
+# torna a essere una chiamata di due righe come gli altri.
 name: Pest
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
     paths:
       - "**/*.php"
       - "composer.json"
@@ -19,7 +23,67 @@ on:
 
 jobs:
   pest:
-    uses: Scrapkit/ci-pipeline/.github/workflows/pest.yml@v1
-    with:
-      php-version: "8.4"
-      database: "mariadb"
+    name: Run Pest Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    services:
+      pgsql:
+        # Stessa immagine di compose.yaml: i test girano dove gira lo sviluppo.
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -q -d testing -U sail"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: testing
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_pgsql, pgsql
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run Pest
+        run: php artisan test --compact

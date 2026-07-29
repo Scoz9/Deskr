@@ -2,7 +2,7 @@ name: Pint
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
     paths:
       - "**/*.php"
       - "composer.json"
