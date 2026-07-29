@@ -1,5 +1,34 @@
 @vendor/scrapkit/engineering-kit/claude/CLAUDE.md
 
+# Deskr
+
+Applicativo di ticketing per team di helpdesk: raccoglie richieste da più
+canali, le trasforma in ticket assegnabili, traccia risposte e note interne,
+misura tempo di prima risposta e di risoluzione.
+
+**Prima di scrivere codice leggi [docs/PROJECT.md](docs/PROJECT.md)**: dominio,
+decisioni architetturali già prese con la loro motivazione, stati del ticket,
+fuori scope. Gli step di lavoro, in ordine, sono in
+[docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Regole di lavoro
+
+- Le decisioni in `docs/PROJECT.md` non si rimettono in discussione: se una
+  sembra sbagliata, dillo e fermati — non aggirarla.
+- Le regole di `scrapkit/engineering-kit` hanno precedenza su qualsiasi
+  convenzione dedotta dal codice esistente.
+- Stack di interfaccia: Inertia + React + TypeScript. **Niente Livewire, niente
+  Filament**: sono decisioni prese, non dimenticanze.
+- **Uno step di roadmap per volta.** Prima dici cosa hai capito e cosa toccherai
+  in 3 righe, aspetti l'ok, poi crei il branch `step-NN-descrizione-breve` da
+  `main` aggiornato.
+- Non anticipare step successivi e non aggiungere astrazioni per esigenze non
+  ancora in roadmap. Se uno step sembra troppo grande, proponi di spezzarlo
+  prima di iniziare.
+- **Mai committare su `main`**: è protetto, il push verrebbe rifiutato. Lo step
+  si chiude con la suite verde, il messaggio di commit in conventional commits e
+  il testo della PR proposti — il merge lo fa l'umano dopo aver letto il diff.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
