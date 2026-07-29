@@ -1,0 +1,9 @@
+{
+    "actions": {
+        "cancel": "Annulla",
+        "confirm": "Conferma",
+        "save": "Salva"
+    },
+    "language": "Lingua",
+    "welcome": "Benvenuto, {{name}}!"
+}

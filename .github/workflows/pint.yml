@@ -1,0 +1,24 @@
+name: Pint
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - "**/*.php"
+      - "composer.json"
+      - "composer.lock"
+      - "pint.json"
+      - ".github/workflows/pint.yml"
+  pull_request:
+    paths:
+      - "**/*.php"
+      - "composer.json"
+      - "composer.lock"
+      - "pint.json"
+      - ".github/workflows/pint.yml"
+
+jobs:
+  pint:
+    uses: Scrapkit/ci-pipeline/.github/workflows/pint-check.yml@v1
+    with:
+      php-version: "8.4"

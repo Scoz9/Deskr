@@ -1,0 +1,31 @@
+name: Lint
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - "**/*.js"
+      - "**/*.jsx"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "package.json"
+      - "package-lock.json"
+      - "eslint.config.js"
+      - ".github/workflows/lint.yml"
+  pull_request:
+    paths:
+      - "**/*.js"
+      - "**/*.jsx"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "package.json"
+      - "package-lock.json"
+      - "eslint.config.js"
+      - ".github/workflows/lint.yml"
+
+jobs:
+  eslint:
+    uses: Scrapkit/ci-pipeline/.github/workflows/js-eslint.yml@v1
+    with:
+      node-version: "22"
+      max-warnings: "0"

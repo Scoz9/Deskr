@@ -1,0 +1,36 @@
+[     395ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[     866ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[    3648ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[    3936ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[   37234ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[   37533ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[  126775ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:8080/users:0
+[  173607ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  173912ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  185717ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:8080/users:231
+[  190742ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:166
+[  210913ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  212459ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  224402ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  224755ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  243378ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8080/dashboard:0
+[  243454ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ about:srcdoc:21
+[  280850ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8080/dashboard:0
+[  280910ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ about:srcdoc:21
+[  284460ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/:172
+[  284701ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/:231
+[  291830ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8080/dashboard:0
+[  291893ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ about:srcdoc:21
+[  296741ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/:172
+[  296886ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/:231
+[  304820ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8080/dashboard:0
+[  304873ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ about:srcdoc:21
+[ 2786087ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:8080/:231
+[ 2786434ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/:172
+[ 2786671ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/:231
+[ 5840365ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:8080/:231
+[ 5840685ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/:172
+[ 5840948ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/:231
+[ 9199631ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:8080/:231
+[ 9199982ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/:172
+[ 9200193ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/:231

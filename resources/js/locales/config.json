@@ -1,0 +1,9 @@
+{
+    "default": "it",
+    "defaultNamespace": "common",
+    "fallback": "en",
+    "locales": [
+        "it",
+        "en"
+    ]
+}

@@ -1,0 +1,26 @@
+name: Prettier
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - "resources/**"
+      - ".prettierrc"
+      - ".prettierignore"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/prettier.yml"
+  pull_request:
+    paths:
+      - "resources/**"
+      - ".prettierrc"
+      - ".prettierignore"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/prettier.yml"
+
+jobs:
+  prettier-check:
+    uses: Scrapkit/ci-pipeline/.github/workflows/prettier-check.yml@v1
+    with:
+      node-version: "22"

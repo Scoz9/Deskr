@@ -1,0 +1,25 @@
+name: Pest
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - "**/*.php"
+      - "composer.json"
+      - "composer.lock"
+      - "phpunit.xml"
+      - ".github/workflows/pest.yml"
+  pull_request:
+    paths:
+      - "**/*.php"
+      - "composer.json"
+      - "composer.lock"
+      - "phpunit.xml"
+      - ".github/workflows/pest.yml"
+
+jobs:
+  pest:
+    uses: Scrapkit/ci-pipeline/.github/workflows/pest.yml@v1
+    with:
+      php-version: "8.4"
+      database: "mariadb"

@@ -1,0 +1,12 @@
+[     415ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[     846ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[   24665ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[   24982ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[   27523ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[   27806ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  120669ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/dashboard:172
+[  120981ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/dashboard:231
+[  139826ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/reset-password/3d80f0e0e07b77706b7b63de991b7a5adbb26a056f8e2f97f8cc8be5cca874d2?email=utente.invitato%40example.com:172
+[  140209ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/reset-password/3d80f0e0e07b77706b7b63de991b7a5adbb26a056f8e2f97f8cc8be5cca874d2?email=utente.invitato%40example.com:231
+[  202234ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[  202880ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231

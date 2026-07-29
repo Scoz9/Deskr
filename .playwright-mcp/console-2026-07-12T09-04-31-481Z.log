@@ -1,0 +1,1968 @@
+[     307ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[    1175ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[    4129ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/email/verify:172
+[    4354ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/email/verify:231
+[   20655ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[   21201ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  398476ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  398881ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  502665ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  502996ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  503427ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <ThemeProvider theme={{...}}>
+      <ThemeProviderNoVars theme={{...}}>
+        <ThemeProvider$1 themeId={undefined} theme={{...}}>
+          <ThemeProvider$2 theme={{...}}>
+            <RtlProvider value={false}>
+              <DefaultPropsProvider$1 value={{}}>
+                <UsersTable users={[...]} roles={[...]} onEdit={function bound dispatchSetState} ...>
+                  <MaterialReactTable table={{...}}>
+                    <MRT_TablePaper table={{...}}>
+                      <Paper elevation={2} onKeyDown={function onKeyDown} ref={function ref} style={{}} sx={function sx}>
+                        <MuiPaper-root as="div" ownerState={{elevation:2, ...}} className="MuiPaper-r..." ...>
+                          <Insertion>
+                          <div
++                           className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-1du84..."
+-                           className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-1hoqu..."
+                            onKeyDown={function onKeyDown}
+                            style={{
++                             --Paper-shadow: "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1..."
+-                             --Paper-shadow: "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1..."
++                             --Paper-overlay: "linear-gradient(rgba(255, 255, 255, 0.069), rgba(255, 255, 255, 0.069))"
+                            }}
+                            ref={function ref}
+                          >
+                            <MRT_TopToolbar table={{...}}>
+                              <Box ref={function ref} sx={function sx}>
+                                <Styled(div) as="div" ref={function ref} className="MuiBox-root" theme={{...}} ...>
+                                  <Insertion>
+                                  <div
++                                   className="MuiBox-root css-a6mh5t"
+-                                   className="MuiBox-root css-1tbggly"
+                                    ref={function ref}
+                                  >
+                                    ...
+                                      <MuiAlert-root role="alert" elevation={0} sx={function sx} ...>
+                                        <Insertion>
+                                        <Paper role="alert" elevation={0} className="MuiAlert-r...">
+                                          <MuiPaper-root as="div" ownerState={{role:"alert", ...}} ...>
+                                            <Insertion>
+                                            <div
++                                             className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-el..."
+-                                             className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-el..."
+                                              role="alert"
+                                              style={{
++                                               --Paper-shadow: "none"
+-                                               --Paper-shadow: "none"
++                                               --Paper-overlay: "linear-gradient(rgba(255, 255, 255, 0), rgba(255, 25..."
+                                              }}
+                                            >
+                                    ...
+                                      <Box className="Mui-Toolba..." onDragEnter={function handleDragEnter} ...>
+                                        <Styled(div) as="div" ref={function} className="Mui-Toolba..." theme={{...}} ...>
+                                          <Insertion>
+                                          <div
++                                           className="Mui-ToolbarDropZone MuiBox-root css-t802yl"
+-                                           className="Mui-ToolbarDropZone MuiBox-root css-1fwjva3"
+                                            onDragEnter={function handleDragEnter}
+                                            onDragOver={function handleDragOver}
+                                            style={{opacity:0,visibility:"hidden"}}
+                                            ref={function}
+                                          >
+                                    ...
+                                      <div className="MuiBox-roo...">
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Mostra/Nascondi ricerca"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Mostra/Nascondi filtri"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Mostra/Nascondi colonne"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Cambia densità"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Cambia schermo intero"
+                                                  onMouseEnter={function onMouseEnter}
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                    ...
+                            ...
+                              <Table stickyHeader={false} style={{...}} sx={function sx}>
+                                <MuiTable-root as="table" role={null} ref={null} className="MuiTable-root" ...>
+                                  <Insertion>
+                                  <table
+                                    role={null}
++                                   className="MuiTable-root css-1up5d7c-MuiTable-root"
+-                                   className="MuiTable-root css-h4w74f-MuiTable-root"
+                                    style={{--header-name-size:180,--col-name-size:180,--header-email-size:180,--col-email-size:180, ...}}
+                                  >
+                                    ...
+                                      <MRT_TableHeadRow columnVirtualizer={undefined} headerGroup={{depth:0,id:"0", ...}} ...>
+                                        <TableRow sx={function sx}>
+                                          <MuiTableRow-root as="tr" ref={null} className="MuiTableRo..." role={null} ...>
+                                            <Insertion>
+                                            <tr
++                                             className="MuiTableRow-root MuiTableRow-head css-1121m5q-MuiTableRow-root"
+-                                             className="MuiTableRow-root MuiTableRow-head css-1ule0da-MuiTableRow-root"
+                                              role={null}
+                                            >
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} header={{id:"name", ...}} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={0}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Nome crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} header={{id:"email", ...}} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={1}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Email crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} header={{id:"role", ...}} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={2}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Ruolo crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={3}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Stato crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={undefined}
+                                                      data-index={4}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                    ...
+                                      <tbody className="MuiTableBo..." role={null}>
+                                        <MRT_TableBodyRow columnVirtualizer={undefined} numRows={2} table={{...}} ...>
+                                          <TableRow data-index={0} data-pinned={undefined} data-selected={undefined} ...>
+                                            <MuiTableRow-root as="tr" ref={function ref} className="MuiTableRo..." ...>
+                                              <Insertion>
+                                              <tr
++                                               className="MuiTableRow-root css-1izovqb-MuiTableRow-root"
+-                                               className="MuiTableRow-root css-11yrv3u-MuiTableRow-root"
+                                                role={null}
+                                                data-index={0}
+                                                data-pinned={undefined}
+                                                data-selected={undefined}
+                                                onDragEnter={function handleDragEnter}
+                                                onDragOver={function handleDragOver}
+                                                style={{transform:undefined}}
+                                                ref={function ref}
+                                              >
+                                                <MRT_TableBodyCell cell={{id:"0_name", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={0} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={0}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_email", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={1} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={1}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_role", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={2} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={2}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_status", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={3} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={3}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_mrt-...", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={4} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={4}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                        <MRT_TableBodyRow columnVirtualizer={undefined} numRows={2} table={{...}} ...>
+                                          <TableRow data-index={1} data-pinned={undefined} data-selected={undefined} ...>
+                                            <MuiTableRow-root as="tr" ref={function ref} className="MuiTableRo..." ...>
+                                              <Insertion>
+                                              <tr
++                                               className="MuiTableRow-root css-1izovqb-MuiTableRow-root"
+-                                               className="MuiTableRow-root css-11yrv3u-MuiTableRow-root"
+                                                role={null}
+                                                data-index={1}
+                                                data-pinned={undefined}
+                                                data-selected={undefined}
+                                                onDragEnter={function handleDragEnter}
+                                                onDragOver={function handleDragOver}
+                                                style={{transform:undefined}}
+                                                ref={function ref}
+                                              >
+                                                <MRT_TableBodyCell cell={{id:"1_name", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={0} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={0}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_email", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={1} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={1}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_role", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={2} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={2}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_status", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={3} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={3}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_mrt-...", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={4} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={4}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                    ...
+                            <MRT_BottomToolbar table={{...}}>
+                              <Box ref={function ref} sx={function sx}>
+                                <Styled(div) as="div" ref={function ref} className="MuiBox-root" theme={{...}} ...>
+                                  <Insertion>
+                                  <div
++                                   className="MuiBox-root css-1joj1yp"
+-                                   className="MuiBox-root css-10gei56"
+                                    ref={function ref}
+                                  >
+                                    <MRT_LinearProgressBar>
+                                    ...
+                                      <div className="MuiTablePa...">
+                                        ...
+                                          <div className="MuiBox-roo...">
+                                            <InputLabel htmlFor="mrt-rows-p..." sx={{mb:0}}>
+                                              <MuiInputLabel-root data-shrink={undefined} ref={null} ...>
+                                                <Insertion>
+                                                <FormLabel data-shrink={undefined} className="MuiInputLa..." ...>
+                                                  <MuiFormLabel-root as="label" ownerState={{...}} ...>
+                                                    <Insertion>
+                                                    <label
++                                                     className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-an..."
+-                                                     className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-an..."
+                                                      data-shrink={undefined}
+                                                      htmlFor="mrt-rows-per-page-_R_2l9_"
+                                                    >
+                                            ...
+                                              <Input inputComponent={{...}} inputProps={{children:[...], ...}} ...>
+                                                <InputBase slots={{root:{...}, ...}} slotProps={{root:{...}}} ...>
+                                                  <GlobalStylesWrapper>
+                                                  <MuiInput-root ownerState={{slots:{...}, ...}} ref={null} ...>
+                                                    <Insertion>
+                                                    <div
+                                                      onClick={function handleClick}
++                                                     className="MuiInputBase-root MuiInput-root MuiInputBase-colorPri..."
+-                                                     className="MuiInputBase-root MuiInput-root MuiInputBase-colorPri..."
+                                                    >
+                                                      <MuiInput-input aria-invalid={undefined} ...>
+                                                        <Insertion>
+                                                        <SelectInput aria-invalid={undefined} ...>
+                                                          <MuiSelect-select as="div" ref={function} tabIndex={0} ...>
+                                                            <Insertion>
+                                                            <div
+                                                              tabIndex={0}
+                                                              role="combobox"
+                                                              aria-controls={undefined}
+                                                              aria-disabled={undefined}
+                                                              aria-expanded="false"
+                                                              aria-haspopup="listbox"
+                                                              aria-readonly={undefined}
+                                                              aria-label="Righe per pagina"
+                                                              aria-labelledby={undefined}
+                                                              aria-describedby={undefined}
+                                                              aria-required={undefined}
+                                                              aria-invalid={undefined}
+                                                              onKeyDown={function handleKeyDown}
+                                                              onMouseDown={function handleMouseDown}
+                                                              onBlur={function handleBlur}
+                                                              onFocus={function handleFocus}
+                                                              id={undefined}
++                                                             className="MuiSelect-select MuiSelect-standard MuiInputB..."
+-                                                             className="MuiSelect-select MuiSelect-standard MuiInputB..."
+                                                              ref={function}
+                                                            >
++                                                             10
+                                                          <MuiSelect-nativeInput>
+                                                          ...
+                                                            <ArrowDropDownIcon className="MuiSelect-...">
+                                                              <SvgIcon data-testid="ArrowDropD..." ref={null} ...>
+                                                                <MuiSvgIcon-root as="svg" className="MuiSvgIcon..." ...>
+                                                                  <Insertion>
+                                                                  <svg
++                                                                   className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedi..."
+-                                                                   className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedi..."
+                                                                    focusable="false"
+                                                                    color={undefined}
+                                                                    aria-hidden={true}
+                                                                    role={undefined}
+                                                                    viewBox="0 0 24 24"
+                                                                    data-testid="ArrowDropDownIcon"
+                                                                  >
+                                                          ...
+                                        ...
+                                          <div className="MuiBox-roo..." gap="xs">
+                                            ...
+                                              <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                <Insertion>
+                                                <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                                  <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                    <Insertion>
+                                                    <button
++                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+-                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+                                                      onBlur={function}
+                                                      onClick={function handleClick}
+                                                      onContextMenu={function}
+                                                      onFocus={function}
+                                                      onKeyDown={function handleKeyDown}
+                                                      onKeyUp={function handleKeyUp}
+                                                      onMouseDown={function}
+                                                      onMouseLeave={function}
+                                                      onMouseUp={function}
+                                                      onDragLeave={function}
+                                                      onTouchEnd={function}
+                                                      onTouchMove={function}
+                                                      onTouchStart={function}
+                                                      tabIndex={-1}
+                                                      type="button"
+                                                      disabled={true}
+                                                      id={undefined}
+                                                      aria-label="Vai alla pagina precedente"
+                                                      ref={function}
+                                                    >
+                                            ...
+                                              <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                <Insertion>
+                                                <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                                  <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                    <Insertion>
+                                                    <button
++                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+-                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+                                                      onBlur={function}
+                                                      onClick={function handleClick}
+                                                      onContextMenu={function}
+                                                      onFocus={function}
+                                                      onKeyDown={function handleKeyDown}
+                                                      onKeyUp={function handleKeyUp}
+                                                      onMouseDown={function}
+                                                      onMouseLeave={function}
+                                                      onMouseUp={function}
+                                                      onDragLeave={function}
+                                                      onTouchEnd={function}
+                                                      onTouchMove={function}
+                                                      onTouchStart={function}
+                                                      tabIndex={-1}
+                                                      type="button"
+                                                      disabled={true}
+                                                      id={undefined}
+                                                      aria-label="Vai alla pagina successiva"
+                                                      ref={function}
+                                                    >
+ @ http://localhost:8080/users:231
+[  598252ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  598647ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  599367ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <ThemeProvider theme={{...}}>
+      <ThemeProviderNoVars theme={{...}}>
+        <ThemeProvider$1 themeId={undefined} theme={{...}}>
+          <ThemeProvider$2 theme={{...}}>
+            <RtlProvider value={false}>
+              <DefaultPropsProvider$1 value={{}}>
+                <UsersTable users={[...]} roles={[...]} onEdit={function bound dispatchSetState} ...>
+                  <MaterialReactTable table={{...}}>
+                    <MRT_TablePaper table={{...}}>
+                      <Paper elevation={2} onKeyDown={function onKeyDown} ref={function ref} style={{}} sx={function sx}>
+                        <MuiPaper-root as="div" ownerState={{elevation:2, ...}} className="MuiPaper-r..." ...>
+                          <Insertion>
+                          <div
++                           className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-1du84..."
+-                           className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-1hoqu..."
+                            onKeyDown={function onKeyDown}
+                            style={{
++                             --Paper-shadow: "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1..."
+-                             --Paper-shadow: "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1..."
++                             --Paper-overlay: "linear-gradient(rgba(255, 255, 255, 0.069), rgba(255, 255, 255, 0.069))"
+                            }}
+                            ref={function ref}
+                          >
+                            <MRT_TopToolbar table={{...}}>
+                              <Box ref={function ref} sx={function sx}>
+                                <Styled(div) as="div" ref={function ref} className="MuiBox-root" theme={{...}} ...>
+                                  <Insertion>
+                                  <div
++                                   className="MuiBox-root css-a6mh5t"
+-                                   className="MuiBox-root css-1tbggly"
+                                    ref={function ref}
+                                  >
+                                    ...
+                                      <MuiAlert-root role="alert" elevation={0} sx={function sx} ...>
+                                        <Insertion>
+                                        <Paper role="alert" elevation={0} className="MuiAlert-r...">
+                                          <MuiPaper-root as="div" ownerState={{role:"alert", ...}} ...>
+                                            <Insertion>
+                                            <div
++                                             className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-el..."
+-                                             className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-el..."
+                                              role="alert"
+                                              style={{
++                                               --Paper-shadow: "none"
+-                                               --Paper-shadow: "none"
++                                               --Paper-overlay: "linear-gradient(rgba(255, 255, 255, 0), rgba(255, 25..."
+                                              }}
+                                            >
+                                    ...
+                                      <Box className="Mui-Toolba..." onDragEnter={function handleDragEnter} ...>
+                                        <Styled(div) as="div" ref={function} className="Mui-Toolba..." theme={{...}} ...>
+                                          <Insertion>
+                                          <div
++                                           className="Mui-ToolbarDropZone MuiBox-root css-t802yl"
+-                                           className="Mui-ToolbarDropZone MuiBox-root css-1fwjva3"
+                                            onDragEnter={function handleDragEnter}
+                                            onDragOver={function handleDragOver}
+                                            style={{opacity:0,visibility:"hidden"}}
+                                            ref={function}
+                                          >
+                                    ...
+                                      <div className="MuiBox-roo...">
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Mostra/Nascondi ricerca"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Mostra/Nascondi filtri"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Mostra/Nascondi colonne"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Cambia densità"
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                        ...
+                                          <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                            <Insertion>
+                                            <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                              <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                <Insertion>
+                                                <button
++                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+-                                                 className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeM..."
+                                                  onBlur={function}
+                                                  onClick={function handleClick}
+                                                  onContextMenu={function}
+                                                  onFocus={function}
+                                                  onKeyDown={function handleKeyDown}
+                                                  onKeyUp={function handleKeyUp}
+                                                  onMouseDown={function}
+                                                  onMouseLeave={function}
+                                                  onMouseUp={function}
+                                                  onDragLeave={function}
+                                                  onTouchEnd={function}
+                                                  onTouchMove={function}
+                                                  onTouchStart={function}
+                                                  tabIndex={0}
+                                                  type="button"
+                                                  disabled={null}
+                                                  id={undefined}
+                                                  aria-label="Cambia schermo intero"
+                                                  onMouseEnter={function onMouseEnter}
+                                                  title={undefined}
+                                                  aria-labelledby={null}
+                                                  data-mui-internal-clone-element={true}
+                                                  onMouseOver={function}
+                                                  ref={function}
+                                                >
+                                    ...
+                            ...
+                              <Table stickyHeader={false} style={{...}} sx={function sx}>
+                                <MuiTable-root as="table" role={null} ref={null} className="MuiTable-root" ...>
+                                  <Insertion>
+                                  <table
+                                    role={null}
++                                   className="MuiTable-root css-1up5d7c-MuiTable-root"
+-                                   className="MuiTable-root css-h4w74f-MuiTable-root"
+                                    style={{--header-name-size:180,--col-name-size:180,--header-email-size:180,--col-email-size:180, ...}}
+                                  >
+                                    ...
+                                      <MRT_TableHeadRow columnVirtualizer={undefined} headerGroup={{depth:0,id:"0", ...}} ...>
+                                        <TableRow sx={function sx}>
+                                          <MuiTableRow-root as="tr" ref={null} className="MuiTableRo..." role={null} ...>
+                                            <Insertion>
+                                            <tr
++                                             className="MuiTableRow-root MuiTableRow-head css-1121m5q-MuiTableRow-root"
+-                                             className="MuiTableRow-root MuiTableRow-head css-1ule0da-MuiTableRow-root"
+                                              role={null}
+                                            >
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} header={{id:"name", ...}} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={0}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Nome crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} header={{id:"email", ...}} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={1}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Email crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} header={{id:"role", ...}} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={2}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Ruolo crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} data-can-sort={true} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={true}
+                                                      data-index={3}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                                      ...
+                                                        <div className="Mui-TableH...">
+                                                          ...
+                                                            <MuiTableSortLabel-root disableRipple={true} component="span" ...>
+                                                              <Insertion>
+                                                              <ButtonBase disableRipple={true} component="span" ...>
+                                                                <MuiButtonBase-root as="span" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <span
++                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+-                                                                   className="MuiButtonBase-root MuiTableSortLabel-ro..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    role="button"
+                                                                    aria-label="Ordina da Stato crescente"
+                                                                    ref={function}
+                                                                  >
+                                                          ...
+                                                            <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                              <Insertion>
+                                                              <ButtonBase id={undefined} className="MuiIconBut..." ...>
+                                                                <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                                  <Insertion>
+                                                                  <button
++                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+-                                                                   className="MuiButtonBase-root MuiIconButton-root M..."
+                                                                    onBlur={function}
+                                                                    onClick={function handleClick}
+                                                                    onContextMenu={function}
+                                                                    onFocus={function}
+                                                                    onKeyDown={function handleKeyDown}
+                                                                    onKeyUp={function handleKeyUp}
+                                                                    onMouseDown={function}
+                                                                    onMouseLeave={function}
+                                                                    onMouseUp={function}
+                                                                    onDragLeave={function}
+                                                                    onTouchEnd={function}
+                                                                    onTouchMove={function}
+                                                                    onTouchStart={function}
+                                                                    tabIndex={0}
+                                                                    type="button"
+                                                                    disabled={null}
+                                                                    id={undefined}
+                                                                    aria-label="Azioni colonna"
+                                                                    title={undefined}
+                                                                    aria-labelledby={null}
+                                                                    data-mui-internal-clone-element={true}
+                                                                    onMouseOver={function}
+                                                                    ref={function}
+                                                                  >
+                                                      ...
+                                              <MRT_TableHeadCell columnVirtualizer={undefined} ...>
+                                                <TableCell align="left" aria-sort="none" colSpan={1} ...>
+                                                  <MuiTableCell-root as="th" ref={function ref} className="MuiTableCe..." ...>
+                                                    <Insertion>
+                                                    <th
++                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+-                                                     className="MuiTableCell-root MuiTableCell-head MuiTableCell-alig..."
+                                                      aria-sort="none"
+                                                      scope="col"
+                                                      colSpan={1}
+                                                      data-can-sort={undefined}
+                                                      data-index={4}
+                                                      data-pinned={undefined}
+                                                      data-sort={undefined}
+                                                      onDragEnter={function handleDragEnter}
+                                                      onDragOver={function handleDragOver}
+                                                      tabIndex={0}
+                                                      onKeyDown={function handleKeyDown}
+                                                      ref={function ref}
+                                                    >
+                                    ...
+                                      <tbody className="MuiTableBo..." role={null}>
+                                        <MRT_TableBodyRow columnVirtualizer={undefined} numRows={2} table={{...}} ...>
+                                          <TableRow data-index={0} data-pinned={undefined} data-selected={undefined} ...>
+                                            <MuiTableRow-root as="tr" ref={function ref} className="MuiTableRo..." ...>
+                                              <Insertion>
+                                              <tr
++                                               className="MuiTableRow-root css-1izovqb-MuiTableRow-root"
+-                                               className="MuiTableRow-root css-11yrv3u-MuiTableRow-root"
+                                                role={null}
+                                                data-index={0}
+                                                data-pinned={undefined}
+                                                data-selected={undefined}
+                                                onDragEnter={function handleDragEnter}
+                                                onDragOver={function handleDragOver}
+                                                style={{transform:undefined}}
+                                                ref={function ref}
+                                              >
+                                                <MRT_TableBodyCell cell={{id:"0_name", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={0} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={0}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_email", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={1} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={1}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_role", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={2} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={2}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_status", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={3} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={3}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"0_mrt-...", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={4} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={4}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                        <MRT_TableBodyRow columnVirtualizer={undefined} numRows={2} table={{...}} ...>
+                                          <TableRow data-index={1} data-pinned={undefined} data-selected={undefined} ...>
+                                            <MuiTableRow-root as="tr" ref={function ref} className="MuiTableRo..." ...>
+                                              <Insertion>
+                                              <tr
++                                               className="MuiTableRow-root css-1izovqb-MuiTableRow-root"
+-                                               className="MuiTableRow-root css-11yrv3u-MuiTableRow-root"
+                                                role={null}
+                                                data-index={1}
+                                                data-pinned={undefined}
+                                                data-selected={undefined}
+                                                onDragEnter={function handleDragEnter}
+                                                onDragOver={function handleDragOver}
+                                                style={{transform:undefined}}
+                                                ref={function ref}
+                                              >
+                                                <MRT_TableBodyCell cell={{id:"1_name", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={0} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={0}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_email", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={1} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={1}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_role", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={2} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={2}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_status", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={3} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={3}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                                <MRT_TableBodyCell cell={{id:"1_mrt-...", ...}} numRows={2} ...>
+                                                  <TableCell align="left" data-index={4} data-pinned={undefined} ...>
+                                                    <MuiTableCell-root as="td" ref={null} className="MuiTableCe..." ...>
+                                                      <Insertion>
+                                                      <td
++                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+-                                                       className="MuiTableCell-root MuiTableCell-body MuiTableCell-al..."
+                                                        aria-sort={null}
+                                                        scope={undefined}
+                                                        data-index={4}
+                                                        data-pinned={undefined}
+                                                        tabIndex={0}
+                                                        onKeyDown={function handleKeyDown}
+                                                        onContextMenu={function handleContextMenu}
+                                                        onDoubleClick={function handleDoubleClick}
+                                                        onDragEnter={function handleDragEnter}
+                                                        onDragOver={function handleDragOver}
+                                                      >
+                                    ...
+                            <MRT_BottomToolbar table={{...}}>
+                              <Box ref={function ref} sx={function sx}>
+                                <Styled(div) as="div" ref={function ref} className="MuiBox-root" theme={{...}} ...>
+                                  <Insertion>
+                                  <div
++                                   className="MuiBox-root css-1joj1yp"
+-                                   className="MuiBox-root css-10gei56"
+                                    ref={function ref}
+                                  >
+                                    <MRT_LinearProgressBar>
+                                    ...
+                                      <div className="MuiTablePa...">
+                                        ...
+                                          <div className="MuiBox-roo...">
+                                            <InputLabel htmlFor="mrt-rows-p..." sx={{mb:0}}>
+                                              <MuiInputLabel-root data-shrink={undefined} ref={null} ...>
+                                                <Insertion>
+                                                <FormLabel data-shrink={undefined} className="MuiInputLa..." ...>
+                                                  <MuiFormLabel-root as="label" ownerState={{...}} ...>
+                                                    <Insertion>
+                                                    <label
++                                                     className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-an..."
+-                                                     className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-an..."
+                                                      data-shrink={undefined}
+                                                      htmlFor="mrt-rows-per-page-_R_2l9_"
+                                                    >
+                                            ...
+                                              <Input inputComponent={{...}} inputProps={{children:[...], ...}} ...>
+                                                <InputBase slots={{root:{...}, ...}} slotProps={{root:{...}}} ...>
+                                                  <GlobalStylesWrapper>
+                                                  <MuiInput-root ownerState={{slots:{...}, ...}} ref={null} ...>
+                                                    <Insertion>
+                                                    <div
+                                                      onClick={function handleClick}
++                                                     className="MuiInputBase-root MuiInput-root MuiInputBase-colorPri..."
+-                                                     className="MuiInputBase-root MuiInput-root MuiInputBase-colorPri..."
+                                                    >
+                                                      <MuiInput-input aria-invalid={undefined} ...>
+                                                        <Insertion>
+                                                        <SelectInput aria-invalid={undefined} ...>
+                                                          <MuiSelect-select as="div" ref={function} tabIndex={0} ...>
+                                                            <Insertion>
+                                                            <div
+                                                              tabIndex={0}
+                                                              role="combobox"
+                                                              aria-controls={undefined}
+                                                              aria-disabled={undefined}
+                                                              aria-expanded="false"
+                                                              aria-haspopup="listbox"
+                                                              aria-readonly={undefined}
+                                                              aria-label="Righe per pagina"
+                                                              aria-labelledby={undefined}
+                                                              aria-describedby={undefined}
+                                                              aria-required={undefined}
+                                                              aria-invalid={undefined}
+                                                              onKeyDown={function handleKeyDown}
+                                                              onMouseDown={function handleMouseDown}
+                                                              onBlur={function handleBlur}
+                                                              onFocus={function handleFocus}
+                                                              id={undefined}
++                                                             className="MuiSelect-select MuiSelect-standard MuiInputB..."
+-                                                             className="MuiSelect-select MuiSelect-standard MuiInputB..."
+                                                              ref={function}
+                                                            >
++                                                             10
+                                                          <MuiSelect-nativeInput>
+                                                          ...
+                                                            <ArrowDropDownIcon className="MuiSelect-...">
+                                                              <SvgIcon data-testid="ArrowDropD..." ref={null} ...>
+                                                                <MuiSvgIcon-root as="svg" className="MuiSvgIcon..." ...>
+                                                                  <Insertion>
+                                                                  <svg
++                                                                   className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedi..."
+-                                                                   className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedi..."
+                                                                    focusable="false"
+                                                                    color={undefined}
+                                                                    aria-hidden={true}
+                                                                    role={undefined}
+                                                                    viewBox="0 0 24 24"
+                                                                    data-testid="ArrowDropDownIcon"
+                                                                  >
+                                                          ...
+                                        ...
+                                          <div className="MuiBox-roo..." gap="xs">
+                                            ...
+                                              <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                <Insertion>
+                                                <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                                  <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                    <Insertion>
+                                                    <button
++                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+-                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+                                                      onBlur={function}
+                                                      onClick={function handleClick}
+                                                      onContextMenu={function}
+                                                      onFocus={function}
+                                                      onKeyDown={function handleKeyDown}
+                                                      onKeyUp={function handleKeyUp}
+                                                      onMouseDown={function}
+                                                      onMouseLeave={function}
+                                                      onMouseUp={function}
+                                                      onDragLeave={function}
+                                                      onTouchEnd={function}
+                                                      onTouchMove={function}
+                                                      onTouchStart={function}
+                                                      tabIndex={-1}
+                                                      type="button"
+                                                      disabled={true}
+                                                      id={undefined}
+                                                      aria-label="Vai alla pagina precedente"
+                                                      ref={function}
+                                                    >
+                                            ...
+                                              <MuiIconButton-root id={undefined} className="MuiIconBut..." ...>
+                                                <Insertion>
+                                                <ButtonBase id={undefined} className="MuiIconBut..." centerRipple={true} ...>
+                                                  <MuiButtonBase-root as="button" className="MuiButtonB..." ...>
+                                                    <Insertion>
+                                                    <button
++                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+-                                                     className="MuiButtonBase-root Mui-disabled MuiIconButton-root Mu..."
+                                                      onBlur={function}
+                                                      onClick={function handleClick}
+                                                      onContextMenu={function}
+                                                      onFocus={function}
+                                                      onKeyDown={function handleKeyDown}
+                                                      onKeyUp={function handleKeyUp}
+                                                      onMouseDown={function}
+                                                      onMouseLeave={function}
+                                                      onMouseUp={function}
+                                                      onDragLeave={function}
+                                                      onTouchEnd={function}
+                                                      onTouchMove={function}
+                                                      onTouchStart={function}
+                                                      tabIndex={-1}
+                                                      type="button"
+                                                      disabled={true}
+                                                      id={undefined}
+                                                      aria-label="Vai alla pagina successiva"
+                                                      ref={function}
+                                                    >
+ @ http://localhost:8080/users:231
+[  605592ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  605941ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  623017ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  623311ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  626001ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  626216ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  627847ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  628071ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  651300ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  651663ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  713608ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  714224ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231

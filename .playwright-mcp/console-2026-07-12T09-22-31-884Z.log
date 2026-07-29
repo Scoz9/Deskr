@@ -1,0 +1,43 @@
+[     440ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[     879ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[    3493ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/email/verify:172
+[    3649ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/email/verify:231
+[   34266ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[   34689ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[   81561ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[   81981ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  123472ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  123839ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  125483ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/settings/appearance:172
+[  125623ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/settings/appearance:231
+[  236089ms] ReferenceError: Ban is not defined
+    at t5 (http://localhost:5173/resources/js/components/users/users-table.tsx?t=1783848386665:127:41)
+    at MRT_ToggleRowActionMenuButton (http://localhost:5173/node_modules/.vite/deps/material-react-table.js?t=1783847398291&v=6a01e807:23492:123)
+    at Object.react_stack_bottom_frame (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:19512:12)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:10859:19)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:12215:16)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:12786:20)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:7497:66)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:15075:92)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:14971:37)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/@inertiajs_react.js?v=6a01e807:14955:6)
+[  236086ms] [WARNING] %s
+
+%s
+ An error occurred in the <MRT_ToggleRowActionMenuButton> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:8080/settings/appearance:231
+[  249090ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  249546ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[  688977ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:8080/users:231
+[  690213ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[  690779ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[ 9125100ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[ 9125350ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[ 9126975ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[ 9127333ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[ 9141794ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/login:172
+[ 9142041ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/login:231
+[ 9144866ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[ 9145189ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231
+[ 9168056ms] [LOG] 🔍 Browser logger active (MCP server detected). Posting to: http://localhost:8080/_boost/browser-logs @ http://localhost:8080/users:172
+[ 9168447ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:8080/users:231

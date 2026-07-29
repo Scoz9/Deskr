@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - "resources/**"
+      - "routes/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - ".github/workflows/build.yml"
+  pull_request:
+    paths:
+      - "resources/**"
+      - "routes/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - ".github/workflows/build.yml"
+
+jobs:
+  build:
+    uses: Scrapkit/ci-pipeline/.github/workflows/vite-build.yml@v1
+    with:
+      node-version: "22"
+      php-version: "8.3"
