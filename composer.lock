@@ -12685,16 +12685,16 @@
         },
         {
             "name": "scrapkit/engineering-kit",
-            "version": "v2.1.0",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Scrapkit/engineering-kit.git",
-                "reference": "2553cc571f39221e1bc8fc8d89632fbf0427a590"
+                "reference": "fc036ecaa9b04c3a0d175bdd4af800c5363997bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Scrapkit/engineering-kit/zipball/2553cc571f39221e1bc8fc8d89632fbf0427a590",
-                "reference": "2553cc571f39221e1bc8fc8d89632fbf0427a590",
+                "url": "https://api.github.com/repos/Scrapkit/engineering-kit/zipball/fc036ecaa9b04c3a0d175bdd4af800c5363997bf",
+                "reference": "fc036ecaa9b04c3a0d175bdd4af800c5363997bf",
                 "shasum": ""
             },
             "require": {
@@ -12740,7 +12740,10 @@
                     "@php vendor/bin/testbench package:discover --ansi"
                 ],
                 "analyse": [
-                    "vendor/bin/phpstan analyse"
+                    "vendor/bin/phpstan analyse --memory-limit=512M"
+                ],
+                "sync-claude-assets": [
+                    "@php scripts/sync-claude-assets.php"
                 ],
                 "test": [
                     "vendor/bin/pest"
@@ -12776,10 +12779,10 @@
                 "scrapkit"
             ],
             "support": {
-                "source": "https://github.com/Scrapkit/engineering-kit/tree/v2.1.0",
+                "source": "https://github.com/Scrapkit/engineering-kit/tree/v2.4.1",
                 "issues": "https://github.com/Scrapkit/engineering-kit/issues"
             },
-            "time": "2026-07-25T09:14:09+00:00"
+            "time": "2026-07-29T20:58:22+00:00"
         },
         {
             "name": "scrapkit/laravel-quick-login",
@@ -14042,5 +14045,5 @@
         "php": "^8.4.1"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
