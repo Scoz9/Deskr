@@ -145,9 +145,12 @@ Restano qui solo le convenzioni proprie di Deskr:
   Alpine.
 - **Ruoli e permessi:** `spatie/laravel-permission` con la gerarchia di
   `scrapkit/laravel-permission-hierarchy`, unica autorità sull'autorizzazione.
-  L'enum `UserRole` è l'elenco type-safe dei ruoli seedati (`admin`, `agent`,
-  `requester`) usato da factory, seeder e policy — **non** un secondo sistema di
-  ruoli su una colonna di `users`.
+  L'enum `UserRole` è l'elenco type-safe dei ruoli seedati (`superAdmin`,
+  `admin`, `agent`, `requester`) usato da factory, seeder e policy — **non** un
+  secondo sistema di ruoli su una colonna di `users`. `superAdmin` è il ruolo
+  dello starter kit, bypassato da `Gate::before` e non assegnabile
+  dall'interfaccia: sta nell'elenco perché è seedato, non perché sia un ruolo
+  di Deskr.
 - **Design system:** Tailwind e le primitive in `resources/js/components/ui` sono
   il default. MUI e `material-react-table` restano confinati alle tabelle dati
   della console e dell'amministrazione — dove sono già in uso e dove pagano

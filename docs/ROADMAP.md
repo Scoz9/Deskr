@@ -29,8 +29,9 @@ lo starter kit con le decisioni del §2–§6.
 
 5. Enum `TicketStatus` (inclusi `annullato`, escluso `riaperto`),
    `TicketPriority`, `TicketChannel` e `UserRole`. Test.
-   `UserRole` è l'**elenco** dei ruoli spatie seedati (`admin`, `agent`,
-   `requester`), non una colonna su `users`: vedi la decisione sui ruoli nel §3.
+   `UserRole` è l'**elenco** dei ruoli spatie seedati (`superAdmin`, `admin`,
+   `agent`, `requester`), non una colonna su `users`: vedi la decisione sui
+   ruoli nel §3.
 6. `Organization`: migration, model, factory.
 7. `User`: appartenenza a `Organization`, seeder dei tre ruoli spatie, factory
    con stati `admin()`, `agent()`, `requester()` che assegnano il ruolo via
