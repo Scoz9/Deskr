@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -16,12 +17,26 @@ class RoleSeeder extends Seeder
     {
         $allPermissions = Permission::all();
 
-        $operatorePermissions = $allPermissions->reject(
+        $agentPermissions = $allPermissions->reject(
             fn (Permission $permission): bool => Str::startsWith($permission->name, ['role:', 'permission:'])
         );
 
-        Role::updateOrCreate(['name' => 'superAdmin'], ['hierarchy_rank' => 0]);
-        Role::updateOrCreate(['name' => 'amministratore'], ['hierarchy_rank' => 1])->syncPermissions($allPermissions);
-        Role::updateOrCreate(['name' => 'operatore'], ['hierarchy_rank' => 2])->syncPermissions($operatorePermissions);
+        foreach (UserRole::cases() as $role) {
+            Role::updateOrCreate(
+                ['name' => $role->value],
+                ['hierarchy_rank' => $role->hierarchyRank()],
+            );
+        }
+
+        // superAdmin gets no grant: Gate::before already answers for it. A
+        // requester gets none either: the portal is guarded by policies on the
+        // requester's own tickets, not by abilities on the console.
+        $this->role(UserRole::Admin)->syncPermissions($allPermissions);
+        $this->role(UserRole::Agent)->syncPermissions($agentPermissions);
+    }
+
+    private function role(UserRole $role): Role
+    {
+        return Role::where('name', $role->value)->firstOrFail();
     }
 }

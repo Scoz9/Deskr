@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -24,6 +25,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property int|null $organization_id
+ * @property-read Organization|null $organization
  * @property string|null $avatar_path
  * @property-read string|null $avatar
  * @property Carbon|null $email_verified_at
@@ -64,6 +67,17 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
                 ? null
                 : Storage::disk(self::AVATAR_DISK)->url($this->avatar_path),
         );
+    }
+
+    /**
+     * The company this user writes on behalf of. Null for agents and admins:
+     * they work for the helpdesk, not for a customer.
+     *
+     * @return BelongsTo<Organization, $this>
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
     }
 
     /**

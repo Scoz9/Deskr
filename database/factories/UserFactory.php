@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +36,45 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
         ];
+    }
+
+    /**
+     * Give the user the admin role, creating it if the seeder has not run.
+     */
+    public function admin(): static
+    {
+        return $this->withRole(UserRole::Admin);
+    }
+
+    /**
+     * Give the user the agent role, creating it if the seeder has not run.
+     */
+    public function agent(): static
+    {
+        return $this->withRole(UserRole::Agent);
+    }
+
+    /**
+     * Give the user the requester role, creating it if the seeder has not run.
+     */
+    public function requester(): static
+    {
+        return $this->withRole(UserRole::Requester);
+    }
+
+    /**
+     * Assign a role after creation. The role is created with the rank the enum
+     * declares, so a test does not have to seed the whole hierarchy to get one
+     * user with one role.
+     */
+    private function withRole(UserRole $role): static
+    {
+        return $this->afterCreating(function (User $user) use ($role): void {
+            $user->assignRole(Role::firstOrCreate(
+                ['name' => $role->value],
+                ['hierarchy_rank' => $role->hierarchyRank()],
+            ));
+        });
     }
 
     /**

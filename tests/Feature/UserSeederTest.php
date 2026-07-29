@@ -12,12 +12,13 @@ beforeEach(function () {
 test('it creates one user per role with the matching role assigned', function () {
     $this->seed(UserSeeder::class);
 
-    expect(User::count())->toBe(3);
+    expect(User::count())->toBe(4);
 
     $expected = [
         'super-admin@example.test' => ['name' => 'Super Admin', 'role' => 'superAdmin'],
-        'amministratore@example.test' => ['name' => 'Amministratore', 'role' => 'amministratore'],
-        'operatore@example.test' => ['name' => 'Operatore', 'role' => 'operatore'],
+        'admin@example.test' => ['name' => 'Admin', 'role' => 'admin'],
+        'agent@example.test' => ['name' => 'Agent', 'role' => 'agent'],
+        'requester@example.test' => ['name' => 'Requester', 'role' => 'requester'],
     ];
 
     foreach ($expected as $email => $data) {
@@ -33,14 +34,14 @@ test('it is idempotent when run twice', function () {
     $this->seed(UserSeeder::class);
     $this->seed(UserSeeder::class);
 
-    expect(User::count())->toBe(3);
+    expect(User::count())->toBe(4);
 });
 
 test('seeded users get a random password outside local', function () {
     // Tests run in the "testing" environment, which is not local.
     $this->seed(UserSeeder::class);
 
-    $password = User::where('email', 'operatore@example.test')->value('password');
+    $password = User::where('email', 'agent@example.test')->value('password');
 
     expect(Hash::check('password', $password))->toBeFalse();
 });
@@ -50,7 +51,7 @@ test('seeded users get the well-known password in local', function () {
 
     $this->seed(UserSeeder::class);
 
-    $password = User::where('email', 'operatore@example.test')->value('password');
+    $password = User::where('email', 'agent@example.test')->value('password');
 
     expect(Hash::check('password', $password))->toBeTrue();
 });

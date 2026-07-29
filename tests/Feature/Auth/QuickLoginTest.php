@@ -24,16 +24,16 @@ test('quick login returns 404 when no user has the role', function () {
 });
 
 test('login screen receives the quick login roles ordered by hierarchy rank', function () {
-    Role::create(['name' => 'operatore', 'hierarchy_rank' => 2]);
+    Role::create(['name' => 'agent', 'hierarchy_rank' => 2]);
     Role::create(['name' => 'superAdmin', 'hierarchy_rank' => 0]);
-    Role::create(['name' => 'amministratore', 'hierarchy_rank' => 1]);
+    Role::create(['name' => 'admin', 'hierarchy_rank' => 1]);
 
     $this->get(route('login'))->assertInertia(
         fn (Assert $page) => $page
             ->component('auth/login')
             ->has('quickLogin.roles', 3)
             ->where('quickLogin.roles.0.name', 'superAdmin')
-            ->where('quickLogin.roles.1.name', 'amministratore')
-            ->where('quickLogin.roles.2.name', 'operatore'),
+            ->where('quickLogin.roles.1.name', 'admin')
+            ->where('quickLogin.roles.2.name', 'agent'),
     );
 });
