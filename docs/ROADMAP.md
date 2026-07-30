@@ -92,11 +92,13 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiusi gli step 15–16: `TicketTransitions` porta la tabella del §4,
-`InvalidTicketTransition` rifiuta tutto il resto, e ogni arco ammesso emette il
-proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail. Tutto
-in `app/Tickets/`, la casa del dominio del ticket che non è né un model né un
-caso d'uso, con gli eventi in `app/Tickets/Events/`.
+Chiusi gli step 15–17: `TicketTransitions` porta la tabella del §4,
+`InvalidTicketTransition` rifiuta tutto il resto, ogni arco ammesso emette il
+proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail, e
+`CreateTicket` apre il ticket a partire dal DTO `NewTicket`. Transizioni ed
+eventi stanno in `app/Tickets/`, la casa del dominio del ticket che non è né un
+model né un caso d'uso, con gli eventi in `app/Tickets/Events/`; le Action, che
+casi d'uso sono, stanno in `app/Actions/Tickets/` accanto a quelle di Fortify.
 
 Archi ed eventi sono **una tabella sola**, un `match` sull'enum: uno stato
 aggiunto senza decidere dove va rompe subito invece di rispondere in silenzio
@@ -134,6 +136,31 @@ metriche e `reopen_count`: li scrivono le Action degli step 18–20, come vuole 
 §5 ("i timestamp li scrive l'Action che causa il fatto"). Il salvataggio si porta
 dietro anche le altre modifiche pendenti sul model, così l'Action che valorizza
 `resolved_at` prima di chiamare `apply()` fa atterrare timestamp e stato insieme.
+
+`CreateTicket` accetta il DTO e nient'altro: è il DTO a rendere i canali
+intercambiabili (§3), mentre parametri sciolti lascerebbero al canale aggiunto
+dopo la libertà di passarne uno in più, e all'ingresso di significare una cosa
+diversa a seconda di chi chiama. Il DTO porta i model e non gli id, perché
+l'instradamento ha bisogno del team che la categoria indica e con gli id
+l'ingresso rileggerebbe dal database righe che il chiamante ha già in mano.
+
+**La categoria è opzionale e il team si scrive sulla riga.** Un'email in arrivo
+non è classificata: rifiutarla vorrebbe dire perdere la richiesta, quindi il
+ticket atterra senza categoria e senza team, nel pool dove la console della Fase
+4 va a guardare. Il team si legge una volta sola, all'ingresso: reinstradare una
+categoria mesi dopo non deve riscrivere dove sono finiti i ticket già lavorati.
+
+Ticket e primo messaggio in **una transazione sola**. La descrizione non è un
+campo del ticket ma il primo `TicketMessage` (§3), e un ticket senza quel
+messaggio ha perso la richiesta per cui è stato aperto: mezzo ingresso è peggio
+di nessun ingresso, perché obbliga a chiedere al richiedente di riscrivere
+qualcosa che è già in elenco.
+
+La creazione **non emette un evento di dominio**: il trail del §4 registra
+transizioni e assegnazioni, e che il ticket sia nato lo dice la riga stessa con
+il suo `created_at`. La priorità invece sta nel DTO con default `normale`, perché
+l'ingresso pubblico non la espone (§3) mentre l'operatore che apre il ticket al
+telefono allo step 39 la sceglie.
 
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.
