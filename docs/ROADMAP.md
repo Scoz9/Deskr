@@ -92,24 +92,48 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiuso lo step 15: `TicketTransitions` porta la tabella del §4 e
-`InvalidTicketTransition` rifiuta tutto il resto. Vivono in `app/Tickets/`,
-che è la casa del dominio del ticket che non è né un model né un caso d'uso: da
-qui passano anche gli eventi dello step 16.
+Chiusi gli step 15–16: `TicketTransitions` porta la tabella del §4,
+`InvalidTicketTransition` rifiuta tutto il resto, e ogni arco ammesso emette il
+proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail. Tutto
+in `app/Tickets/`, la casa del dominio del ticket che non è né un model né un
+caso d'uso, con gli eventi in `app/Tickets/Events/`.
 
-La tabella è un `match` sull'enum e non un array indicizzato per stringa: uno
-stato aggiunto senza decidere dove va rompe subito, invece di rispondere in
-silenzio "da nessuna parte". `chiuso` e `annullato` compaiono con la lista
-vuota perché terminale è una decisione, non una dimenticanza.
+Archi ed eventi sono **una tabella sola**, un `match` sull'enum: uno stato
+aggiunto senza decidere dove va rompe subito invece di rispondere in silenzio
+"da nessuna parte", e un arco non può restare ammesso senza niente che lo
+annunci. `chiuso` e `annullato` compaiono con la lista vuota perché terminale è
+una decisione, non una dimenticanza.
 
 **Uno stato non transiziona verso sé stesso.** Non è nella tabella del §4 e
 resta fuori: lasciarlo passare emetterebbe un evento e muoverebbe le metriche
 per un ticket che non si è mosso.
 
-La classe valida e risponde, non tocca il ticket e non salva niente: scrivere
-lo stato nuovo, i timestamp delle metriche e l'audit trail è delle Action degli
-step 18–20, come vuole il §5 ("i timestamp li scrive l'Action che causa il
-fatto").
+Tredici archi e **nove** eventi: quello che una transizione significa è la
+coppia che attraversa, non lo stato in cui arriva. Tre archi finiscono in
+`annullato` e due ciascuno in `risolto` e `in_attesa` senza voler dire niente di
+diverso una volta lì; i tre che arrivano in `in lavorazione`, invece, sono tre
+fatti distinti — presa in carico, risposta del richiedente, riapertura — e hanno
+tre classi. Un evento unico costringerebbe ogni listener a ricostruire dalla
+coppia cosa è successo.
+
+`TicketEventType` è il vocabolario scritto su `ticket_events.type`: la colonna
+resta una stringa (crescerà a ogni step che aggiunge un fatto da registrare), è
+l'attributo del model a essere castato.
+
+`RecordTicketEvent` ascolta l'**interfaccia** `TicketDomainEvent`, non i nove
+eventi uno per uno: un evento aggiunto dopo — la riassegnazione dello step 18,
+che non è una transizione — finisce nel trail per il fatto di implementarla. È
+l'unico listener non in coda del progetto, mentre le notifiche lo sono sempre
+(§5): una notifica in ritardo è una notifica, un trail in ritardo è un ticket con
+un buco nella storia, e uno che fallisce in silenzio è un ticket con la storia
+sbagliata per sempre. Gira dentro la transazione della transizione: o atterrano
+entrambi o il ticket non si è mosso.
+
+`apply()` valida, salva lo stato ed emette. Restano fuori i timestamp delle
+metriche e `reopen_count`: li scrivono le Action degli step 18–20, come vuole il
+§5 ("i timestamp li scrive l'Action che causa il fatto"). Il salvataggio si porta
+dietro anche le altre modifiche pendenti sul model, così l'Action che valorizza
+`resolved_at` prima di chiamare `apply()` fa atterrare timestamp e stato insieme.
 
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.

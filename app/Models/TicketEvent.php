@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TicketActorType;
+use App\Enums\TicketEventType;
 use Database\Factories\TicketEventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,8 +14,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * One line of the audit trail: a transition, an assignment, whatever else the
- * domain events of step 16 decide to record. Written once and never updated —
- * the trail is what the ticket did, and what happened does not change.
+ * domain events decide to record. Written once and never updated — the trail is
+ * what the ticket did, and what happened does not change.
  *
  * The actor is polimorphic and nullable because it is not always a person
  * (§4): the automatic closing job acts as the system, the triage acts as the
@@ -23,7 +24,7 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property int $ticket_id
- * @property string $type
+ * @property TicketEventType $type
  * @property string|null $actor_type
  * @property int|null $actor_id
  * @property TicketActorType $actor_kind
@@ -80,6 +81,7 @@ class TicketEvent extends Model
     protected function casts(): array
     {
         return [
+            'type' => TicketEventType::class,
             'actor_kind' => TicketActorType::class,
             'payload' => 'array',
         ];

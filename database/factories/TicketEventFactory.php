@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\TicketActorType;
+use App\Enums\TicketEventType;
 use App\Models\Ticket;
 use App\Models\TicketEvent;
 use App\Models\User;
@@ -23,7 +24,7 @@ class TicketEventFactory extends Factory
     {
         return [
             'ticket_id' => Ticket::factory(),
-            'type' => 'ticket.transitioned',
+            'type' => TicketEventType::Assegnato,
             'actor_type' => (new User)->getMorphClass(),
             'actor_id' => User::factory()->agent(),
             'actor_kind' => TicketActorType::Utente,
