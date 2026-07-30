@@ -27,12 +27,12 @@ lo starter kit con le decisioni del §2–§6.
 
 ## Fase 1 — Modello dati
 
-Chiusi gli step 5–13: enum del dominio, `Organization`, `User` legato
+Fase chiusa con gli step 5–14: enum del dominio, `Organization`, `User` legato
 all'organizzazione con i ruoli allineati a Deskr, `Team` con la pivot
 `team_user`, `Category` con il team di destinazione, `Ticket` con tutti gli
 attributi del §4, `TicketMessage` con il thread, `Attachment` appeso al
-messaggio e `TicketEvent` con l'attore polimorfico. Ogni step è un commit di
-squash su `main`, con il perché nel corpo del messaggio.
+messaggio, `TicketEvent` con l'attore polimorfico e il seeder demo. Ogni step è
+un commit di squash su `main`, con il perché nel corpo del messaggio.
 
 La `reference` è generata da una sequenza PostgreSQL dedicata, legata con
 `OWNED BY` alla colonna che alimenta: così non deriva dall'id auto-incrementale
@@ -54,6 +54,15 @@ hanno una riga a cui puntare, quindi il tipo va scritto comunque, altrimenti
 resta un attore nullo con la ragione persa. La riga si scrive una volta sola e
 non ha `updated_at`. `type` è una stringa e `payload` un json: il vocabolario
 degli eventi lo decide lo step 16 insieme agli eventi di dominio.
+
+`DemoSeeder` sta fuori da `DatabaseSeeder` — trecento ticket inventati non sono
+qualcosa con cui un'installazione pulita deve svegliarsi — e si lancia con
+`artisan db:seed --class=DemoSeeder`. Le date sono sparse su 90 giorni perché
+trecento righe con lo stesso istante nasconderebbero proprio i problemi di
+paginazione che questo volume deve far emergere in Fase 4. **Lascia
+`first_response_at` e `resolved_at` a null**: li scrive il backfill dello step
+43, che senza dati da riempire non proverebbe niente — i thread però contengono
+già la risposta dell'operatore da cui il backfill li ricaverà.
 
 5. Enum `TicketStatus` (inclusi `annullato`, escluso `riaperto`),
    `TicketPriority`, `TicketChannel` e `UserRole`. Test.
