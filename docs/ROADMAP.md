@@ -92,6 +92,25 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
+Chiuso lo step 15: `TicketTransitions` porta la tabella del §4 e
+`InvalidTicketTransition` rifiuta tutto il resto. Vivono in `app/Tickets/`,
+che è la casa del dominio del ticket che non è né un model né un caso d'uso: da
+qui passano anche gli eventi dello step 16.
+
+La tabella è un `match` sull'enum e non un array indicizzato per stringa: uno
+stato aggiunto senza decidere dove va rompe subito, invece di rispondere in
+silenzio "da nessuna parte". `chiuso` e `annullato` compaiono con la lista
+vuota perché terminale è una decisione, non una dimenticanza.
+
+**Uno stato non transiziona verso sé stesso.** Non è nella tabella del §4 e
+resta fuori: lasciarlo passare emetterebbe un evento e muoverebbe le metriche
+per un ticket che non si è mosso.
+
+La classe valida e risponde, non tocca il ticket e non salva niente: scrivere
+lo stato nuovo, i timestamp delle metriche e l'audit trail è delle Action degli
+step 18–20, come vuole il §5 ("i timestamp li scrive l'Action che causa il
+fatto").
+
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.
 16. Eventi di dominio a ogni transizione + `TicketEvent` che li registra.
