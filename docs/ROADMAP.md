@@ -27,15 +27,19 @@ lo starter kit con le decisioni del §2–§6.
 
 ## Fase 1 — Modello dati
 
-Chiusi gli step 5–10: enum del dominio, `Organization`, `User` legato
+Chiusi gli step 5–11: enum del dominio, `Organization`, `User` legato
 all'organizzazione con i ruoli allineati a Deskr, `Team` con la pivot
-`team_user`, `Category` con il team di destinazione e `Ticket` con tutti gli
-attributi del §4. Ogni step è un commit di squash su `main`, con il perché nel
-corpo del messaggio.
+`team_user`, `Category` con il team di destinazione, `Ticket` con tutti gli
+attributi del §4 e `TicketMessage` con il thread. Ogni step è un commit di
+squash su `main`, con il perché nel corpo del messaggio.
 
 La `reference` è generata da una sequenza PostgreSQL dedicata, legata con
 `OWNED BY` alla colonna che alimenta: così non deriva dall'id auto-incrementale
 e non sopravvive al `migrate:fresh` dei test.
+
+`external_message_id` è `unique`: il threading dell'email inbound arriva allo
+step 29, ma la colonna nasce con il vincolo che impedisce al webhook consegnato
+due volte di appendere due volte lo stesso messaggio.
 
 5. Enum `TicketStatus` (inclusi `annullato`, escluso `riaperto`),
    `TicketPriority`, `TicketChannel` e `UserRole`. Test.
