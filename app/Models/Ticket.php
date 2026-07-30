@@ -49,6 +49,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Ticket|null $parentTicket
  * @property-read Collection<int, Ticket> $followUps
  * @property-read Collection<int, TicketMessage> $messages
+ * @property-read Collection<int, TicketEvent> $events
  */
 #[Fillable([
     'subject',
@@ -198,6 +199,19 @@ class Ticket extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(TicketMessage::class)->oldest()->orderBy('id');
+    }
+
+    /**
+     * The audit trail: every transition and every assignment, oldest first,
+     * with the id breaking the tie between two things that happened in the
+     * same second. Same reason as the thread — a timeline has only one reading
+     * order.
+     *
+     * @return HasMany<TicketEvent, $this>
+     */
+    public function events(): HasMany
+    {
+        return $this->hasMany(TicketEvent::class)->oldest()->orderBy('id');
     }
 
     /**
