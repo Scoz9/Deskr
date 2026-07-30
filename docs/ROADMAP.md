@@ -27,12 +27,12 @@ lo starter kit con le decisioni del §2–§6.
 
 ## Fase 1 — Modello dati
 
-Chiusi gli step 5–12: enum del dominio, `Organization`, `User` legato
+Chiusi gli step 5–13: enum del dominio, `Organization`, `User` legato
 all'organizzazione con i ruoli allineati a Deskr, `Team` con la pivot
 `team_user`, `Category` con il team di destinazione, `Ticket` con tutti gli
-attributi del §4, `TicketMessage` con il thread e `Attachment` appeso al
-messaggio. Ogni step è un commit di squash su `main`, con il perché nel corpo
-del messaggio.
+attributi del §4, `TicketMessage` con il thread, `Attachment` appeso al
+messaggio e `TicketEvent` con l'attore polimorfico. Ogni step è un commit di
+squash su `main`, con il perché nel corpo del messaggio.
 
 La `reference` è generata da una sequenza PostgreSQL dedicata, legata con
 `OWNED BY` alla colonna che alimenta: così non deriva dall'id auto-incrementale
@@ -48,6 +48,12 @@ deve puntare a storage persistente (§8). Il disco è anche una colonna della
 riga, così il giorno che cambia quello di default i file già scritti continuano
 a risolversi da dove sono. Whitelist MIME, dimensione massima e route firmata
 sono lo step 24, quando c'è un form che carica davvero.
+
+`TicketEvent` porta l'attore polimorfico **e** `actor_kind`: sistema e AI non
+hanno una riga a cui puntare, quindi il tipo va scritto comunque, altrimenti
+resta un attore nullo con la ragione persa. La riga si scrive una volta sola e
+non ha `updated_at`. `type` è una stringa e `payload` un json: il vocabolario
+degli eventi lo decide lo step 16 insieme agli eventi di dominio.
 
 5. Enum `TicketStatus` (inclusi `annullato`, escluso `riaperto`),
    `TicketPriority`, `TicketChannel` e `UserRole`. Test.
