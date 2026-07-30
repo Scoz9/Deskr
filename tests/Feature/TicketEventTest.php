@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\TicketActorType;
+use App\Enums\TicketEventType;
 use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Models\TicketEvent;
@@ -13,7 +14,7 @@ test('the factory persists an event written by a person', function () {
 
     expect($event->actor_kind)->toBe(TicketActorType::Utente)
         ->and($event->actor)->toBeInstanceOf(User::class)
-        ->and($event->type)->toBeString()->not->toBeEmpty();
+        ->and($event->type)->toBeInstanceOf(TicketEventType::class);
 
     $this->assertDatabaseHas('ticket_events', [
         'id' => $event->id,
@@ -113,7 +114,7 @@ test('two events written in the same second keep the order they happened in', fu
  */
 test('an event carries the payload of what happened', function () {
     $event = TicketEvent::factory()->create([
-        'type' => 'ticket.transitioned',
+        'type' => TicketEventType::Assegnato,
         'payload' => ['from' => TicketStatus::Nuovo->value, 'to' => TicketStatus::Assegnato->value],
     ]);
 
