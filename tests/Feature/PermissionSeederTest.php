@@ -6,7 +6,7 @@ use Spatie\Permission\Models\Permission;
 test('the permission registry lists every model ability plus the custom permissions', function () {
     $names = PermissionSeeder::getPermissionNames();
 
-    foreach (['user', 'role', 'organization', 'team', 'category', 'ticket'] as $model) {
+    foreach (['user', 'role', 'organization', 'team', 'category', 'ticket', 'ticketMessage'] as $model) {
         foreach (['viewAny', 'view', 'create', 'update', 'delete'] as $ability) {
             expect($names)->toContain("{$model}:{$ability}");
         }
@@ -15,7 +15,7 @@ test('the permission registry lists every model ability plus the custom permissi
     expect($names)
         ->toContain('permission:viewAny')
         ->toContain('user:suspend')
-        ->toHaveCount(36);
+        ->toHaveCount(41);
 });
 
 test('permission:viewAny is a custom permission, not a model permission', function () {

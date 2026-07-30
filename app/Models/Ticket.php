@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read User|null $assignee
  * @property-read Ticket|null $parentTicket
  * @property-read Collection<int, Ticket> $followUps
+ * @property-read Collection<int, TicketMessage> $messages
  */
 #[Fillable([
     'subject',
@@ -183,6 +184,20 @@ class Ticket extends Model
     public function followUps(): HasMany
     {
         return $this->hasMany(Ticket::class, 'parent_ticket_id');
+    }
+
+    /**
+     * The thread: the initial description, the replies to the requester and the
+     * notes the team keeps to itself, oldest first. The order is on the
+     * relation because a thread has only one reading order, and without it the
+     * database is free to hand the rows back in any. The id breaks the tie
+     * between two messages written in the same second.
+     *
+     * @return HasMany<TicketMessage, $this>
+     */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(TicketMessage::class)->oldest()->orderBy('id');
     }
 
     /**
