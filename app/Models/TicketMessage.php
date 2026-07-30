@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Database\Factories\TicketMessageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -25,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Ticket $ticket
  * @property-read User $author
+ * @property-read Collection<int, Attachment> $attachments
  */
 #[Fillable([
     'ticket_id',
@@ -57,6 +60,17 @@ class TicketMessage extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    /**
+     * The files that came in with this message. Never polimorphic: this is the
+     * only place an attachment hangs from.
+     *
+     * @return HasMany<Attachment, $this>
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
     }
 
     /**
