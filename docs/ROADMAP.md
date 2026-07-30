@@ -92,10 +92,11 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiusi gli step 15–17: `TicketTransitions` porta la tabella del §4,
+Chiusi gli step 15–18: `TicketTransitions` porta la tabella del §4,
 `InvalidTicketTransition` rifiuta tutto il resto, ogni arco ammesso emette il
-proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail, e
-`CreateTicket` apre il ticket a partire dal DTO `NewTicket`. Transizioni ed
+proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail,
+`CreateTicket` apre il ticket a partire dal DTO `NewTicket` e `AssignTicket` lo
+mette nelle mani di qualcuno. Transizioni ed
 eventi stanno in `app/Tickets/`, la casa del dominio del ticket che non è né un
 model né un caso d'uso, con gli eventi in `app/Tickets/Events/`; le Action, che
 casi d'uso sono, stanno in `app/Actions/Tickets/` accanto a quelle di Fortify.
@@ -161,6 +162,27 @@ transizioni e assegnazioni, e che il ticket sia nato lo dice la riga stessa con
 il suo `created_at`. La priorità invece sta nel DTO con default `normale`, perché
 l'ingresso pubblico non la espone (§3) mentre l'operatore che apre il ticket al
 telefono allo step 39 la sceglie.
+
+`AssignTicket` è **un caso d'uso su due fatti**. Fuori dal pool è la transizione
+`nuovo` → `assegnato` e passa da `TicketTransitions`, così l'arco e il suo evento
+restano dove stanno tutti gli altri; l'assegnatario è già pendente sul model
+quando la transizione salva, quindi il ticket atterra assegnato a qualcuno in una
+scrittura sola e non è mai, per un istante, assegnato a nessuno. Da ogni altro
+stato è un passaggio di mano e basta: l'assegnatario è un attributo e non uno
+stato (§3), e riportare a `assegnato` un ticket in lavorazione falserebbe le
+metriche di un ticket che non si è mosso.
+
+`TicketReassigned` è il primo evento di dominio che **non è una transizione**, ed
+è il caso previsto dallo step 16: finisce nel trail per il fatto di implementare
+`TicketDomainEvent`, senza che nessuno lo colleghi. Porta vecchio e nuovo
+assegnatario, e il vecchio può essere nullo — un ticket annullato senza che
+nessuno l'avesse preso è un fatto da rileggere com'era.
+
+**Dare il ticket a chi ce l'ha già non emette niente**, come uno stato che non
+transiziona verso sé stesso: niente si è mosso, quindi il trail tace. Restano
+fuori il togliere l'assegnatario (la rimessa nel pool non è in roadmap), il
+vincolo che il destinatario sia un `agent` e il rifiuto sui ticket terminali:
+sono autorizzazione, e l'autorizzazione è lo step 21.
 
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.

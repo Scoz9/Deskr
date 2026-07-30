@@ -11,6 +11,9 @@ namespace App\Enums;
  * at: three arrows land on `annullato`, and two each on `risolto` and
  * `in_attesa`, without meaning anything different once there.
  *
+ * Not every name here is a passage: `riassegnato` is a ticket changing hands
+ * without moving, which the trail has to remember all the same.
+ *
  * The column stays a string: an enum in the schema would need an `ALTER TYPE`
  * to grow, and this vocabulary grows at every step that adds a fact worth
  * recording.
@@ -18,6 +21,7 @@ namespace App\Enums;
 enum TicketEventType: string
 {
     case Assegnato = 'ticket.assegnato';
+    case Riassegnato = 'ticket.riassegnato';
     case PresoInCarico = 'ticket.preso_in_carico';
     case RimessoNelPool = 'ticket.rimesso_nel_pool';
     case MessoInAttesa = 'ticket.messo_in_attesa';
