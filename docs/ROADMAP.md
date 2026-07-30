@@ -27,11 +27,12 @@ lo starter kit con le decisioni del §2–§6.
 
 ## Fase 1 — Modello dati
 
-Chiusi gli step 5–11: enum del dominio, `Organization`, `User` legato
+Chiusi gli step 5–12: enum del dominio, `Organization`, `User` legato
 all'organizzazione con i ruoli allineati a Deskr, `Team` con la pivot
 `team_user`, `Category` con il team di destinazione, `Ticket` con tutti gli
-attributi del §4 e `TicketMessage` con il thread. Ogni step è un commit di
-squash su `main`, con il perché nel corpo del messaggio.
+attributi del §4, `TicketMessage` con il thread e `Attachment` appeso al
+messaggio. Ogni step è un commit di squash su `main`, con il perché nel corpo
+del messaggio.
 
 La `reference` è generata da una sequenza PostgreSQL dedicata, legata con
 `OWNED BY` alla colonna che alimenta: così non deriva dall'id auto-incrementale
@@ -40,6 +41,13 @@ e non sopravvive al `migrate:fresh` dei test.
 `external_message_id` è `unique`: il threading dell'email inbound arriva allo
 step 29, ma la colonna nasce con il vincolo che impedisce al webhook consegnato
 due volte di appendere due volte lo stesso messaggio.
+
+Gli allegati vivono su un disco `attachments` dedicato: privato, senza `url` e
+con `serve` spento, e con la radice presa dall'ambiente perché in produzione
+deve puntare a storage persistente (§8). Il disco è anche una colonna della
+riga, così il giorno che cambia quello di default i file già scritti continuano
+a risolversi da dove sono. Whitelist MIME, dimensione massima e route firmata
+sono lo step 24, quando c'è un form che carica davvero.
 
 5. Enum `TicketStatus` (inclusi `annullato`, escluso `riaperto`),
    `TicketPriority`, `TicketChannel` e `UserRole`. Test.

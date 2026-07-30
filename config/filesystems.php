@@ -47,6 +47,29 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Ticket attachments. Private and with no URL: what a requester sends
+         * to the helpdesk is never reachable by guessing an address, and the
+         * download goes exclusively through a signed route that passes by the
+         * policy. "serve" stays off for the same reason — the local driver
+         * would otherwise expose its own route to the files.
+         *
+         * "throw" is on: a read that finds nothing must fail loudly instead of
+         * handing back an empty attachment.
+         *
+         * The root is driven by the environment because in production it has
+         * to point at persistent storage: on the ephemeral filesystem of a
+         * container the attachments would be gone at the first redeploy (§8).
+         */
+        'attachments' => [
+            'driver' => 'local',
+            'root' => env('ATTACHMENTS_ROOT', storage_path('app/private/attachments')),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
