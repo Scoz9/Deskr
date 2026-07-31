@@ -92,12 +92,13 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiusi gli step 15–19: `TicketTransitions` porta la tabella del §4,
+Chiusi gli step 15–20: `TicketTransitions` porta la tabella del §4,
 `InvalidTicketTransition` rifiuta tutto il resto, ogni arco ammesso emette il
 proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail,
 `CreateTicket` apre il ticket a partire dal DTO `NewTicket`, `AssignTicket` lo
-mette nelle mani di qualcuno e `ReplyToTicket` ci fa conversare sopra.
-Transizioni ed
+mette nelle mani di qualcuno, `ReplyToTicket` ci fa conversare sopra e
+`TransitionTicket` lo muove lungo il ciclo di vita con le metriche che ogni
+passaggio vale. Transizioni ed
 eventi stanno in `app/Tickets/`, la casa del dominio del ticket che non è né un
 model né un caso d'uso, con gli eventi in `app/Tickets/Events/`; le Action, che
 casi d'uso sono, stanno in `app/Actions/Tickets/` accanto a quelle di Fortify.
@@ -205,6 +206,34 @@ spatie (`admin` o `agent`), che per il §5 è l'unica autorità in materia, non
 "autore diverso dal richiedente". Il timestamp è quello del messaggio e non un
 secondo `now()`: la metrica misura la risposta che sta nel thread, all'istante
 che quella risposta porta.
+
+`TransitionTicket` prende **uno stato di destinazione, non un verbo**. Risolvi,
+chiudi, riapri, metti in attesa e annulla sono cinque voci di menu, ma ciò che
+le distingue è già scritto nella tabella del §4: un metodo per verbo sarebbe la
+stessa tabella scritta due volte, e la seconda copia è quella che al prossimo
+arco nessuno aggiorna. Per la stessa ragione l'Action accetta qualunque
+passaggio ammesso e non solo i cinque — così il portale dello step 27 e le
+chiusure automatiche dello step 42 passano di qui invece di riscrivere altrove i
+timestamp.
+
+Le metriche si leggono dalla **coppia** `(from, to)`, esattamente come gli
+eventi. Entrambi gli archi che atterrano in `risolto` scrivono `resolved_at`:
+quello che si misura è il ticket risolto, non lo stato da cui è stato risolto.
+La riapertura invece è solo l'arco che **esce** da `risolto`: il richiedente che
+risponde a un ticket in attesa riprende qualcosa che non era mai stato risolto,
+e contarlo gonfierebbe il tasso di riapertura dello step 46 con ticket che non
+sono mai tornati indietro. `in attesa` e `annullato` non hanno colonna e non
+scrivono niente.
+
+**La riapertura azzera `resolved_at`.** Un ticket riaperto non è risolto: il
+timestamp lasciato lì racconterebbe alla dashboard dello step 46 una risoluzione
+non più vera, e la risoluzione successiva lo riscrive comunque.
+
+L'ammissibilità si chiede **prima** di toccare qualsiasi cosa, così un passaggio
+rifiutato lascia il model pulito quanto la riga — un `resolved_at` pendente su
+un ticket che non si è mosso lo scriverebbe il primo che salva. I timestamp
+invece si valorizzano prima di `apply()`, perché è la transizione a salvare:
+stato e metrica atterrano nella stessa scrittura.
 
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.
