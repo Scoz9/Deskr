@@ -92,11 +92,12 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiusi gli step 15–18: `TicketTransitions` porta la tabella del §4,
+Chiusi gli step 15–19: `TicketTransitions` porta la tabella del §4,
 `InvalidTicketTransition` rifiuta tutto il resto, ogni arco ammesso emette il
 proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail,
-`CreateTicket` apre il ticket a partire dal DTO `NewTicket` e `AssignTicket` lo
-mette nelle mani di qualcuno. Transizioni ed
+`CreateTicket` apre il ticket a partire dal DTO `NewTicket`, `AssignTicket` lo
+mette nelle mani di qualcuno e `ReplyToTicket` ci fa conversare sopra.
+Transizioni ed
 eventi stanno in `app/Tickets/`, la casa del dominio del ticket che non è né un
 model né un caso d'uso, con gli eventi in `app/Tickets/Events/`; le Action, che
 casi d'uso sono, stanno in `app/Actions/Tickets/` accanto a quelle di Fortify.
@@ -183,6 +184,27 @@ transiziona verso sé stesso: niente si è mosso, quindi il trail tace. Restano
 fuori il togliere l'assegnatario (la rimessa nel pool non è in roadmap), il
 vincolo che il destinatario sia un `agent` e il rifiuto sui ticket terminali:
 sono autorizzazione, e l'autorizzazione è lo step 21.
+
+`ReplyToTicket` scrive risposta e nota interna con **un DTO solo**: sono lo
+stesso fatto con un flag sopra (§4), e una forma a parte per la nota sarebbe un
+secondo modo di scrivere nello stesso thread da tenere allineato al primo il
+giorno che la nota prende un allegato.
+
+**Rispondere non è una transizione.** L'Action non passa da `TicketTransitions`
+e non lascia niente nel trail: il trail del §4 registra transizioni e
+assegnazioni, e che un messaggio sia stato scritto lo dice il messaggio. La
+risposta che riporta `in attesa` a `in lavorazione` è il portale dello step 27,
+gli altri passaggi sono lo step 20.
+
+`first_response_at` si scrive a **tre condizioni**, e ognuna è la metrica che si
+rifiuta di dire una cosa non successa: la nota interna è scritta per il team e
+il richiedente non la legge mai; il richiedente che aggiunge alla propria
+richiesta non è il team che risponde; e prima vuol dire prima, quindi la seconda
+risposta lascia il timestamp dove l'ha messo la prima. "Operatore" è il ruolo
+spatie (`admin` o `agent`), che per il §5 è l'unica autorità in materia, non
+"autore diverso dal richiedente". Il timestamp è quello del messaggio e non un
+secondo `now()`: la metrica misura la risposta che sta nel thread, all'istante
+che quella risposta porta.
 
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.
