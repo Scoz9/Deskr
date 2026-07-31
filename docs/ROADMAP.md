@@ -92,13 +92,14 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiusi gli step 15–20: `TicketTransitions` porta la tabella del §4,
+Fase chiusa con gli step 15–21: `TicketTransitions` porta la tabella del §4,
 `InvalidTicketTransition` rifiuta tutto il resto, ogni arco ammesso emette il
 proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail,
 `CreateTicket` apre il ticket a partire dal DTO `NewTicket`, `AssignTicket` lo
-mette nelle mani di qualcuno, `ReplyToTicket` ci fa conversare sopra e
+mette nelle mani di qualcuno, `ReplyToTicket` ci fa conversare sopra,
 `TransitionTicket` lo muove lungo il ciclo di vita con le metriche che ogni
-passaggio vale. Transizioni ed
+passaggio vale e le policy decidono chi arriva a ticket e messaggi.
+Transizioni ed
 eventi stanno in `app/Tickets/`, la casa del dominio del ticket che non è né un
 model né un caso d'uso, con gli eventi in `app/Tickets/Events/`; le Action, che
 casi d'uso sono, stanno in `app/Actions/Tickets/` accanto a quelle di Fortify.
@@ -234,6 +235,29 @@ rifiutato lascia il model pulito quanto la riga — un `resolved_at` pendente su
 un ticket che non si è mosso lo scriverebbe il primo che salva. I timestamp
 invece si valorizzano prima di `apply()`, perché è la transizione a salvare:
 stato e metrica atterrano nella stessa scrittura.
+
+`TicketPolicy` e `TicketMessagePolicy` stanno su `BasePolicy` e hanno **due
+ingressi che non si sovrappongono**: operatori e admin passano dai permessi
+`ticket:*` e `ticketMessage:*` del seeder e vedono tutto, perché il team è un
+filtro e non un confine (§3); il richiedente non ha nessun permesso (§5) ed
+entra per proprietà. Solo `view` è sovrascritto: `viewAny`, `create`, `update` e
+`delete` sono superfici della console e restano permessi puri.
+
+Il filtro del richiedente è **sulla persona, non sull'organizzazione**: un
+collega della stessa azienda è qualcun altro. È l'unico filtro fra due clienti,
+perché non c'è scoping globale sotto a raccogliere quello che passa.
+
+Sui messaggi la proprietà è quella del ticket — un messaggio non ha un
+richiedente suo — con in più la **nota interna, che il richiedente non vede
+mai**, nemmeno sul proprio ticket: è scritta per il team, e un thread che la
+lascia passare l'ha pubblicata.
+
+I test seedano ruoli e permessi veri invece di inventarli: una policy verificata
+contro ruoli costruiti dal test dimostra che la policy è d'accordo con il test,
+non che un richiedente di questa applicazione non legge il ticket di un altro.
+Resta fuori il permesso di **rispondere** dal portale: `BasePolicy::create()`
+non riceve il model, e inventare qui la firma che glielo passa significherebbe
+progettare lo step 27 in anticipo.
 
 15. Classe delle transizioni con la tabella del §4. Test esaustivo: ogni
     transizione valida passa, ogni invalida solleva eccezione.
