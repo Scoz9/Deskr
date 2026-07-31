@@ -5,5 +5,24 @@
         "save": "Salva"
     },
     "language": "Lingua",
+    "support": {
+        "description": "Raccontaci cosa non funziona: ti rispondiamo all'indirizzo che ci lasci.",
+        "errors": {
+            "email": "Controlla l'indirizzo email: manca qualcosa.",
+            "required": "Questo campo serve.",
+            "tooLong": "Questo campo è troppo lungo."
+        },
+        "fields": {
+            "body": "Descrizione",
+            "category": "Di cosa si tratta",
+            "categoryPlaceholder": "Scegli una voce",
+            "email": "Email",
+            "name": "Nome e cognome",
+            "subject": "Oggetto",
+            "website": "Sito web"
+        },
+        "submit": "Invia la richiesta",
+        "title": "Chiedi assistenza"
+    },
     "welcome": "Benvenuto, {{name}}!"
 }
