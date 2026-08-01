@@ -21,6 +21,10 @@
             "subject": "Subject",
             "website": "Website"
         },
+        "sent": {
+            "reference": "The reference of your request is",
+            "title": "Request received."
+        },
         "submit": "Send the request",
         "title": "Ask for support"
     },

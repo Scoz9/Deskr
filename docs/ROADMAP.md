@@ -253,8 +253,9 @@ stato e metrica atterrano nella stessa scrittura.
 
 ## Fase 3 — Ingresso
 
-Aperta con lo step 22: `/assistenza` è la prima pagina che risponde a chi non ha
-un account, come vuole il §3 — un richiedente non si registra mai. Il percorso è
+Aperti gli step 22–23: `/assistenza` è la prima pagina che risponde a chi non ha
+un account, come vuole il §3 — un richiedente non si registra mai — e da lì una
+richiesta diventa un ticket. Il percorso è
 in italiano perché lo legge chi ha bisogno di aiuto e non chi mantiene
 l'applicazione; il nome della route e il codice restano in inglese come il resto.
 
@@ -289,9 +290,34 @@ Il `select` è nativo e non la primitiva Radix: il portale pubblico è una
 superficie leggera vista da fuori (§5), e questo è il controllo che ogni browser
 sa già rendere e ogni tecnologia assistiva sa già leggere.
 
-**Solo campi, nessun invio**: il form non ha `action`, il submit valida e si
-ferma lì. Il collegamento a `CreateTicket` è lo step 23, ed è un test a tenerlo
-fermo.
+Con lo step 23 il form invia davvero, e il controller è **l'adapter web del
+canale**: prende quello che è stato scritto, ne fa il DTO `NewTicket` con
+`channel = web` e lo passa a `CreateTicket`. Cosa sia un ticket e dove venga
+instradato non si decide qui — è già deciso allo step 17.
+
+**L'indirizzo è l'identità.** Se esiste, il ticket nasce sull'account che c'è
+già; se non esiste, l'account nasce ora con il ruolo `requester` e una password
+casuale che non va da nessuna parte: la registrazione è spenta e il portale dello
+step 26 si raggiunge per magic link. Il nome di un account esistente **non si
+riscrive** con quello appena digitato: scrivere all'helpdesk apre un ticket, non
+rinomina qualcun altro.
+
+Le due difese che il §5 chiede accanto all'esca arrivano qui perché **solo ora
+c'è un indirizzo su cui contare**: un rate limit per indirizzo (l'unica cosa che
+resta uguale quando chi invia cambia rete) e un tetto di ticket aperti per
+indirizzo. Il tetto si dice a voce alta, a differenza dell'esca: chi ha già dieci
+richieste aperte non è uno script, e lasciarlo indovinare perché non è successo
+niente è il modo sicuro per farlo riscrivere. **L'esca invece risponde esattamente
+come il caso buono** — uno script che distingue il rifiuto dal successo ha
+imparato ad aggirarla — e non scrive niente.
+
+La `reference` torna in sessione ed è mostrata una volta sola: è la ricevuta
+della richiesta appena inviata, e finché non esistono la conferma via email dello
+step 25 e il portale dello step 26 è l'unica cosa che il richiedente si porta via.
+
+Il flusso ha anche il suo **browser test**: è il primo dei tre end-to-end del §5,
+e nessuno dei livelli sotto — validazione client, visita Inertia, regole server,
+Action — può dire se il giro completo funziona davvero da un browser.
 
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.

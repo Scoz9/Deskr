@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\SupportRequestController;
 use App\Models\Role;
 use App\Models\User;
 use App\Policies\RolePolicy;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
@@ -54,6 +56,12 @@ class AppServiceProvider extends ServiceProvider
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('intake', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip()));
+
+        // Keyed on the address and not on the network: an address is the one
+        // thing that stays the same when whoever is sending moves connection.
+        RateLimiter::for('intake-email', fn (Request $request): Limit => Limit::perHour(
+            SupportRequestController::SUBMISSIONS_PER_EMAIL_PER_HOUR,
+        )->by(Str::transliterate(Str::lower((string) $request->input('email')))));
     }
 
     /**

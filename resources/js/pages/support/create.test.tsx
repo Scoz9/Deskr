@@ -1,10 +1,12 @@
+import { router } from '@inertiajs/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import SupportCreate from '@/pages/support/create';
 
 vi.mock('@inertiajs/react', () => ({
     Head: () => null,
+    router: { post: vi.fn() },
 }));
 
 vi.mock('react-i18next', () => ({
@@ -16,9 +18,15 @@ const categories = [
     { id: 2, name: 'Rete' },
 ];
 
-function renderForm() {
-    return render(<SupportCreate categories={categories} />);
+function renderForm(reference: string | null = null) {
+    return render(
+        <SupportCreate categories={categories} reference={reference} />,
+    );
 }
+
+beforeEach(() => {
+    vi.mocked(router.post).mockClear();
+});
 
 async function fillInTheForm(): Promise<void> {
     const user = userEvent.setup();
@@ -144,21 +152,89 @@ describe('the public intake form', () => {
         expect(honeypot?.closest('[aria-hidden="true"]')).not.toBeNull();
     });
 
-    /*
-     * Step 22 is the form and nothing else: the wiring to `CreateTicket` is step
-     * 23, and until then a valid form must not try to reach the server.
-     */
-    it('sends nothing anywhere yet', async () => {
+    it('sends a filled in request to the intake', async () => {
         const user = userEvent.setup();
-        const { container } = renderForm();
-
-        expect(container.querySelector('form')).not.toHaveAttribute('action');
+        renderForm();
 
         await fillInTheForm();
         await user.click(
             screen.getByRole('button', { name: 'support.submit' }),
         );
 
-        expect(screen.queryByText(/support\.errors/)).toBeNull();
+        expect(router.post).toHaveBeenCalledTimes(1);
+
+        const [url, payload] = vi.mocked(router.post).mock.calls[0];
+
+        expect(url).toBe('/assistenza');
+        expect(payload).toMatchObject({
+            name: 'Anna Rossi',
+            email: 'anna.rossi@example.com',
+            categoryId: '2',
+            subject: 'La stampante non risponde',
+            body: 'Da stamattina la stampante del secondo piano non stampa.',
+            website: '',
+        });
+    });
+
+    /*
+     * The browser check is a courtesy and the server one is the defence, but a
+     * request the browser already knows is incomplete is a round trip nobody
+     * needs.
+     */
+    it('does not bother the server with a request it can already see is empty', async () => {
+        const user = userEvent.setup();
+        renderForm();
+
+        await user.click(
+            screen.getByRole('button', { name: 'support.submit' }),
+        );
+
+        expect(router.post).not.toHaveBeenCalled();
+    });
+
+    /*
+     * What the server refuses is said in the server's own words: the cap on open
+     * tickets is a rule the browser has no way to know about.
+     */
+    it('shows what the server refused, next to the field it refused', async () => {
+        const user = userEvent.setup();
+        renderForm();
+
+        vi.mocked(router.post).mockImplementation(
+            (_url: unknown, _payload: unknown, options?: unknown) => {
+                (
+                    options as {
+                        onError?: (errors: Record<string, string>) => void;
+                    }
+                )?.onError?.({
+                    email: 'Hai già diverse richieste aperte.',
+                });
+            },
+        );
+
+        await fillInTheForm();
+        await user.click(
+            screen.getByRole('button', { name: 'support.submit' }),
+        );
+
+        expect(
+            await screen.findByText('Hai già diverse richieste aperte.'),
+        ).toBeInTheDocument();
+    });
+
+    /*
+     * The reference is the receipt of the request: until the confirmation email
+     * of step 25 exists, it is the only thing the requester walks away with.
+     */
+    it('shows the reference of the ticket just opened', () => {
+        renderForm('DSK-000123');
+
+        expect(screen.getByText(/DSK-000123/)).toBeInTheDocument();
+    });
+
+    it('says nothing about a reference nobody just earned', () => {
+        renderForm();
+
+        expect(screen.queryByText(/DSK-/)).toBeNull();
     });
 });

@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ import type {
     SupportRequestErrors,
     SupportRequestValues,
 } from '@/lib/support-request';
+import { store } from '@/routes/support';
 
 type Category = {
     id: number;
@@ -24,21 +25,28 @@ type Category = {
 
 type Props = {
     categories: Category[];
+    /** The ticket just opened, shown once on the way back from a submission. */
+    reference: string | null;
 };
 
 /**
  * The public intake form: the one surface of the application a person reaches
  * without an account, since a requester never registers (§3).
  *
- * Fields only, for now. What happens on a valid submission is step 23, and the
- * honeypot below is bait that only the server gets to act on.
+ * The browser checks the fields before anybody waits for the server, and the
+ * server checks them again — the first is a courtesy, the second is the
+ * defence. What the server refuses is shown in the server's own words, because
+ * some of its rules (the cap on open tickets) are ones the browser has no way
+ * to know about.
  */
-export default function SupportCreate({ categories }: Props) {
+export default function SupportCreate({ categories, reference }: Props) {
     const { t } = useTranslation();
     const [values, setValues] = useState<SupportRequestValues>(
         emptySupportRequest(),
     );
     const [errors, setErrors] = useState<SupportRequestErrors>({});
+    const [refusals, setRefusals] = useState<Record<string, string>>({});
+    const [sending, setSending] = useState(false);
 
     const update = (field: keyof SupportRequestValues, value: string): void => {
         setValues((current) => ({ ...current, [field]: value }));
@@ -47,7 +55,22 @@ export default function SupportCreate({ categories }: Props) {
     const submit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
 
-        setErrors(validateSupportRequest(values));
+        const found = validateSupportRequest(values);
+
+        setErrors(found);
+        setRefusals({});
+
+        if (Object.keys(found).length > 0) {
+            return;
+        }
+
+        setSending(true);
+
+        router.post(store.url(), values, {
+            onError: (serverErrors) => setRefusals(serverErrors),
+            onSuccess: () => setValues(emptySupportRequest()),
+            onFinish: () => setSending(false),
+        });
     };
 
     const errorMessage = (
@@ -55,7 +78,9 @@ export default function SupportCreate({ categories }: Props) {
     ): string | undefined => {
         const error = errors[field];
 
-        return error === undefined ? undefined : t(`support.errors.${error}`);
+        return error === undefined
+            ? refusals[field]
+            : t(`support.errors.${error}`);
     };
 
     return (
@@ -72,6 +97,21 @@ export default function SupportCreate({ categories }: Props) {
                             {t('support.description')}
                         </p>
                     </header>
+
+                    {reference !== null && (
+                        <div
+                            role="status"
+                            className="rounded-md border border-emerald-600/40 bg-emerald-50 p-4 text-sm dark:bg-emerald-950/40"
+                        >
+                            <p className="font-medium">
+                                {t('support.sent.title')}
+                            </p>
+                            <p className="text-muted-foreground">
+                                {t('support.sent.reference')}{' '}
+                                <span className="font-mono">{reference}</span>
+                            </p>
+                        </div>
+                    )}
 
                     <form onSubmit={submit} className="grid gap-6" noValidate>
                         <div className="grid gap-2">
@@ -204,7 +244,11 @@ export default function SupportCreate({ categories }: Props) {
                             />
                         </div>
 
-                        <Button type="submit" className="justify-self-start">
+                        <Button
+                            type="submit"
+                            disabled={sending}
+                            className="justify-self-start"
+                        >
                             {t('support.submit')}
                         </Button>
                     </form>
