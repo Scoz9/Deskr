@@ -33,5 +33,17 @@
         "submit": "Send the request",
         "title": "Ask for support"
     },
+    "ticket": {
+        "readOnly": "This page is read only: to add something, reply to our email.",
+        "status": {
+            "annullato": "Cancelled",
+            "assegnato": "Picked up",
+            "chiuso": "Closed",
+            "in_attesa": "Waiting for your reply",
+            "in_lavorazione": "Being worked on",
+            "nuovo": "Received",
+            "risolto": "Solved"
+        }
+    },
     "welcome": "Welcome, {{name}}!"
 }

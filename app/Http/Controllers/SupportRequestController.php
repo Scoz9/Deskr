@@ -11,6 +11,7 @@ use App\Http\Requests\Support\SupportRequestStoreRequest;
 use App\Models\Attachment;
 use App\Models\Category;
 use App\Models\User;
+use App\Notifications\TicketReceived;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
@@ -101,6 +102,10 @@ class SupportRequestController extends Controller
             category: $category,
             attachments: $this->storeAttachments($request->file('attachments', [])),
         ));
+
+        // Queued, like every notification (§5): the ticket exists, and the
+        // receipt of it can take the time the mail server takes.
+        $requester->notify(new TicketReceived($ticket));
 
         return to_route('support.create')->with('reference', $ticket->reference);
     }
