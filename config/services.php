@@ -16,6 +16,17 @@ return [
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
+
+        /*
+         * The credentials the inbound webhook's URL is configured with on
+         * Postmark's side (HTTP Basic Auth) — how the endpoint knows a
+         * request actually came from Postmark and not from anybody who
+         * found the URL.
+         */
+        'inbound' => [
+            'username' => env('POSTMARK_INBOUND_USERNAME'),
+            'password' => env('POSTMARK_INBOUND_PASSWORD'),
+        ],
     ],
 
     'resend' => [

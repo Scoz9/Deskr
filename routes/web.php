@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\PortalController;
+use App\Http\Controllers\PostmarkInboundController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
 use App\Http\Controllers\SupportTicketController;
@@ -75,6 +76,14 @@ Route::middleware('throttle:intake')->group(function () {
 Route::get('allegati/{attachment}', [AttachmentController::class, 'show'])
     ->middleware('signed')
     ->name('attachments.show');
+
+/*
+ * The email channel. The caller is Postmark, not a browser, so there is no
+ * session and no CSRF token to check — the credential is the HTTP Basic Auth
+ * the request itself verifies (§6: an endpoint the mail provider can reach).
+ */
+Route::post('webhooks/postmark/inbound', [PostmarkInboundController::class, 'store'])
+    ->name('webhooks.postmark.inbound');
 
 Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
