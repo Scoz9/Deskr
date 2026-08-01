@@ -536,6 +536,38 @@ caso che il form web copriva. Una risposta agganciata a un ticket esistente
 
 ## Fase 4 — Console operatore
 
+Aperto lo step 31: la console riusa il layout autenticato dello starter kit
+(la stessa sidebar di dashboard, utenti e ruoli) e aggiunge `TicketController`
+— il primo controller dell'applicazione a **consumare davvero** le policy
+recuperate allo step 21: `$authorizesResources` resta `true` di default, e
+`can:viewAny,Ticket` fa il suo lavoro senza che il controller debba saperlo.
+
+**La lista è paginata sul server, non sul client.** `UserController` manda
+tutti gli utenti in un colpo solo e lascia che sia `material-react-table` a
+sfogliarli — corretto per una manciata di account, sbagliato per un backlog
+che i 300 ticket del seeder esistono apposta a far crescere. `Ticket::paginate()`
+manda una pagina alla volta, e la tabella è in `manualPagination`: cambiare
+pagina è una visita Inertia parziale (`only: ['tickets']`), non un giro sui
+dati che il server ha già mandato tutti.
+
+**Lo stato di paginazione della tabella si legge dalle prop, non si
+specchia in uno stato locale.** Tenerlo sincronizzato a mano con due
+`useEffect` che si controllano a vicenda è la fonte più comune di loop e
+disallineamenti in questo pattern; leggerlo da `tickets.meta.currentPage` a
+ogni render lo rende impossibile da disallineare, e fa funzionare avanti e
+indietro del browser gratis.
+
+`Ticket::query()->orderByDesc('created_at')->orderByDesc('id')` e non il solo
+`latest()`: senza un tiebreaker esplicito, due ticket con lo stesso secondo
+di `created_at` — frequente nel seeder demo, possibile anche in produzione —
+lascerebbero l'ordine ai capricci del motore, con righe che una pagina
+ripete e la successiva salta.
+
+Niente filtri, niente ricerca, niente dettaglio cliccabile: sono gli step
+32-34. La query non applica nessuno scoping per team, com'è deciso da §3 —
+un `agent` vede tutto il backlog, il team è un filtro che arriverà allo step
+32, non un confine che serve già oggi.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.

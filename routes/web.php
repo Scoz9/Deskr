@@ -6,6 +6,7 @@ use App\Http\Controllers\PostmarkInboundController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -87,6 +88,8 @@ Route::post('webhooks/postmark/inbound', [PostmarkInboundController::class, 'sto
 
 Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
+
+    Route::resource('tickets', TicketController::class)->only(['index']);
 
     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
 

@@ -5,6 +5,7 @@ import {
     LayoutGrid,
     Mail,
     Shield,
+    Ticket,
     Users,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
@@ -24,6 +25,7 @@ import { useCan } from '@/hooks/use-can';
 import { dashboard } from '@/routes';
 import { index as notificationsIndex } from '@/routes/notifications';
 import { index as rolesIndex } from '@/routes/roles';
+import { index as ticketsIndex } from '@/routes/tickets';
 import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
 
@@ -48,6 +50,12 @@ export function AppSidebar() {
             title: 'Dashboard',
             href: dashboard(),
             icon: LayoutGrid,
+        },
+        {
+            title: 'Ticket',
+            href: ticketsIndex(),
+            icon: Ticket,
+            canView: can('ticket:viewAny'),
         },
         {
             title: 'Ruoli',
