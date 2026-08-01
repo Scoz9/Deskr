@@ -45,6 +45,10 @@
     },
     "ticket": {
         "readOnly": "Questa pagina è di sola lettura: per aggiungere qualcosa, rispondi alla nostra email.",
+        "reply": {
+            "label": "La tua risposta",
+            "submit": "Invia risposta"
+        },
         "status": {
             "annullato": "Annullata",
             "assegnato": "Presa in carico",

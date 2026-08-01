@@ -5,6 +5,7 @@ namespace App\Actions\Tickets;
 use App\Enums\TicketChannel;
 use App\Enums\TicketPriority;
 use App\Models\Category;
+use App\Models\Ticket;
 use App\Models\User;
 
 /**
@@ -50,5 +51,11 @@ class NewTicket
          * @var list<NewAttachment>
          */
         public readonly array $attachments = [],
+        /**
+         * The closed ticket this one follows up on, when a requester replies to
+         * something already closed (§3). A closed ticket does not reopen — this
+         * is what it fathers instead.
+         */
+        public readonly ?Ticket $parentTicket = null,
     ) {}
 }

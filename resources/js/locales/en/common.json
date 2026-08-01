@@ -45,6 +45,10 @@
     },
     "ticket": {
         "readOnly": "This page is read only: to add something, reply to our email.",
+        "reply": {
+            "label": "Your reply",
+            "submit": "Send reply"
+        },
         "status": {
             "annullato": "Cancelled",
             "assegnato": "Picked up",

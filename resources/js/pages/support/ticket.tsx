@@ -1,5 +1,11 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 type Attachment = {
     name: string;
@@ -35,22 +41,56 @@ type Props = {
         status: TicketStatus;
         openedAt: string | null;
         messages: Message[];
+        replyUrl: string;
     };
+    /**
+     * Whether whoever is looking at this page can post to it: only the
+     * portal session can, since a POST needs identity and CSRF, not the
+     * signature the confirmation email's link carries (§3).
+     */
+    canReply: boolean;
 };
 
 /**
- * The request as whoever asked sees it: the state it is in and the conversation
- * so far, and nothing else. Read only — replying from here is step 27.
+ * The request as whoever asked sees it: the state it is in and the
+ * conversation so far. Read only when reached by the signed link — the
+ * portal session is what makes replying possible (§3).
  *
  * There is nothing about who is working on it, which team has it or how it was
  * filed: that is how the helpdesk is organised inside, and it is not what
  * somebody waiting for an answer needs to read.
  */
-export default function SupportTicket({ ticket }: Props) {
+export default function SupportTicket({ ticket, canReply }: Props) {
     const { t } = useTranslation();
+    const [body, setBody] = useState('');
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [sending, setSending] = useState(false);
 
     const readableDate = (value: string | null): string =>
         value === null ? '' : new Date(value).toLocaleString();
+
+    const submit = (event: FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
+
+        if (body.trim() === '') {
+            setError(t('support.errors.required'));
+
+            return;
+        }
+
+        setError(undefined);
+        setSending(true);
+
+        router.post(
+            ticket.replyUrl,
+            { body },
+            {
+                onError: (errors) => setError(errors.body),
+                onSuccess: () => setBody(''),
+                onFinish: () => setSending(false),
+            },
+        );
+    };
 
     return (
         <>
@@ -107,9 +147,41 @@ export default function SupportTicket({ ticket }: Props) {
                         ))}
                     </ol>
 
-                    <p className="text-sm text-muted-foreground">
-                        {t('ticket.readOnly')}
-                    </p>
+                    {canReply ? (
+                        <form
+                            onSubmit={submit}
+                            className="grid gap-2"
+                            noValidate
+                        >
+                            <Label htmlFor="body">
+                                {t('ticket.reply.label')}
+                            </Label>
+                            <Textarea
+                                id="body"
+                                name="body"
+                                rows={4}
+                                maxLength={5000}
+                                aria-invalid={error !== undefined}
+                                value={body}
+                                onChange={(event) =>
+                                    setBody(event.target.value)
+                                }
+                            />
+                            <InputError message={error} />
+
+                            <Button
+                                type="submit"
+                                disabled={sending}
+                                className="justify-self-start"
+                            >
+                                {t('ticket.reply.submit')}
+                            </Button>
+                        </form>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">
+                            {t('ticket.readOnly')}
+                        </p>
+                    )}
                 </div>
             </div>
         </>

@@ -41,6 +41,14 @@ Route::get('assistenza/ticket/{ticket}', [SupportTicketController::class, 'show'
     ->name('support.ticket.show');
 
 /*
+ * The reply from the portal. There is only one way in: the portal session,
+ * because a POST needs identity and CSRF, not a signature in the query
+ * string (§3) — the signed link of the confirmation email stops at `show`.
+ */
+Route::post('assistenza/ticket/{ticket}/rispondi', [SupportTicketController::class, 'reply'])
+    ->name('support.ticket.reply');
+
+/*
  * "My requests". The link asked for here is the credential, so the request for
  * it is throttled twice — by IP like the intake, and by the address it names.
  */

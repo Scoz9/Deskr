@@ -45,6 +45,7 @@ class CreateTicket
                 // a category later must not rewrite where the tickets already
                 // handled went.
                 'team_id' => $request->category?->team_id,
+                'parent_ticket_id' => $request->parentTicket?->getKey(),
                 'reopen_count' => 0,
             ]);
 
