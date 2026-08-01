@@ -47,12 +47,23 @@ class PostmarkInboundRequest extends FormRequest
             'FromFull.Name' => ['nullable', 'string'],
             'Subject' => ['nullable', 'string'],
             'TextBody' => ['nullable', 'string'],
+            // Postmark's own signature/quoted-text removal (step 30): the
+            // reply with everything below it already cut.
+            'StrippedTextReply' => ['nullable', 'string'],
             // The raw headers, `Message-ID`/`In-Reply-To`/`References`
             // included: what step 29 threads a reply on and what stops an
             // autoresponder loop before it reaches the domain.
             'Headers' => ['nullable', 'array'],
             'Headers.*.Name' => ['nullable', 'string'],
             'Headers.*.Value' => ['nullable', 'string'],
+            // The files that came in with the email (step 30). Not checked
+            // against the whitelist here: an attachment the adapter refuses
+            // is left out, not a reason to bounce the whole message.
+            'Attachments' => ['nullable', 'array'],
+            'Attachments.*.Name' => ['nullable', 'string'],
+            'Attachments.*.Content' => ['nullable', 'string'],
+            'Attachments.*.ContentType' => ['nullable', 'string'],
+            'Attachments.*.ContentID' => ['nullable', 'string'],
         ];
     }
 }

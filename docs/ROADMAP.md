@@ -257,7 +257,11 @@ stato e metrica atterrano nella stessa scrittura.
 
 ## Fase 3 — Ingresso
 
-Aperti gli step 22–23: `/assistenza` è la prima pagina che risponde a chi non ha
+Chiusi gli step 22–30: dal form pubblico al webhook email con threading,
+allegati e protezione dai loop, i due canali dell'ingresso pubblico
+convergono entrambi su `CreateTicket` (§3) senza sapersi l'uno dell'altro.
+
+`/assistenza` è la prima pagina che risponde a chi non ha
 un account, come vuole il §3 — un richiedente non si registra mai — e da lì una
 richiesta diventa un ticket. Il percorso è
 in italiano perché lo legge chi ha bisogno di aiuto e non chi mantiene
@@ -444,6 +448,41 @@ scartato apposta.
 `NewTicket` e `NewReply` portano ora `externalMessageId`: la colonna
 `external_message_id` di `TicketMessage` esiste dalla prima migration
 apposta per questo, ed era rimasta sempre `null` fino a questo step.
+
+Lo step 30 chiude la Fase 3 con allegati e pulizia del corpo del messaggio.
+
+**La rimozione di firma e testo citato non è un parser scritto in casa**:
+`StrippedTextReply`, il campo che Postmark stesso manda con la risposta già
+ripulita da citazioni e firma, sostituisce `TextBody` quando c'è. Scriverne
+uno proprio avrebbe voluto dire mantenere per sempre un'euristica che il
+provider risolve già meglio di noi; quando Postmark non trova niente da
+togliere (un primo messaggio, non una risposta), `StrippedTextReply` non
+c'è e si torna a `TextBody`.
+
+**Gli allegati inbound riusano `Attachment`/`NewAttachment`** dello step 24,
+non una seconda whitelist: stesso elenco di MIME type ammessi, stesso tetto
+di peso, stesso numero massimo per messaggio. Il `Content` di ogni allegato
+arriva già in base64 nel payload; una volta decodificato, il MIME è
+**sniffato dai byte** e non letto dal `ContentType` che l'email dichiara —
+la stessa regola `mimetypes` e non `mimes` del form web, perché un'email è
+input non fidato quanto un upload.
+
+**Un allegato rifiutato non fa perdere il messaggio.** A differenza del form
+web, dove un file fuori whitelist blocca l'intero invio con un errore che
+la persona può correggere, qui non c'è nessuno dall'altra parte a leggere un
+422: l'allegato che non supera whitelist o peso viene semplicemente escluso,
+il ticket nasce comunque. Lo stesso vale oltre il tetto per messaggio — i
+primi arrivano, gli altri restano fuori — invece di rifiutare tutta l'email.
+
+**Un `ContentID` valorizzato non è un allegato**: è un'immagine incorporata
+nel corpo, tipicamente il logo della firma di chi scrive. Senza questo
+filtro, ripulire la firma dal testo (sopra) sarebbe stato solo mezzo lavoro
+— l'immagine sarebbe comunque arrivata come allegato a ogni email.
+
+`NewReply` porta ora `attachments` come `NewTicket`: prima di questo step
+solo il primo messaggio di un ticket poteva avere file, perché era l'unico
+caso che il form web copriva. Una risposta agganciata a un ticket esistente
+(step 29) può ora arrivare con i propri.
 
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.

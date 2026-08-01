@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Tickets\NewAttachment;
 use App\Actions\Tickets\ReplyFromRequester;
 use App\Actions\Tickets\RequesterReply;
 use App\Enums\TicketActorType;
@@ -15,12 +16,15 @@ use function Pest\Laravel\assertDatabaseHas;
 /**
  * Run the use case the way the portal and the email adapter both will:
  * resolved from the container and handed a DTO.
+ *
+ * @param  list<NewAttachment>  $attachments
  */
 function replyFromRequester(
     Ticket $ticket,
     string $body = 'Aggiungo un dettaglio.',
     TicketChannel $channel = TicketChannel::Web,
     ?string $externalMessageId = null,
+    array $attachments = [],
 ): Ticket {
     return app(ReplyFromRequester::class)(new RequesterReply(
         ticket: $ticket,
@@ -28,6 +32,7 @@ function replyFromRequester(
         body: $body,
         channel: $channel,
         externalMessageId: $externalMessageId,
+        attachments: $attachments,
     ));
 }
 
@@ -206,4 +211,40 @@ test('the follow-up of a closed ticket carries the id of the email that opened i
         'ticket_id' => $followUp->id,
         'external_message_id' => '<abc123@mail.example.com>',
     ]);
+});
+
+/*
+ * The files that came in with a threaded reply (step 30) hang from the
+ * message it resumes the ticket with.
+ */
+test('a reply that resumes a ticket carries its attachments', function () {
+    $ticket = Ticket::factory()->inAttesa()->create();
+
+    $result = replyFromRequester($ticket, attachments: [
+        new NewAttachment(
+            disk: 'attachments',
+            path: 'attachments/example.png',
+            originalName: 'errore.png',
+            mimeType: 'image/png',
+            size: 1234,
+        ),
+    ]);
+
+    expect($result->messages->last()->attachments)->toHaveCount(1);
+});
+
+test('the follow-up of a closed ticket carries the attachments it came in with', function () {
+    $ticket = Ticket::factory()->chiuso()->create();
+
+    $followUp = replyFromRequester($ticket, attachments: [
+        new NewAttachment(
+            disk: 'attachments',
+            path: 'attachments/example.png',
+            originalName: 'errore.png',
+            mimeType: 'image/png',
+            size: 1234,
+        ),
+    ]);
+
+    expect($followUp->messages->first()->attachments)->toHaveCount(1);
 });

@@ -34,5 +34,11 @@ class RequesterReply
          * of its own.
          */
         public readonly ?string $externalMessageId = null,
+        /**
+         * The files that came in with the reply, already on disk (step 30).
+         *
+         * @var list<NewAttachment>
+         */
+        public readonly array $attachments = [],
     ) {}
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Tickets\NewAttachment;
 use App\Actions\Tickets\NewReply;
 use App\Actions\Tickets\ReplyToTicket;
 use App\Enums\TicketStatus;
@@ -12,6 +13,8 @@ use function Pest\Laravel\assertDatabaseCount;
 /**
  * Run the use case the way the console and the portal will: resolved from the
  * container and handed a DTO.
+ *
+ * @param  list<NewAttachment>  $attachments
  */
 function replyToTicket(
     Ticket $ticket,
@@ -19,6 +22,7 @@ function replyToTicket(
     string $body,
     bool $isInternal = false,
     ?string $externalMessageId = null,
+    array $attachments = [],
 ): TicketMessage {
     return app(ReplyToTicket::class)(new NewReply(
         ticket: $ticket,
@@ -26,6 +30,7 @@ function replyToTicket(
         body: $body,
         isInternal: $isInternal,
         externalMessageId: $externalMessageId,
+        attachments: $attachments,
     ));
 }
 
@@ -171,4 +176,30 @@ test('a reply threaded from an email carries its id', function () {
     );
 
     expect($message->external_message_id)->toBe('<abc123@mail.example.com>');
+});
+
+/*
+ * A reply carries its own attachments (step 30) — they hang from the message
+ * that came in with them, not from the ticket's first one.
+ */
+test('a reply carries the attachments it came in with', function () {
+    $ticket = Ticket::factory()->inLavorazione()->create();
+
+    $message = replyToTicket(
+        $ticket,
+        $ticket->requester,
+        'Allego uno screenshot.',
+        attachments: [
+            new NewAttachment(
+                disk: 'attachments',
+                path: 'attachments/example.png',
+                originalName: 'errore.png',
+                mimeType: 'image/png',
+                size: 1234,
+            ),
+        ],
+    );
+
+    expect($message->attachments)->toHaveCount(1)
+        ->and($message->attachments->first()->original_name)->toBe('errore.png');
 });
