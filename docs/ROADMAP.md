@@ -96,7 +96,7 @@ già la risposta dell'operatore da cui il backfill li ricaverà.
 
 ## Fase 2 — Ciclo di vita
 
-Chiusi gli step 15–20: `TicketTransitions` porta la tabella del §4,
+Chiusi gli step 15–21: `TicketTransitions` porta la tabella del §4,
 `InvalidTicketTransition` rifiuta tutto il resto, ogni arco ammesso emette il
 proprio evento di dominio, che `RecordTicketEvent` scrive nell'audit trail,
 `CreateTicket` apre il ticket a partire dal DTO `NewTicket`, `AssignTicket` lo
@@ -254,6 +254,36 @@ stato e metrica atterrano nella stessa scrittura.
 21. Policies su `Ticket` e `TicketMessage` + test di autorizzazione per i tre
     ruoli, incluso il test esplicito che un richiedente non accede ai ticket di
     un altro richiedente.
+
+Lo step 21 era rimasto scoperto quando il resto della Fase 2 è stato chiuso —
+le sessioni successive erano già passate alla Fase 3 senza accorgersene, e la
+Fase 2 andava dichiarata chiusa solo fino al 20. Recuperato qui, prima di
+aprire la Fase 4: la console che sta per arrivare avrà bisogno di una policy
+su `Ticket` da subito, e non del debito di scriverla mentre già la si usa.
+
+`TicketPolicy` e `TicketMessagePolicy` estendono `BasePolicy` con il solo
+`view()` da sovrascrivere: `viewAny`/`create`/`update`/`delete` bastano così
+come sono, sulla sola permission convenzionale — `agent` la ha su tutto
+tranne ruoli e permessi (§5), `requester` non ne ha **nessuna** (era già
+deciso da `RoleSeeder`: "il portale è difeso da policy sui propri ticket, non
+da abilità sulla console"). **Proprio perché il richiedente non ha permessi,
+`view()` non può fermarsi al controllo della permission**: senza
+un'eccezione, negherebbe l'accesso anche al proprio ticket. La riga in più è
+l'unica differenza fra "chiunque abbia il permesso" e "il proprietario",
+esattamente il filtro che tiene separati due clienti.
+
+`TicketMessagePolicy::view()` aggiunge una condizione sopra la stessa regola:
+una nota interna non esce mai, nemmeno sul proprio ticket (§3) — chi ha la
+permission la vede sempre, il proprietario del ticket solo se il messaggio
+non è interno.
+
+Nessuna delle due Policy è ancora agganciata a un controller: `SupportTicketController`
+e `PortalController` restano con i controlli inline già scritti e già testati
+(la firma di un link non ha un `Authorizable` da controllare, quindi non
+possono comunque passare da una Policy per intero). Le consumerà la prima
+volta un controller della console che le vorrà — e da lì in poi basterà non
+disattivare `$authorizesResources`, come fanno già `RoleController` e
+`UserController`.
 
 ## Fase 3 — Ingresso
 
