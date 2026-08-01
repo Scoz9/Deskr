@@ -2,7 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TicketChannel;
+use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
+use App\Enums\UserRole;
+use App\Models\Team;
 use App\Models\Ticket;
+use App\Models\User;
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,7 +31,8 @@ class TicketController extends Controller
     public const PER_PAGE = 15;
 
     /**
-     * The backlog, newest first, one page at a time.
+     * The backlog, newest first, one page at a time, narrowed by whichever
+     * filters are on the query string.
      *
      * Paginated on the server and not sent whole like the users list: that
      * one is a handful of staff accounts, this is a ticket volume the demo
@@ -32,10 +43,25 @@ class TicketController extends Controller
      * same reason the thread and the audit trail order on it too: without a
      * tiebreaker a page boundary can repeat or skip a row.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = $request->validate([
+            'status' => ['nullable', Rule::enum(TicketStatus::class)],
+            'priority' => ['nullable', Rule::enum(TicketPriority::class)],
+            'channel' => ['nullable', Rule::enum(TicketChannel::class)],
+            'team_id' => ['nullable', 'integer', Rule::exists(Team::class, 'id')],
+            'assignee' => ['nullable', $this->assigneeRule()],
+        ]);
+
         $tickets = Ticket::query()
             ->with(['requester.organization:id,name', 'team:id,name', 'assignee:id,name'])
+            ->when(filled($filters['status'] ?? null), fn (Builder $query) => $query->where('status', $filters['status']))
+            ->when(filled($filters['priority'] ?? null), fn (Builder $query) => $query->where('priority', $filters['priority']))
+            ->when(filled($filters['channel'] ?? null), fn (Builder $query) => $query->where('channel', $filters['channel']))
+            ->when(filled($filters['team_id'] ?? null), fn (Builder $query) => $query->where('team_id', $filters['team_id']))
+            ->when(filled($filters['assignee'] ?? null), fn (Builder $query) => $filters['assignee'] === 'unassigned'
+                ? $query->whereNull('assignee_id')
+                : $query->where('assignee_id', $filters['assignee']))
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE)
@@ -62,6 +88,52 @@ class TicketController extends Controller
                     'total' => $tickets->total(),
                 ],
             ],
+            'filters' => [
+                'status' => $filters['status'] ?? null,
+                'priority' => $filters['priority'] ?? null,
+                'channel' => $filters['channel'] ?? null,
+                'teamId' => isset($filters['team_id']) ? (int) $filters['team_id'] : null,
+                'assignee' => $filters['assignee'] ?? null,
+            ],
+            'filterOptions' => [
+                'teams' => Team::query()->orderBy('name')->get(['id', 'name']),
+                'assignees' => $this->assignableUsers()->orderBy('name')->get(['id', 'name']),
+            ],
         ]);
+    }
+
+    /**
+     * Every user a ticket may be assigned to: an `agent` or an `admin`.
+     *
+     * A `whereHas` on the relation and not spatie's `role()` scope, which
+     * looks the role names up and throws if either one is not seeded yet —
+     * fatal for a query that only wants to know who currently holds them.
+     *
+     * @return Builder<User>
+     */
+    private function assignableUsers(): Builder
+    {
+        return User::query()->whereHas(
+            'roles',
+            fn (Builder $query) => $query->whereIn('name', [UserRole::Admin->value, UserRole::Agent->value]),
+        );
+    }
+
+    /**
+     * The assignee filter takes a user id or the literal "unassigned" — the
+     * pool of tickets nobody has picked up, which is not a person to look
+     * up by id.
+     */
+    private function assigneeRule(): Closure
+    {
+        return function (string $attribute, mixed $value, Closure $fail): void {
+            if ($value === 'unassigned') {
+                return;
+            }
+
+            if (! is_numeric($value) || ! $this->assignableUsers()->whereKey($value)->exists()) {
+                $fail('Assegnatario non valido.');
+            }
+        };
     }
 }
