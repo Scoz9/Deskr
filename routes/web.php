@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\PortalController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
 use App\Http\Controllers\SupportTicketController;
@@ -30,13 +31,32 @@ Route::middleware('throttle:intake')->group(function () {
 });
 
 /*
- * The ticket as whoever asked sees it, opened by the signed link the
- * confirmation email carries: the signature is the key, because a requester
- * never registers and never logs in (§3).
+ * The ticket as whoever asked sees it. Two ways in and no third: the signature
+ * on the link the confirmation email carries, or the portal session of whoever
+ * opened the request. The check is in the controller because the two are read
+ * together — a requester never logs in with a password (§3), so neither alone
+ * is "the" credential.
  */
 Route::get('assistenza/ticket/{ticket}', [SupportTicketController::class, 'show'])
-    ->middleware('signed')
     ->name('support.ticket.show');
+
+/*
+ * "My requests". The link asked for here is the credential, so the request for
+ * it is throttled twice — by IP like the intake, and by the address it names.
+ */
+Route::middleware('throttle:intake')->group(function () {
+    Route::get('portale', [PortalController::class, 'request'])->name('portal.request');
+
+    Route::post('portale', [PortalController::class, 'link'])
+        ->middleware('throttle:portal-email')
+        ->name('portal.link');
+
+    Route::get('portale/entra/{user}', [PortalController::class, 'enter'])->name('portal.enter');
+
+    Route::get('portale/richieste', [PortalController::class, 'index'])->name('portal.index');
+
+    Route::post('portale/esci', [PortalController::class, 'leave'])->name('portal.leave');
+});
 
 /*
  * The bytes of an attachment, and the only way to them: the disk is private and

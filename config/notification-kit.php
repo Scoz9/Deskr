@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Notifications\PortalLink;
 use App\Notifications\TicketReceived;
 use App\Notifications\UserInvitation;
 
@@ -12,6 +13,7 @@ return [
      * The notification-kit:sync command upserts their template definitions.
      */
     'manageables' => [
+        PortalLink::class,
         TicketReceived::class,
         UserInvitation::class,
     ],

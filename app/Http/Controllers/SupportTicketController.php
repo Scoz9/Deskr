@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attachment;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -29,9 +30,21 @@ class SupportTicketController extends Controller
 
     /**
      * Show the request and its thread.
+     *
+     * Two ways in and no third: the signature on the link the confirmation
+     * email carries, or the portal session of whoever opened the request. A
+     * requester never logs in with a password (§3), so neither one alone is
+     * "the" credential — and being logged in as somebody else is worth nothing
+     * here, which is the one filter between two customers.
      */
-    public function show(Ticket $ticket): Response
+    public function show(Request $request, Ticket $ticket): Response
     {
+        abort_unless(
+            $request->hasValidSignature()
+                || $request->user()?->getKey() === $ticket->requester_id,
+            403,
+        );
+
         $ticket->load(['messages.author:id,name', 'messages.attachments']);
 
         return Inertia::render('support/ticket', [

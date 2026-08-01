@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\PortalController;
 use App\Http\Controllers\SupportRequestController;
 use App\Models\Role;
 use App\Models\User;
@@ -61,6 +62,12 @@ class AppServiceProvider extends ServiceProvider
         // thing that stays the same when whoever is sending moves connection.
         RateLimiter::for('intake-email', fn (Request $request): Limit => Limit::perHour(
             SupportRequestController::SUBMISSIONS_PER_EMAIL_PER_HOUR,
+        )->by(Str::transliterate(Str::lower((string) $request->input('email')))));
+
+        // The link into the portal is a credential: without a limit, this form
+        // is a way to fill somebody else's mailbox with it (§5).
+        RateLimiter::for('portal-email', fn (Request $request): Limit => Limit::perHour(
+            PortalController::LINKS_PER_EMAIL_PER_HOUR,
         )->by(Str::transliterate(Str::lower((string) $request->input('email')))));
     }
 

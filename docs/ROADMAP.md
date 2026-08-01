@@ -377,6 +377,32 @@ non è quello che serve a chi aspetta una risposta. Le **note interne non escono
 mai**, nemmeno sul proprio ticket: sono scritte per il team, e un thread che ne
 lascia passare una l'ha pubblicata.
 
+Lo step 26 mette insieme le richieste in un portale. **Il magic link apre una
+sessione**, e da lì elenco e dettaglio sono pagine normali con l'ambito
+sull'utente, invece di una firma trascinata dentro ogni indirizzo. È la scelta
+che rende possibile lo step 27: un POST vuole identità e CSRF, non una firma
+nella query string.
+
+Il dettaglio dello step 25 ora ha **due vie e nessuna terza**: la firma del link
+che l'email porta, o la sessione di chi ha aperto quella richiesta. Il controllo
+sta nel controller perché le due si leggono insieme — un richiedente non fa login
+con una password (§3), quindi nessuna delle due da sola è "la" credenziale. Essere
+autenticati come qualcun altro qui non vale niente: è **l'unico filtro fra due
+clienti**, e sotto non c'è scoping globale a raccogliere quello che passa.
+
+**La richiesta del link risponde sempre allo stesso modo**, che l'indirizzo esista
+o no: un form che distingue i due casi è un modo per sapere chi è cliente
+dell'helpdesk, ed è aperto a internet. Il rate limit è doppio — per IP come
+l'ingresso, e per indirizzo — perché senza, questo form riempie la casella di
+qualcun altro di link validi (§5).
+
+**Un link scaduto non è un muro.** Chi ha cliccato è qualcuno da cui l'helpdesk
+vuole sentire, quindi atterra sulla pagina che ne consegna uno nuovo invece che su
+un 403 muto: per questo la firma si verifica nel controller e non nel middleware.
+
+C'è anche il **secondo dei tre browser test** del §5: che il link apra davvero
+qualcosa non è una domanda a cui un livello sotto il browser possa rispondere.
+
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.
 23. Form → `CreateTicket` via DTO: riconoscimento del richiedente dall'email,
