@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        // Postmark posts here with no session and no CSRF token to carry —
+        // the request authenticates itself with HTTP Basic Auth instead.
+        $middleware->validateCsrfTokens(except: ['webhooks/postmark/inbound']);
+
         $middleware->web(append: [
             SetLocale::class,
             HandleAppearance::class,
