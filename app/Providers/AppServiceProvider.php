@@ -7,9 +7,12 @@ use App\Models\User;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -38,6 +41,19 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
 
         $this->configureNotificationKitGates();
+        $this->configureRateLimiting();
+    }
+
+    /**
+     * Rate limit the public intake (§5).
+     *
+     * Per IP, which is all there is to key on while the form only renders: the
+     * limit per email address and the cap on open tickets per address arrive
+     * with the submission of step 23, where an address exists to count.
+     */
+    protected function configureRateLimiting(): void
+    {
+        RateLimiter::for('intake', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip()));
     }
 
     /**

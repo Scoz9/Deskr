@@ -253,6 +253,46 @@ stato e metrica atterrano nella stessa scrittura.
 
 ## Fase 3 — Ingresso
 
+Aperta con lo step 22: `/assistenza` è la prima pagina che risponde a chi non ha
+un account, come vuole il §3 — un richiedente non si registra mai. Il percorso è
+in italiano perché lo legge chi ha bisogno di aiuto e non chi mantiene
+l'applicazione; il nome della route e il codice restano in inglese come il resto.
+
+`SupportRequestController` **rinuncia esplicitamente all'autorizzazione di
+risorsa** dello starter kit: qui non c'è né una policy da consultare né un utente
+su cui consultarla. A difendere la porta ci sono il rate limit sulla route e
+l'esca nel form, non un permesso.
+
+Il **rate limit è per IP** e basta: finché la pagina si limita a rendersi non c'è
+altro su cui contare. Il limite per indirizzo email e il tetto di ticket aperti
+per indirizzo, che il §5 chiede insieme a questo, arrivano con l'invio dello step
+23 — prima non ci sarebbe un'email da contare.
+
+**L'esca è nel markup e fuori dalla pagina**: `aria-hidden`, fuori dall'ordine di
+tabulazione e con `autocomplete` spento, così non la incontra nessuno per cui non
+è pensata. Il client non la giudica mai — un campo che nessuno vede non può
+essere il motivo per cui a una persona si dice che il form è sbagliato: cosa
+significhi trovarla piena lo decide il server allo step 23.
+
+La validazione sta in `lib/support-request.ts`, separata dalla pagina perché è
+una regola e non una resa: si legge e si prova da sola, riporta **tutti** i campi
+sbagliati insieme — così si corregge il form in un giro invece di scoprire il
+problema successivo a ogni tentativo — ed è una cortesia, non una difesa. La
+difesa è la validazione server-side dello step 23.
+
+La categoria è l'unica cosa che il form non può inventarsi, perché è ciò che
+instrada al team: la manda il server, e **niente altro della categoria arriva a
+una pagina pubblica** — il team dietro è come è organizzato l'helpdesk dentro, e
+chi chiede aiuto non ha motivo di leggerlo. La priorità non c'è affatto (§3).
+
+Il `select` è nativo e non la primitiva Radix: il portale pubblico è una
+superficie leggera vista da fuori (§5), e questo è il controllo che ogni browser
+sa già rendere e ogni tecnologia assistiva sa già leggere.
+
+**Solo campi, nessun invio**: il form non ha `action`, il submit valida e si
+ferma lì. Il collegamento a `CreateTicket` è lo step 23, ed è un test a tenerlo
+fermo.
+
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.
 23. Form → `CreateTicket` via DTO: riconoscimento del richiedente dall'email,

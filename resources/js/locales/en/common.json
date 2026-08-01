@@ -5,5 +5,24 @@
         "save": "Save"
     },
     "language": "Language",
+    "support": {
+        "description": "Tell us what is not working: we answer at the address you leave us.",
+        "errors": {
+            "email": "Check the email address: something is missing.",
+            "required": "This field is needed.",
+            "tooLong": "This field is too long."
+        },
+        "fields": {
+            "body": "Description",
+            "category": "What it is about",
+            "categoryPlaceholder": "Pick one",
+            "email": "Email",
+            "name": "Full name",
+            "subject": "Subject",
+            "website": "Website"
+        },
+        "submit": "Send the request",
+        "title": "Ask for support"
+    },
     "welcome": "Welcome, {{name}}!"
 }
