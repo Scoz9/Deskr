@@ -10,9 +10,14 @@
         "errors": {
             "email": "Check the email address: something is missing.",
             "required": "This field is needed.",
-            "tooLong": "This field is too long."
+            "tooLarge": "One of the files is too heavy.",
+            "tooLong": "This field is too long.",
+            "tooMany": "You picked too many files.",
+            "type": "This kind of file is not accepted."
         },
         "fields": {
+            "attachments": "Attachments",
+            "attachmentsHint": "Up to {{maxFiles}} files of {{maxMegabytes}} MB: images, PDFs or text.",
             "body": "Description",
             "category": "What it is about",
             "categoryPlaceholder": "Pick one",

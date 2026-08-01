@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
 use App\Http\Controllers\UserController;
@@ -26,6 +27,16 @@ Route::middleware('throttle:intake')->group(function () {
         ->middleware('throttle:intake-email')
         ->name('support.store');
 });
+
+/*
+ * The bytes of an attachment, and the only way to them: the disk is private and
+ * serves nothing on its own, so the signature on the link is what says the
+ * application handed it out. It is outside the intake group because downloading
+ * a file the helpdesk itself linked is not asking for help.
+ */
+Route::get('allegati/{attachment}', [AttachmentController::class, 'show'])
+    ->middleware('signed')
+    ->name('attachments.show');
 
 Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');

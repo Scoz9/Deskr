@@ -41,5 +41,14 @@ class NewTicket
          * while an agent opening a ticket on the phone does.
          */
         public readonly TicketPriority $priority = TicketPriority::Normale,
+        /**
+         * The files that came in with the description, already on disk. They
+         * hang from the first message like every other attachment (§4): the
+         * description is a message, so there is nothing special about the files
+         * that arrive with it.
+         *
+         * @var list<NewAttachment>
+         */
+        public readonly array $attachments = [],
     ) {}
 }

@@ -48,11 +48,24 @@ class CreateTicket
                 'reopen_count' => 0,
             ]);
 
-            $ticket->messages()->create([
+            $message = $ticket->messages()->create([
                 'author_id' => $request->requester->getKey(),
                 'body' => $request->body,
                 'is_internal' => false,
             ]);
+
+            // The rows land in the same transaction as the message they hang
+            // from: a file on disk nobody points at is rubbish to collect, a row
+            // pointing at nothing is a broken link in the thread.
+            foreach ($request->attachments as $attachment) {
+                $message->attachments()->create([
+                    'disk' => $attachment->disk,
+                    'path' => $attachment->path,
+                    'original_name' => $attachment->originalName,
+                    'mime_type' => $attachment->mimeType,
+                    'size' => $attachment->size,
+                ]);
+            }
 
             return $ticket;
         });

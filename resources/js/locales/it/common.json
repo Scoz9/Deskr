@@ -10,9 +10,14 @@
         "errors": {
             "email": "Controlla l'indirizzo email: manca qualcosa.",
             "required": "Questo campo serve.",
-            "tooLong": "Questo campo è troppo lungo."
+            "tooLarge": "Un file è troppo pesante.",
+            "tooLong": "Questo campo è troppo lungo.",
+            "tooMany": "Hai scelto troppi file.",
+            "type": "Questo tipo di file non è ammesso."
         },
         "fields": {
+            "attachments": "Allegati",
+            "attachmentsHint": "Fino a {{maxFiles}} file da {{maxMegabytes}} MB: immagini, PDF o testo.",
             "body": "Descrizione",
             "category": "Di cosa si tratta",
             "categoryPlaceholder": "Scegli una voce",

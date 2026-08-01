@@ -27,6 +27,45 @@ export type SupportRequestValues = {
 
 export type SupportRequestError = 'required' | 'email' | 'tooLong';
 
+/**
+ * What the server accepts as an attachment, sent to the page instead of written
+ * twice: the whitelist and the limits are decided in `Attachment`, and a copy
+ * here would be the one that goes stale.
+ */
+export type AttachmentLimits = {
+    maxFiles: number;
+    maxBytes: number;
+    mimeTypes: string[];
+};
+
+export type AttachmentError = 'tooMany' | 'tooLarge' | 'type';
+
+/**
+ * The first thing wrong with the picked files, if anything is.
+ *
+ * Unlike the fields, the answer is one error and not one per file: what a
+ * person does with it is remove the file and pick another, and a list of five
+ * complaints about five files says no more than the first.
+ */
+export function validateAttachments(
+    files: File[],
+    limits: AttachmentLimits,
+): AttachmentError | undefined {
+    if (files.length > limits.maxFiles) {
+        return 'tooMany';
+    }
+
+    if (files.some((file) => file.size > limits.maxBytes)) {
+        return 'tooLarge';
+    }
+
+    if (files.some((file) => !limits.mimeTypes.includes(file.type))) {
+        return 'type';
+    }
+
+    return undefined;
+}
+
 export type SupportRequestErrors = Partial<
     Record<keyof SupportRequestValues, SupportRequestError>
 >;

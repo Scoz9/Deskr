@@ -323,6 +323,34 @@ Il flusso ha anche il suo **browser test**: è il primo dei tre end-to-end del �
 e nessuno dei livelli sotto — validazione client, visita Inertia, regole server,
 Action — può dire se il giro completo funziona davvero da un browser.
 
+Con lo step 24 il form prende allegati. I limiti — whitelist MIME, peso massimo,
+numero massimo — stanno su `Attachment` e vengono **mandati alla pagina come
+prop**: scritti una seconda volta in TypeScript, sarebbe la copia a invecchiare
+il giorno che la lista cambia.
+
+La whitelist è controllata con `mimetypes` e non con `mimes`: la prima chiede
+cosa il file **è**, la seconda crede all'estensione che il mittente ha digitato.
+Ed è una whitelist e non una blacklist, perché l'elenco di ciò che può fare male
+non è mai finito.
+
+**Il nome del file arriva come dato, mai come percorso.** I byte finiscono sul
+disco privato sotto un nome generato dall'applicazione; quello scelto da chi
+invia viaggia sulla riga e torna solo come nome del download. Un nome di file che
+decide dove il file atterra è un nome di file che può atterrare ovunque.
+
+Le righe `Attachment` nascono **dentro la transazione** di `CreateTicket`, appese
+al primo messaggio come qualsiasi altro allegato (§4): la descrizione è un
+messaggio, quindi i file che arrivano con lei non sono un caso speciale. Il DTO
+porta file già scritti su disco, non upload HTTP — l'ingresso non ha motivo di
+sapere cos'è un `UploadedFile`, e un allegato email dello step 30 non lo è.
+
+Il download passa **solo dalla route firmata**: il disco è privato e non serve
+niente da sé, quindi la firma è ciò che dice che il link l'ha dato
+l'applicazione. Una riga il cui file è sparito risponde **404** e non un download
+vuoto che sembra il file vero. La policy che il §5 vuole accanto alla firma
+arriverà quando il portale (step 26) e la console (step 34) cominceranno a
+linkare gli allegati: oggi non c'è ancora un utente da autorizzare.
+
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.
 23. Form → `CreateTicket` via DTO: riconoscimento del richiedente dall'email,
