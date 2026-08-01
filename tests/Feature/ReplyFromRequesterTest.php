@@ -1,8 +1,9 @@
 <?php
 
-use App\Actions\Tickets\PortalReply;
-use App\Actions\Tickets\ReplyFromPortal;
+use App\Actions\Tickets\ReplyFromRequester;
+use App\Actions\Tickets\RequesterReply;
 use App\Enums\TicketActorType;
+use App\Enums\TicketChannel;
 use App\Enums\TicketEventType;
 use App\Enums\TicketStatus;
 use App\Models\Category;
@@ -12,15 +13,21 @@ use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 
 /**
- * Run the use case the way the portal will: resolved from the container and
- * handed a DTO.
+ * Run the use case the way the portal and the email adapter both will:
+ * resolved from the container and handed a DTO.
  */
-function replyFromPortal(Ticket $ticket, string $body = 'Aggiungo un dettaglio.'): Ticket
-{
-    return app(ReplyFromPortal::class)(new PortalReply(
+function replyFromRequester(
+    Ticket $ticket,
+    string $body = 'Aggiungo un dettaglio.',
+    TicketChannel $channel = TicketChannel::Web,
+    ?string $externalMessageId = null,
+): Ticket {
+    return app(ReplyFromRequester::class)(new RequesterReply(
         ticket: $ticket,
         requester: $ticket->requester,
         body: $body,
+        channel: $channel,
+        externalMessageId: $externalMessageId,
     ));
 }
 
@@ -31,7 +38,7 @@ function replyFromPortal(Ticket $ticket, string $body = 'Aggiungo un dettaglio.'
 test('a reply while waiting on the requester resumes the ticket', function () {
     $ticket = Ticket::factory()->inAttesa()->create();
 
-    $result = replyFromPortal($ticket, 'Confermo che succede ancora.');
+    $result = replyFromRequester($ticket, 'Confermo che succede ancora.');
 
     expect($result->id)->toBe($ticket->id)
         ->and($result->status)->toBe(TicketStatus::InLavorazione);
@@ -59,7 +66,7 @@ test('a reply while waiting on the requester resumes the ticket', function () {
 test('a reply to a solved ticket reopens it', function () {
     $ticket = Ticket::factory()->risolto()->create();
 
-    $result = replyFromPortal($ticket, 'Il problema si ripresenta.');
+    $result = replyFromRequester($ticket, 'Il problema si ripresenta.');
 
     expect($result->status)->toBe(TicketStatus::InLavorazione)
         ->and($result->reopen_count)->toBe(1)
@@ -79,7 +86,7 @@ test('a reply to a solved ticket reopens it', function () {
 test('a reply to a closed ticket opens a new one instead of reopening it', function () {
     $ticket = Ticket::factory()->chiuso()->create(['subject' => 'La stampante non risponde']);
 
-    $followUp = replyFromPortal($ticket, 'Il problema si ripresenta.');
+    $followUp = replyFromRequester($ticket, 'Il problema si ripresenta.');
 
     expect($followUp->id)->not->toBe($ticket->id)
         ->and($followUp->status)->toBe(TicketStatus::Nuovo)
@@ -103,7 +110,7 @@ test('the follow-up of a closed ticket is routed like its parent', function () {
     $category = Category::factory()->create();
     $ticket = Ticket::factory()->chiuso()->create(['category_id' => $category->id, 'team_id' => $category->team_id]);
 
-    $followUp = replyFromPortal($ticket);
+    $followUp = replyFromRequester($ticket);
 
     expect($followUp->category_id)->toBe($category->id)
         ->and($followUp->team_id)->toBe($category->team_id);
@@ -123,7 +130,7 @@ test('a reply to a live ticket is appended without moving it', function (TicketS
 
     $ticket = $factory->create();
 
-    $result = replyFromPortal($ticket, 'Aggiungo che succede solo dal portatile.');
+    $result = replyFromRequester($ticket, 'Aggiungo che succede solo dal portatile.');
 
     expect($result->id)->toBe($ticket->id)
         ->and($result->status)->toBe($status);
@@ -148,7 +155,7 @@ test('a reply to a live ticket is appended without moving it', function (TicketS
 test('the requester replying never starts the first response metric', function () {
     $ticket = Ticket::factory()->nuovo()->create();
 
-    replyFromPortal($ticket);
+    replyFromRequester($ticket);
 
     expect($ticket->fresh()->first_response_at)->toBeNull();
 });
@@ -157,7 +164,46 @@ test('the requester replying does not touch a first response already on record',
     $ticket = Ticket::factory()->inAttesa()->create();
     $firstResponse = $ticket->first_response_at;
 
-    replyFromPortal($ticket);
+    replyFromRequester($ticket);
 
     expect($ticket->fresh()->first_response_at->equalTo($firstResponse))->toBeTrue();
+});
+
+/*
+ * The follow-up of a closed ticket is born on the channel the reply itself
+ * came in on (step 29), not necessarily the one the parent ticket did.
+ */
+test('the follow-up of a closed ticket carries the channel the reply came in on', function () {
+    $ticket = Ticket::factory()->chiuso()->create();
+
+    $followUp = replyFromRequester($ticket, channel: TicketChannel::Email);
+
+    expect($followUp->channel)->toBe(TicketChannel::Email);
+});
+
+/*
+ * The id of a threaded inbound email is what a later reply's `In-Reply-To`
+ * will match against (step 29) — it has to survive onto the message the
+ * reply writes, and onto the follow-up a closed ticket fathers.
+ */
+test('a threaded reply carries the id of the email it came from', function () {
+    $ticket = Ticket::factory()->inAttesa()->create();
+
+    replyFromRequester($ticket, externalMessageId: '<abc123@mail.example.com>');
+
+    assertDatabaseHas('ticket_messages', [
+        'ticket_id' => $ticket->id,
+        'external_message_id' => '<abc123@mail.example.com>',
+    ]);
+});
+
+test('the follow-up of a closed ticket carries the id of the email that opened it', function () {
+    $ticket = Ticket::factory()->chiuso()->create();
+
+    $followUp = replyFromRequester($ticket, externalMessageId: '<abc123@mail.example.com>');
+
+    assertDatabaseHas('ticket_messages', [
+        'ticket_id' => $followUp->id,
+        'external_message_id' => '<abc123@mail.example.com>',
+    ]);
 });

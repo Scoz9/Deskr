@@ -53,6 +53,7 @@ class CreateTicket
                 'author_id' => $request->requester->getKey(),
                 'body' => $request->body,
                 'is_internal' => false,
+                'external_message_id' => $request->externalMessageId,
             ]);
 
             // The rows land in the same transaction as the message they hang

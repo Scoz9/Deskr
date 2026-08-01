@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Tickets\CreateTicket;
+use App\Actions\Tickets\InboundEmail;
 use App\Actions\Tickets\NewTicket;
-use App\Enums\TicketChannel;
-use App\Enums\UserRole;
+use App\Actions\Tickets\ReceiveInboundEmail;
 use App\Http\Requests\Support\PostmarkInboundRequest;
-use App\Models\User;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * The email channel's adapter: turns what Postmark parsed into a ticket, the
- * same way the web form turns a submission into one (§3 — every channel
- * reduces itself to the `NewTicket` DTO).
+ * The email channel's adapter: turns what Postmark parsed into the
+ * {@see InboundEmail} DTO the domain reads, the same way the web form turns
+ * a submission into {@see NewTicket} for its own
+ * channel (§3 — every channel reduces itself to a DTO, never a second way
+ * into the domain).
  *
- * Threading a reply onto an existing ticket, loop protection and the policy
- * on an unknown sender are steps 29 and 30: every message this step sees
- * becomes a new ticket.
+ * What the email becomes — a new ticket, a threaded reply, or nothing —
+ * is not decided here: {@see ReceiveInboundEmail} decides.
  */
 class PostmarkInboundController extends Controller
 {
@@ -31,20 +31,30 @@ class PostmarkInboundController extends Controller
     public function store(PostmarkInboundRequest $request): Response
     {
         $validated = $request->validated();
+        $headers = $this->headersFrom($validated['Headers'] ?? []);
 
-        $requester = $this->requesterFor(
-            $validated['FromFull']['Name'] ?? $validated['FromFull']['Email'],
-            $validated['FromFull']['Email'],
-        );
-
-        app(CreateTicket::class)(new NewTicket(
-            requester: $requester,
+        app(ReceiveInboundEmail::class)(new InboundEmail(
+            fromEmail: $validated['FromFull']['Email'],
+            fromName: $this->fromNameFor($validated['FromFull']),
             subject: $this->subjectFor($validated['Subject'] ?? null),
             body: $this->bodyFor($validated['TextBody'] ?? null),
-            channel: TicketChannel::Email,
+            externalMessageId: $headers->get('message-id'),
+            inReplyTo: $headers->get('in-reply-to'),
+            references: $this->referencesFrom($headers->get('references')),
+            autoSubmitted: $this->isAutoSubmitted($headers),
         ));
 
         return response()->noContent();
+    }
+
+    /**
+     * @param  array{Email: string, Name?: string|null}  $fromFull
+     */
+    private function fromNameFor(array $fromFull): string
+    {
+        $name = trim((string) ($fromFull['Name'] ?? ''));
+
+        return $name === '' ? $fromFull['Email'] : $name;
     }
 
     /**
@@ -61,8 +71,8 @@ class PostmarkInboundController extends Controller
 
     /**
      * The description is the first message of the thread (§3), and a thread
-     * cannot start with nothing in it: an email with no text body still opens
-     * a ticket, it just says so.
+     * cannot start with nothing in it: an email with no text body still
+     * opens a ticket, it just says so.
      */
     private function bodyFor(?string $body): string
     {
@@ -72,21 +82,49 @@ class PostmarkInboundController extends Controller
     }
 
     /**
-     * The person behind the address, created if this is the first time they
-     * write. Same rule as the web form (§3): the address is the identity, and
-     * an account that already exists is not renamed by a new message.
+     * Postmark's own headers as a lower-cased lookup, so a name is matched
+     * the same way regardless of how the sending client capitalised it —
+     * `Message-ID` and `message-id` are the same header.
+     *
+     * @param  list<array{Name?: string, Value?: string}>  $headers
+     * @return Collection<string, string>
      */
-    private function requesterFor(string $name, string $email): User
+    private function headersFrom(array $headers): Collection
     {
-        $requester = User::query()->firstOrCreate(
-            ['email' => $email],
-            ['name' => $name, 'password' => Str::password()],
-        );
+        return (new Collection($headers))
+            ->filter(fn (array $header): bool => filled($header['Name'] ?? null))
+            ->mapWithKeys(fn (array $header): array => [
+                Str::lower($header['Name']) => (string) ($header['Value'] ?? ''),
+            ]);
+    }
 
-        if ($requester->wasRecentlyCreated) {
-            $requester->assignRole(UserRole::Requester->value);
+    /**
+     * `References` is a whitespace-separated chain of every message id in
+     * the thread, oldest first — checked when `In-Reply-To` alone does not
+     * resolve to a ticket.
+     *
+     * @return list<string>
+     */
+    private function referencesFrom(?string $references): array
+    {
+        if ($references === null || trim($references) === '') {
+            return [];
         }
 
-        return $requester;
+        return preg_split('/\s+/', trim($references)) ?: [];
+    }
+
+    /**
+     * RFC 3834: an autoresponder identifies itself with `Auto-Submitted` set
+     * to anything but `no`. Two of them answering each other is the loop
+     * this stops before it ever reaches the domain (§5).
+     *
+     * @param  Collection<string, string>  $headers
+     */
+    private function isAutoSubmitted(Collection $headers): bool
+    {
+        $value = $headers->get('auto-submitted');
+
+        return $value !== null && Str::lower(trim($value)) !== 'no';
     }
 }

@@ -47,6 +47,12 @@ class PostmarkInboundRequest extends FormRequest
             'FromFull.Name' => ['nullable', 'string'],
             'Subject' => ['nullable', 'string'],
             'TextBody' => ['nullable', 'string'],
+            // The raw headers, `Message-ID`/`In-Reply-To`/`References`
+            // included: what step 29 threads a reply on and what stops an
+            // autoresponder loop before it reaches the domain.
+            'Headers' => ['nullable', 'array'],
+            'Headers.*.Name' => ['nullable', 'string'],
+            'Headers.*.Value' => ['nullable', 'string'],
         ];
     }
 }

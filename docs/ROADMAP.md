@@ -403,6 +403,48 @@ un 403 muto: per questo la firma si verifica nel controller e non nel middleware
 C'è anche il **secondo dei tre browser test** del §5: che il link apra davvero
 qualcosa non è una domanda a cui un livello sotto il browser possa rispondere.
 
+Lo step 29 aggiunge il threading, la protezione dai loop e la policy sul
+mittente sconosciuto sopra il webhook dello step 28. `ReceiveInboundEmail` è
+la nuova Action che decide: crea un ticket, aggancia un messaggio a uno
+esistente, o non fa niente — `PostmarkInboundController` resta solo
+l'adapter che traduce il payload di Postmark nel DTO `InboundEmail`, come
+`SupportRequestController` fa per il form web.
+
+**La `reference` nell'oggetto è la chiave del threading**, esattamente come
+promesso dallo step 25: un `preg_match` sul prefisso `DSK-` nel `Subject`
+basta a ritrovare il ticket. L'header `In-Reply-To` (e, a scendere,
+`References`) è la seconda via, per il client che nella risposta ha tolto la
+reference dall'oggetto: entrambi cercano tra gli `external_message_id` già
+scritti sui messaggi.
+
+**Il mittente deve essere il richiedente del ticket trovato, o il threading
+non vale.** Una reference nell'oggetto è un valore che chiunque può scrivere,
+non una prova di chi sta scrivendo: senza questo controllo, un estraneo che
+cita la reference giusta scriverebbe nel thread di qualcun altro. Quando non
+coincide, la mail non sparisce — apre un ticket nuovo, come farebbe
+comunque un primo contatto.
+
+`ReplyFromRequester` (rinominata da `ReplyFromPortal` dello step 27, insieme
+al DTO `PortalReply` → `RequesterReply`) è dove il threading finisce: la
+stessa Action decide se riprendere, riaprire o accodare, sia che la risposta
+arrivi dal portale sia che arrivi da un'email agganciata. Duplicarla per il
+canale email avrebbe tenuto due copie della stessa macchina a stati in
+passo.
+
+**La protezione dai loop viene prima di tutto**, nell'ordine in cui costa
+meno verificarla: l'header `Auto-Submitted` (RFC 3834) scarta un
+autorisponditore senza toccare il database, l'idempotenza su
+`external_message_id` riconosce un webhook consegnato due volte prima di
+consumare il tetto per mittente, e il tetto — cinque messaggi al minuto — è
+quello che due autorisponditori che si rispondono a vicenda superano in
+pochi secondi, cosa che una persona non fa mai. Un messaggio scartato
+risponde comunque `204`: Postmark non deve ritentare qualcosa che è stato
+scartato apposta.
+
+`NewTicket` e `NewReply` portano ora `externalMessageId`: la colonna
+`external_message_id` di `TicketMessage` esiste dalla prima migration
+apposta per questo, ed era rimasta sempre `null` fino a questo step.
+
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.
 23. Form → `CreateTicket` via DTO: riconoscimento del richiedente dall'email,

@@ -33,6 +33,7 @@ class ReplyToTicket
                 'author_id' => $reply->author->getKey(),
                 'body' => $reply->body,
                 'is_internal' => $reply->isInternal,
+                'external_message_id' => $reply->externalMessageId,
             ]);
 
             if ($this->startsTheResponseTime($reply)) {

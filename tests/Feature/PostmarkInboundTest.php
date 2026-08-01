@@ -1,8 +1,10 @@
 <?php
 
 use App\Enums\TicketChannel;
+use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Models\Ticket;
+use App\Models\TicketMessage;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 
@@ -33,6 +35,9 @@ function postmarkPayload(array $overrides = []): array
         ],
         'Subject' => 'La stampante non risponde',
         'TextBody' => 'Da stamattina la stampante del secondo piano non stampa.',
+        'Headers' => [
+            ['Name' => 'Message-ID', 'Value' => '<msg-1@mail.example.com>'],
+        ],
         ...$overrides,
     ];
 }
@@ -144,4 +149,67 @@ test('an email with no sender address is refused', function () {
         ->assertUnprocessable();
 
     assertDatabaseCount('tickets', 0);
+});
+
+test('the id in the Message-ID header lands on the message it opened', function () {
+    postToInboundWebhook(postmarkPayload());
+
+    assertDatabaseHas('ticket_messages', ['external_message_id' => '<msg-1@mail.example.com>']);
+});
+
+/*
+ * The reference in the subject is the threading key, and the sender must be
+ * the ticket's own requester (§5): the two together are what tells a real
+ * reply apart from anybody quoting the same reference.
+ */
+test('a reply carrying the reference in its subject threads through the real webhook', function () {
+    $requester = User::factory()->requester()->create(['email' => 'anna.rossi@example.com']);
+    $ticket = Ticket::factory()->inAttesa()->for($requester, 'requester')->create();
+
+    postToInboundWebhook(postmarkPayload([
+        'Subject' => 'Re: ['.$ticket->reference.'] La stampante non risponde',
+        'Headers' => [['Name' => 'Message-ID', 'Value' => '<reply-1@mail.example.com>']],
+    ]))->assertNoContent();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::InLavorazione);
+
+    assertDatabaseCount('tickets', 1);
+});
+
+test('In-Reply-To threads through the real webhook', function () {
+    $requester = User::factory()->requester()->create(['email' => 'anna.rossi@example.com']);
+    $ticket = Ticket::factory()->inAttesa()->for($requester, 'requester')->create();
+    TicketMessage::factory()->for($ticket)->create(['external_message_id' => '<original@mail.example.com>']);
+
+    postToInboundWebhook(postmarkPayload([
+        'Subject' => 'Re: la mia richiesta',
+        'Headers' => [
+            ['Name' => 'Message-ID', 'Value' => '<reply-1@mail.example.com>'],
+            ['Name' => 'In-Reply-To', 'Value' => '<original@mail.example.com>'],
+        ],
+    ]))->assertNoContent();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::InLavorazione);
+
+    assertDatabaseCount('tickets', 1);
+});
+
+test('an autosubmitted email is accepted but dropped', function () {
+    postToInboundWebhook(postmarkPayload([
+        'Headers' => [
+            ['Name' => 'Message-ID', 'Value' => '<auto-1@mail.example.com>'],
+            ['Name' => 'Auto-Submitted', 'Value' => 'auto-replied'],
+        ],
+    ]))->assertNoContent();
+
+    assertDatabaseCount('tickets', 0);
+});
+
+test('the same webhook delivered twice opens only one ticket', function () {
+    $payload = postmarkPayload();
+
+    postToInboundWebhook($payload)->assertNoContent();
+    postToInboundWebhook($payload)->assertNoContent();
+
+    assertDatabaseCount('tickets', 1);
 });
