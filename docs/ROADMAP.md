@@ -568,6 +568,38 @@ Niente filtri, niente ricerca, niente dettaglio cliccabile: sono gli step
 un `agent` vede tutto il backlog, il team è un filtro che arriverà allo step
 32, non un confine che serve già oggi.
 
+Lo step 32 aggiunge i cinque filtri sopra la lista: stato, priorità, canale,
+team, assegnatario. Vivono nella query string e non in uno stato del
+componente, per lo stesso motivo della paginazione dello step 31 — un
+filtro letto dalle prop del server invece che specchiato altrove non può
+disallinearsi, e un link con `?status=risolto` è già l'intera vista da
+condividere o salvare nei preferiti.
+
+**Ogni filtro è un `when()` in coda alla stessa query**, non un ramo
+separato: si combinano tutti insieme, come un operatore si aspetta da un
+elenco di filtri e non da un elenco di viste alternative. Validati contro
+gli enum del dominio (`Rule::enum`) prima di toccare il database — un valore
+sconosciuto è un 422, non una query silenziosamente vuota o un errore SQL.
+
+**"Non assegnato" è un valore a sé** nel filtro assegnatario, non un id da
+cercare: il pool dei ticket che nessuno ha ancora preso in carico non è una
+persona, e senza questo valore sarebbe irraggiungibile dal filtro.
+
+`TicketController` cerca gli assegnabili con `whereHas('roles', ...)` e non
+con lo scope `role()` di spatie: quello risolve il nome del ruolo e lancia
+un'eccezione se non è ancora seedato, fatale per una richiesta che vuole
+solo sapere chi lo tiene oggi.
+
+Il centro di comando degli spostamenti è la pagina, non più la tabella: la
+navigazione della paginazione (step 31) si sposta da `TicketsTable` a
+`tickets/index.tsx`, che ora è l'unico punto che costruisce la query string
+— una tabella che decide da sola la propria pagina non saprebbe portare con
+sé i filtri che un componente diverso possiede.
+
+**La barra dei filtri usa i `Select` di shadcn/ui, non quelli di MUI**:
+sta fuori dalla griglia dati, ed è lì — non altrove — che §5 confina MUI e
+`material-react-table`.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.

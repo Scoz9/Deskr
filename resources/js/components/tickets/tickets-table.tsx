@@ -1,4 +1,3 @@
-import { router } from '@inertiajs/react';
 import {
     MaterialReactTable,
     useMaterialReactTable,
@@ -11,7 +10,6 @@ import type {
 import { MRT_Localization_IT } from 'material-react-table/locales/it';
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { index as ticketsIndex } from '@/routes/tickets';
 
 export type TicketStatus =
     | 'nuovo'
@@ -49,7 +47,7 @@ export type PaginatedTickets = {
     };
 };
 
-const statusLabels: Record<TicketStatus, string> = {
+export const statusLabels: Record<TicketStatus, string> = {
     nuovo: 'Nuovo',
     assegnato: 'Assegnato',
     in_lavorazione: 'In lavorazione',
@@ -72,7 +70,7 @@ const statusVariants: Record<
     annullato: 'destructive',
 };
 
-const priorityLabels: Record<TicketPriority, string> = {
+export const priorityLabels: Record<TicketPriority, string> = {
     bassa: 'Bassa',
     normale: 'Normale',
     alta: 'Alta',
@@ -89,7 +87,7 @@ const priorityVariants: Record<
     urgente: 'destructive',
 };
 
-const channelLabels: Record<TicketChannel, string> = {
+export const channelLabels: Record<TicketChannel, string> = {
     web: 'Web',
     email: 'Email',
     telefono: 'Telefono',
@@ -102,6 +100,8 @@ const openedAtFormatter = new Intl.DateTimeFormat('it-IT', {
 
 type TicketsTableProps = {
     tickets: PaginatedTickets;
+    /** Called with the 1-based page number the table wants next. */
+    onPageChange: (page: number) => void;
 };
 
 /**
@@ -114,8 +114,14 @@ type TicketsTableProps = {
  * specifically to make that mistake obvious. Deriving the pagination state
  * from props instead of mirroring it into local state is also what makes
  * the browser's back and forward buttons work for free.
+ *
+ * The visit itself is the page's job, not this table's: it has to carry
+ * whatever filters are active, and this component has no idea what they are.
  */
-export default function TicketsTable({ tickets }: TicketsTableProps) {
+export default function TicketsTable({
+    tickets,
+    onPageChange,
+}: TicketsTableProps) {
     const pagination = useMemo<MRT_PaginationState>(
         () => ({
             pageIndex: tickets.meta.currentPage - 1,
@@ -134,11 +140,7 @@ export default function TicketsTable({ tickets }: TicketsTableProps) {
             return;
         }
 
-        router.get(
-            ticketsIndex.url({ query: { page: next.pageIndex + 1 } }),
-            {},
-            { preserveState: true, preserveScroll: true, only: ['tickets'] },
-        );
+        onPageChange(next.pageIndex + 1);
     };
 
     const columns = useMemo<MRT_ColumnDef<TicketRow>[]>(

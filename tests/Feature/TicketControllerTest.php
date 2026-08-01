@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\TicketChannel;
+use App\Enums\TicketPriority;
 use App\Http\Controllers\TicketController;
 use App\Models\Category;
 use App\Models\Organization;
@@ -130,4 +132,122 @@ test('the list carries what an operator needs to triage a ticket', function () {
             ->where('tickets.data.0.team', $team->name)
             ->where('tickets.data.0.assignee', 'Mario Bianchi')
         );
+});
+
+test('the console offers who a ticket may be filtered by', function () {
+    $this->seed([PermissionSeeder::class, RoleSeeder::class]);
+
+    $team = Team::factory()->create();
+    $agent = User::factory()->agent()->create();
+    $admin = User::factory()->admin()->create();
+    $requester = User::factory()->requester()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where(
+                'filterOptions.teams',
+                fn ($teams) => collect($teams)->pluck('id')->contains($team->id),
+            )
+            ->where(
+                'filterOptions.assignees',
+                fn ($assignees) => collect($assignees)->pluck('id')->contains($agent->id)
+                    && collect($assignees)->pluck('id')->contains($admin->id)
+                    && ! collect($assignees)->pluck('id')->contains($requester->id),
+            )
+        );
+});
+
+test('a status filter narrows the backlog to that status', function () {
+    Ticket::factory()->nuovo()->count(2)->create();
+    Ticket::factory()->risolto()->count(3)->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['status' => 'risolto']))
+        ->assertInertia(fn ($page) => $page
+            ->has('tickets.data', 3)
+            ->where('filters.status', 'risolto')
+        );
+});
+
+test('a priority filter narrows the backlog to that priority', function () {
+    Ticket::factory()->create(['priority' => TicketPriority::Urgente]);
+    Ticket::factory()->count(2)->create(['priority' => TicketPriority::Bassa]);
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['priority' => 'urgente']))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 1));
+});
+
+test('a channel filter narrows the backlog to that channel', function () {
+    Ticket::factory()->create(['channel' => TicketChannel::Email]);
+    Ticket::factory()->count(2)->create(['channel' => TicketChannel::Web]);
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['channel' => 'email']))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 1));
+});
+
+test('a team filter narrows the backlog to that team', function () {
+    $team = Team::factory()->create();
+    Ticket::factory()->create(['team_id' => $team->id]);
+    Ticket::factory()->count(2)->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['team_id' => $team->id]))
+        ->assertInertia(fn ($page) => $page
+            ->has('tickets.data', 1)
+            ->where('filters.teamId', $team->id)
+        );
+});
+
+test('an assignee filter narrows the backlog to that agent', function () {
+    $agent = User::factory()->agent()->create();
+    Ticket::factory()->assegnato()->create(['assignee_id' => $agent->id]);
+    Ticket::factory()->assegnato()->count(2)->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['assignee' => $agent->id]))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 1));
+});
+
+/*
+ * The pool nobody has picked up is not a person to look up by id — it needs
+ * its own value rather than being unreachable through the filter.
+ */
+test('the "unassigned" filter narrows the backlog to the pool', function () {
+    Ticket::factory()->nuovo()->count(2)->create();
+    Ticket::factory()->assegnato()->count(3)->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['assignee' => 'unassigned']))
+        ->assertInertia(fn ($page) => $page
+            ->has('tickets.data', 2)
+            ->where('filters.assignee', 'unassigned')
+        );
+});
+
+test('filters combine instead of overriding one another', function () {
+    $team = Team::factory()->create();
+    Ticket::factory()->nuovo()->create(['team_id' => $team->id]);
+    Ticket::factory()->nuovo()->create();
+    Ticket::factory()->risolto()->create(['team_id' => $team->id]);
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['status' => 'nuovo', 'team_id' => $team->id]))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 1));
+});
+
+test('an unknown status value is refused', function () {
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['status' => 'non-esiste']))
+        ->assertSessionHasErrors('status');
+});
+
+test('an assignee that is not an agent or admin is refused', function () {
+    $requester = User::factory()->requester()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['assignee' => $requester->id]))
+        ->assertSessionHasErrors('assignee');
 });
