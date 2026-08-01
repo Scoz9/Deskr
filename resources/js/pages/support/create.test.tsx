@@ -18,10 +18,24 @@ const categories = [
     { id: 2, name: 'Rete' },
 ];
 
+const attachmentLimits = {
+    maxFiles: 2,
+    maxBytes: 1024,
+    mimeTypes: ['image/png', 'application/pdf'],
+};
+
 function renderForm(reference: string | null = null) {
     return render(
-        <SupportCreate categories={categories} reference={reference} />,
+        <SupportCreate
+            categories={categories}
+            reference={reference}
+            attachmentLimits={attachmentLimits}
+        />,
     );
+}
+
+function file(name: string, type: string, size = 10): File {
+    return new File([new Uint8Array(size)], name, { type });
 }
 
 beforeEach(() => {
@@ -236,5 +250,90 @@ describe('the public intake form', () => {
         renderForm();
 
         expect(screen.queryByText(/DSK-/)).toBeNull();
+    });
+
+    it('takes the files picked along with the request', async () => {
+        const user = userEvent.setup();
+        renderForm();
+
+        await fillInTheForm();
+        await user.upload(
+            screen.getByLabelText('support.fields.attachments'),
+            file('errore.png', 'image/png'),
+        );
+        await user.click(
+            screen.getByRole('button', { name: 'support.submit' }),
+        );
+
+        const [, payload] = vi.mocked(router.post).mock.calls[0];
+        const sent = (payload as { attachments: File[] }).attachments;
+
+        expect(sent).toHaveLength(1);
+        expect(sent[0].name).toBe('errore.png');
+    });
+
+    /*
+     * A file the server would refuse anyway is a refusal worth saying here: the
+     * round trip that carries ten megabytes to be told no is the one nobody
+     * wants to wait for. `applyAccept: false` is how a file gets past the
+     * picker in real life too — "all files" in the dialog, or a drag and drop.
+     */
+    it('does not upload a file the whitelist already excludes', async () => {
+        const user = userEvent.setup({ applyAccept: false });
+        renderForm();
+
+        await fillInTheForm();
+        await user.upload(
+            screen.getByLabelText('support.fields.attachments'),
+            file('script.php', 'application/x-php'),
+        );
+        await user.click(
+            screen.getByRole('button', { name: 'support.submit' }),
+        );
+
+        expect(screen.getByText('support.errors.type')).toBeInTheDocument();
+        expect(router.post).not.toHaveBeenCalled();
+    });
+
+    it('offers only the types the server accepts', () => {
+        renderForm();
+
+        expect(
+            screen.getByLabelText('support.fields.attachments'),
+        ).toHaveAttribute('accept', 'image/png,application/pdf');
+    });
+
+    /*
+     * The server refuses per file (`attachments.0`) and the page has one place
+     * to say so: to whoever is looking at the form, it is the same fact.
+     */
+    it('shows what the server refused about a file', async () => {
+        const user = userEvent.setup();
+        renderForm();
+
+        vi.mocked(router.post).mockImplementation(
+            (_url: unknown, _payload: unknown, options?: unknown) => {
+                (
+                    options as {
+                        onError?: (errors: Record<string, string>) => void;
+                    }
+                )?.onError?.({
+                    'attachments.0': 'Il file non è ammesso.',
+                });
+            },
+        );
+
+        await fillInTheForm();
+        await user.upload(
+            screen.getByLabelText('support.fields.attachments'),
+            file('nota.pdf', 'application/pdf'),
+        );
+        await user.click(
+            screen.getByRole('button', { name: 'support.submit' }),
+        );
+
+        expect(
+            await screen.findByText('Il file non è ammesso.'),
+        ).toBeInTheDocument();
     });
 });

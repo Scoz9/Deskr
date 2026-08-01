@@ -10,9 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import {
     SUPPORT_FIELD_LIMITS,
     emptySupportRequest,
+    validateAttachments,
     validateSupportRequest,
 } from '@/lib/support-request';
 import type {
+    AttachmentError,
+    AttachmentLimits,
     SupportRequestErrors,
     SupportRequestValues,
 } from '@/lib/support-request';
@@ -27,6 +30,7 @@ type Props = {
     categories: Category[];
     /** The ticket just opened, shown once on the way back from a submission. */
     reference: string | null;
+    attachmentLimits: AttachmentLimits;
 };
 
 /**
@@ -39,12 +43,20 @@ type Props = {
  * some of its rules (the cap on open tickets) are ones the browser has no way
  * to know about.
  */
-export default function SupportCreate({ categories, reference }: Props) {
+export default function SupportCreate({
+    categories,
+    reference,
+    attachmentLimits,
+}: Props) {
     const { t } = useTranslation();
     const [values, setValues] = useState<SupportRequestValues>(
         emptySupportRequest(),
     );
+    const [attachments, setAttachments] = useState<File[]>([]);
     const [errors, setErrors] = useState<SupportRequestErrors>({});
+    const [attachmentError, setAttachmentError] = useState<
+        AttachmentError | undefined
+    >(undefined);
     const [refusals, setRefusals] = useState<Record<string, string>>({});
     const [sending, setSending] = useState(false);
 
@@ -56,21 +68,30 @@ export default function SupportCreate({ categories, reference }: Props) {
         event.preventDefault();
 
         const found = validateSupportRequest(values);
+        const refusedFile = validateAttachments(attachments, attachmentLimits);
 
         setErrors(found);
+        setAttachmentError(refusedFile);
         setRefusals({});
 
-        if (Object.keys(found).length > 0) {
+        if (Object.keys(found).length > 0 || refusedFile !== undefined) {
             return;
         }
 
         setSending(true);
 
-        router.post(store.url(), values, {
-            onError: (serverErrors) => setRefusals(serverErrors),
-            onSuccess: () => setValues(emptySupportRequest()),
-            onFinish: () => setSending(false),
-        });
+        router.post(
+            store.url(),
+            { ...values, attachments },
+            {
+                onError: (serverErrors) => setRefusals(serverErrors),
+                onSuccess: () => {
+                    setValues(emptySupportRequest());
+                    setAttachments([]);
+                },
+                onFinish: () => setSending(false),
+            },
+        );
     };
 
     const errorMessage = (
@@ -81,6 +102,24 @@ export default function SupportCreate({ categories, reference }: Props) {
         return error === undefined
             ? refusals[field]
             : t(`support.errors.${error}`);
+    };
+
+    /**
+     * The server answers about the whole field (`attachments`) or about the
+     * file it refused (`attachments.0`), and to whoever is looking at the form
+     * both mean the same thing: one of the files cannot come in.
+     */
+    const attachmentMessage = (): string | undefined => {
+        if (attachmentError !== undefined) {
+            return t(`support.errors.${attachmentError}`);
+        }
+
+        const refused = Object.entries(refusals).find(
+            ([field]) =>
+                field === 'attachments' || field.startsWith('attachments.'),
+        );
+
+        return refused?.[1];
     };
 
     return (
@@ -220,6 +259,45 @@ export default function SupportCreate({ categories, reference }: Props) {
                                 }
                             />
                             <InputError message={errorMessage('body')} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="attachments">
+                                {t('support.fields.attachments')}
+                            </Label>
+                            {/*
+                             * Uncontrolled, as every file input is: the key is
+                             * what empties it after a request goes through,
+                             * since nothing else can set its value.
+                             */}
+                            <Input
+                                key={
+                                    attachments.length === 0
+                                        ? 'empty'
+                                        : 'picked'
+                                }
+                                id="attachments"
+                                name="attachments"
+                                type="file"
+                                multiple
+                                accept={attachmentLimits.mimeTypes.join(',')}
+                                aria-invalid={attachmentMessage() !== undefined}
+                                onChange={(event) =>
+                                    setAttachments(
+                                        Array.from(event.target.files ?? []),
+                                    )
+                                }
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                {t('support.fields.attachmentsHint', {
+                                    maxFiles: attachmentLimits.maxFiles,
+                                    maxMegabytes: Math.round(
+                                        attachmentLimits.maxBytes /
+                                            (1024 * 1024),
+                                    ),
+                                })}
+                            </p>
+                            <InputError message={attachmentMessage()} />
                         </div>
 
                         {/*

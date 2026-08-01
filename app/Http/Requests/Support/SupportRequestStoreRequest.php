@@ -4,6 +4,7 @@ namespace App\Http\Requests\Support;
 
 use App\Enums\TicketStatus;
 use App\Http\Controllers\SupportRequestController;
+use App\Models\Attachment;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\User;
@@ -50,6 +51,14 @@ class SupportRequestStoreRequest extends FormRequest
             'subject' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string', 'max:5000'],
             'website' => ['nullable', 'string', 'max:255'],
+            'attachments' => ['nullable', 'array', 'max:'.Attachment::MAX_PER_MESSAGE],
+            // `mimetypes` and not `mimes`: the first asks what the file is, the
+            // second believes the extension the sender typed.
+            'attachments.*' => [
+                'file',
+                'max:'.Attachment::MAX_KILOBYTES,
+                'mimetypes:'.implode(',', Attachment::ALLOWED_MIME_TYPES),
+            ],
         ];
     }
 

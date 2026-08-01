@@ -52,6 +52,37 @@ class Attachment extends Model
     public const DIRECTORY = 'attachments';
 
     /**
+     * What a helpdesk actually receives: a screenshot, a document, a log.
+     *
+     * A whitelist and not a blacklist, because the list of what can hurt is
+     * never finished. It is checked against what the file *is* and not against
+     * what it is called — an extension is whatever the sender typed.
+     *
+     * @var list<string>
+     */
+    public const ALLOWED_MIME_TYPES = [
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/webp',
+        'application/pdf',
+        'text/plain',
+        'text/csv',
+    ];
+
+    /**
+     * The heaviest file the intake takes, in kilobytes. Ten megabytes is a
+     * screenshot, a scanned page or a log; anything past it is a transfer that
+     * belongs somewhere else.
+     */
+    public const MAX_KILOBYTES = 10 * 1024;
+
+    /**
+     * How many files may come in with one message.
+     */
+    public const MAX_PER_MESSAGE = 5;
+
+    /**
      * The message this file came in with.
      *
      * @return BelongsTo<TicketMessage, $this>

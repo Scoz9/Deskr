@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Tickets\CreateTicket;
+use App\Actions\Tickets\NewAttachment;
 use App\Actions\Tickets\NewTicket;
 use App\Enums\TicketChannel;
 use App\Enums\UserRole;
 use App\Http\Requests\Support\SupportRequestStoreRequest;
+use App\Models\Attachment;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -61,6 +64,14 @@ class SupportRequestController extends Controller
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'reference' => session('reference'),
+            // The whitelist and the limits are decided in one place and sent
+            // to the page: a second copy written in TypeScript is the one that
+            // would go stale the day the list changes.
+            'attachmentLimits' => [
+                'maxFiles' => Attachment::MAX_PER_MESSAGE,
+                'maxBytes' => Attachment::MAX_KILOBYTES * 1024,
+                'mimeTypes' => Attachment::ALLOWED_MIME_TYPES,
+            ],
         ]);
     }
 
@@ -88,9 +99,38 @@ class SupportRequestController extends Controller
             body: $validated['body'],
             channel: TicketChannel::Web,
             category: $category,
+            attachments: $this->storeAttachments($request->file('attachments', [])),
         ));
 
         return to_route('support.create')->with('reference', $ticket->reference);
+    }
+
+    /**
+     * Write the picked files to the private disk and describe them for the
+     * Action.
+     *
+     * The stored name is generated, never the one that came in: a file name is
+     * input like any other, and one that decides where it lands is a file name
+     * that can land anywhere. What the sender called it travels on the row, and
+     * comes back only as the name of the download.
+     *
+     * @param  array<int, UploadedFile>|UploadedFile|null  $files
+     * @return list<NewAttachment>
+     */
+    private function storeAttachments(array|UploadedFile|null $files): array
+    {
+        $files = $files instanceof UploadedFile ? [$files] : ($files ?? []);
+
+        return array_map(
+            fn (UploadedFile $file): NewAttachment => new NewAttachment(
+                disk: Attachment::DISK,
+                path: (string) $file->store(Attachment::DIRECTORY, Attachment::DISK),
+                originalName: $file->getClientOriginalName(),
+                mimeType: (string) $file->getMimeType(),
+                size: (int) $file->getSize(),
+            ),
+            array_values($files),
+        );
     }
 
     /**
