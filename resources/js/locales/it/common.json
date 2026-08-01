@@ -33,6 +33,16 @@
         "submit": "Invia la richiesta",
         "title": "Chiedi assistenza"
     },
+    "portal": {
+        "description": "Lasciaci l'indirizzo con cui ci hai scritto: ti mandiamo il link alle tue richieste.",
+        "empty": "Qui non c'è ancora niente: quando aprirai una richiesta, la troverai in questo elenco.",
+        "expired": "Quel link non è più valido. Chiedine uno nuovo qui sotto.",
+        "leave": "Esci",
+        "mine": "Le mie richieste",
+        "sent": "Se l'indirizzo è nel nostro elenco, il link è appena partito. Vale 7 giorni.",
+        "submit": "Mandami il link",
+        "title": "Le tue richieste"
+    },
     "ticket": {
         "readOnly": "Questa pagina è di sola lettura: per aggiungere qualcosa, rispondi alla nostra email.",
         "status": {

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -30,6 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int|null $organization_id
  * @property-read Organization|null $organization
  * @property-read Collection<int, Team> $teams
+ * @property-read Collection<int, Ticket> $tickets
  * @property string|null $avatar_path
  * @property-read string|null $avatar
  * @property Carbon|null $email_verified_at
@@ -91,6 +93,18 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class)->withTimestamps();
+    }
+
+    /**
+     * The requests this person has opened, newest first — what the portal of
+     * step 26 shows and nothing more. It is the tickets they asked for, not the
+     * ones they are working on: an agent reads those through `assignee`.
+     *
+     * @return HasMany<Ticket, $this>
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'requester_id')->latest();
     }
 
     /**

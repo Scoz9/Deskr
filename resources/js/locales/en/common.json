@@ -33,6 +33,16 @@
         "submit": "Send the request",
         "title": "Ask for support"
     },
+    "portal": {
+        "description": "Leave the address you wrote to us from: we send you the link to your requests.",
+        "empty": "Nothing here yet: once you open a request, you will find it in this list.",
+        "expired": "That link is no longer good. Ask for a new one below.",
+        "leave": "Leave",
+        "mine": "My requests",
+        "sent": "If the address is on our list, the link has just gone out. It is good for 7 days.",
+        "submit": "Send me the link",
+        "title": "Your requests"
+    },
     "ticket": {
         "readOnly": "This page is read only: to add something, reply to our email.",
         "status": {
