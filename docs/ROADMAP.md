@@ -23,7 +23,11 @@ lo starter kit con le decisioni del §2–§6.
 4. Toolchain qualità completa in GitHub Actions: test backend, test frontend,
    linter e formatter di entrambi i lati, analisi statica PHP, `tsc --noEmit`.
    I workflow Pest e Browser sono locali al repository e non riusabili finché
-   `Scrapkit/ci-pipeline` non sa avviare un servizio PostgreSQL.
+   `Scrapkit/ci-pipeline` non sa avviare un servizio PostgreSQL. Dallo step 23
+   lo è anche Vitest, per un motivo diverso: le pagine importano le route
+   tipizzate che Wayfinder genera, che sono un artefatto di build ignorato da
+   git, e il workflow riusabile esegue i test con il solo Node — senza PHP e
+   artisan quei file non esistono.
 
 ## Fase 1 — Modello dati
 
