@@ -18,6 +18,13 @@ Route::get('/', fn (): Response => Inertia::render('auth/login'))->name('home');
 Route::middleware('throttle:intake')->group(function () {
     Route::get('assistenza', [SupportRequestController::class, 'create'])
         ->name('support.create');
+
+    // The submission is limited twice: by IP like the page, and by the address
+    // it carries, which is the only thing that stays the same when whoever is
+    // sending changes network (§5).
+    Route::post('assistenza', [SupportRequestController::class, 'store'])
+        ->middleware('throttle:intake-email')
+        ->name('support.store');
 });
 
 Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {

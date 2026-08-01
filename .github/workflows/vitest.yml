@@ -1,3 +1,11 @@
+# Workflow locale, non riusabile: `Scrapkit/ci-pipeline` esegue Vitest con il
+# solo Node, mentre le pagine di Deskr importano le route tipizzate che Wayfinder
+# genera in `resources/js/routes` — file ignorati da git perché sono un artefatto
+# di build, e che senza PHP e artisan nessuno scrive. Il workflow riusabile di
+# `vite-build` risolve lo stesso problema costruendo prima e verificando i tipi
+# dopo; qui il generatore va invocato a mano, prima dei test. Il giorno che
+# ci-pipeline saprà preparare un progetto Laravel prima di Vitest, questo file
+# torna a essere una chiamata di due righe come gli altri.
 name: Vitest
 
 on:
@@ -5,6 +13,7 @@ on:
     branches: [main]
     paths:
       - "resources/js/**"
+      - "routes/**"
       - "package.json"
       - "package-lock.json"
       - "vitest.config.ts"
@@ -13,6 +22,58 @@ on:
 
 jobs:
   vitest:
-    uses: Scrapkit/ci-pipeline/.github/workflows/vitest.yml@v1
-    with:
-      node-version: "22"
+    name: Run Vitest Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install PHP dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # Le stesse opzioni del plugin Wayfinder in vite.config.ts: le varianti
+      # `form` servono alle pagine che le usano, e generarle qui in modo diverso
+      # darebbe a Vitest un'API che in sviluppo non esiste.
+      - name: Generate Wayfinder routes
+        run: php artisan wayfinder:generate --with-form
+
+      - name: Run Vitest Tests
+        run: npm run test

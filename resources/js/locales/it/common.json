@@ -21,6 +21,10 @@
             "subject": "Oggetto",
             "website": "Sito web"
         },
+        "sent": {
+            "reference": "Il riferimento della tua richiesta è",
+            "title": "Richiesta ricevuta."
+        },
         "submit": "Invia la richiesta",
         "title": "Chiedi assistenza"
     },
