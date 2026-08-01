@@ -4,6 +4,7 @@ import type {
     FilterOption,
     TicketFilters,
 } from '@/components/tickets/tickets-filters';
+import TicketsSearch from '@/components/tickets/tickets-search';
 import TicketsTable from '@/components/tickets/tickets-table';
 import type { PaginatedTickets } from '@/components/tickets/tickets-table';
 import TicketsTableThemeProvider from '@/components/tickets/tickets-table-theme-provider';
@@ -50,6 +51,10 @@ function queryFrom(
         query.assignee = filters.assignee;
     }
 
+    if (filters.search !== null) {
+        query.search = filters.search;
+    }
+
     if (page !== undefined && page > 1) {
         query.page = page;
     }
@@ -88,12 +93,18 @@ export default function Tickets({
         <>
             <Head title="Ticket" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
-                <TicketsFilters
-                    filters={filters}
-                    teams={filterOptions.teams}
-                    assignees={filterOptions.assignees}
-                    onChange={handleFilterChange}
-                />
+                <div className="flex flex-wrap items-end gap-3">
+                    <TicketsSearch
+                        value={filters.search}
+                        onChange={(search) => handleFilterChange({ search })}
+                    />
+                    <TicketsFilters
+                        filters={filters}
+                        teams={filterOptions.teams}
+                        assignees={filterOptions.assignees}
+                        onChange={handleFilterChange}
+                    />
+                </div>
                 <TicketsTableThemeProvider>
                     <TicketsTable
                         tickets={tickets}

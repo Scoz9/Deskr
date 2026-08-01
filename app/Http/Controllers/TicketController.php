@@ -51,6 +51,7 @@ class TicketController extends Controller
             'channel' => ['nullable', Rule::enum(TicketChannel::class)],
             'team_id' => ['nullable', 'integer', Rule::exists(Team::class, 'id')],
             'assignee' => ['nullable', $this->assigneeRule()],
+            'search' => ['nullable', 'string', 'max:255'],
         ]);
 
         $tickets = Ticket::query()
@@ -62,6 +63,7 @@ class TicketController extends Controller
             ->when(filled($filters['assignee'] ?? null), fn (Builder $query) => $filters['assignee'] === 'unassigned'
                 ? $query->whereNull('assignee_id')
                 : $query->where('assignee_id', $filters['assignee']))
+            ->when(filled($filters['search'] ?? null), fn (Builder $query) => $this->applySearch($query, $filters['search']))
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE)
@@ -94,12 +96,43 @@ class TicketController extends Controller
                 'channel' => $filters['channel'] ?? null,
                 'teamId' => isset($filters['team_id']) ? (int) $filters['team_id'] : null,
                 'assignee' => $filters['assignee'] ?? null,
+                'search' => $filters['search'] ?? null,
             ],
             'filterOptions' => [
                 'teams' => Team::query()->orderBy('name')->get(['id', 'name']),
                 'assignees' => $this->assignableUsers()->orderBy('name')->get(['id', 'name']),
             ],
         ]);
+    }
+
+    /**
+     * The full-text search of step 33, on Postgres' own dictionary and not
+     * a search engine of its own (§3 — the reason the project runs on
+     * Postgres rather than MySQL in the first place). One `where` group so
+     * the four `or`s stay together and never leak into the filters around
+     * them: subject, the requester's name, their organisation's name, and
+     * every message in the thread — a match on any one is a match on the
+     * ticket.
+     *
+     * @param  Builder<Ticket>  $query
+     */
+    private function applySearch(Builder $query, string $term): void
+    {
+        $query->where(function (Builder $query) use ($term): void {
+            $query->whereFullText('subject', $term, ['language' => 'italian'])
+                ->orWhereHas(
+                    'requester',
+                    fn (Builder $query) => $query->whereFullText('name', $term, ['language' => 'italian']),
+                )
+                ->orWhereHas(
+                    'requester.organization',
+                    fn (Builder $query) => $query->whereFullText('name', $term, ['language' => 'italian']),
+                )
+                ->orWhereHas(
+                    'messages',
+                    fn (Builder $query) => $query->whereFullText('body', $term, ['language' => 'italian']),
+                );
+        });
     }
 
     /**

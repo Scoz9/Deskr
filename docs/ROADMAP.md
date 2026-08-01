@@ -600,6 +600,33 @@ sé i filtri che un componente diverso possiede.
 sta fuori dalla griglia dati, ed è lì — non altrove — che §5 confina MUI e
 `material-react-table`.
 
+Lo step 33 aggiunge la ricerca full-text: oggetto, messaggi del thread,
+nome del richiedente, nome dell'organizzazione. **Sul dizionario nativo di
+Postgres in italiano**, non su un motore di ricerca a parte — è esattamente
+la ragione per cui il §3 ha scelto Postgres invece di MySQL fin dal primo
+step, e questo è il punto in cui quella scelta inizia a ripagare.
+
+**Quattro indici GIN, uno per colonna, mai una colonna calcolata**:
+`tickets.subject`, `ticket_messages.body`, `users.name`,
+`organizations.name`, ciascuno con `$table->fullText(...)->language('italian')`.
+Una colonna `tsvector` unica che raccolga tutt'e quattro le fonti avrebbe
+richiesto un trigger — o una sincronizzazione manuale nelle Action che ogni
+nuovo messaggio avrebbe dovuto ricordarsi di rifare — per un dominio dove
+`ticket_messages` sta in una tabella diversa da `tickets` e cresce con ogni
+risposta. Quattro query a runtime restano invece quattro `whereFullText()`
+indipendenti, ciascuna che gira già sul proprio indice.
+
+**Un solo gruppo `where`, quattro `orWhereHas` dentro**: la ricerca è "un
+match su una qualunque delle quattro fonti", non quattro filtri che si
+sommano — e deve restare un blocco solo perché altrimenti i suoi `or`
+uscirebbero a sommarsi anche a stato, team e agli altri filtri già
+applicati, invece di restringerli.
+
+Cerca per nome del richiedente, non per email: è quello che il roadmap
+chiede alla lettera ("richiedente"), e un'email è un campo da confronto
+esatto più che da full-text — resta un'estensione naturale se servirà, non
+un buco di oggi.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
