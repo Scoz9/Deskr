@@ -351,6 +351,32 @@ vuoto che sembra il file vero. La policy che il §5 vuole accanto alla firma
 arriverà quando il portale (step 26) e la console (step 34) cominceranno a
 linkare gli allegati: oggi non c'è ancora un utente da autorizzare.
 
+Lo step 25 chiude il giro con la ricevuta. `TicketReceived` è **in coda** come
+ogni notifica del progetto (§5): un ingresso che aspetta il server di posta è un
+ingresso che fallisce quando fallisce il server di posta, e un ticket che esiste
+vale più di una conferma arrivata nello stesso secondo. Il contenuto passa dal
+notification kit come `UserInvitation`, quindi si edita senza toccare il codice.
+
+**La `reference` sta nell'oggetto**, che è dove una casella di posta la mostra:
+è quella che il richiedente cita al telefono, ed è la chiave su cui l'email
+inbound dello step 29 farà threading.
+
+Il link firmato apre **una pagina del solo ticket**, in sola lettura. Non è il
+portale — elenco, ambito ai soli ticket del destinatario e pagina di rinnovo del
+link scaduto restano lo step 26 — ma è ciò che rende la mail utile invece di un
+foglietto con un codice sopra. Dura **7 giorni** come vuole il §5, ed è
+riusabile fino ad allora.
+
+**La firma è la chiave, non la sessione**: un richiedente non si registra e non
+fa login (§3), quindi chi è autenticato non dice niente su chi può leggere. La
+firma copre l'id, così un link non si modifica nel ticket di qualcun altro.
+
+La pagina mostra **meno** di quanto mostrerà la console: stato e conversazione,
+e niente assegnatario, team o categoria — come l'helpdesk è organizzato dentro
+non è quello che serve a chi aspetta una risposta. Le **note interne non escono
+mai**, nemmeno sul proprio ticket: sono scritte per il team, e un thread che ne
+lascia passare una l'ha pubblicata.
+
 22. Form pubblico in React con validazione, **honeypot e rate limit**. Solo
     campi, nessun invio.
 23. Form → `CreateTicket` via DTO: riconoscimento del richiedente dall'email,

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Notifications\TicketReceived;
 use App\Notifications\UserInvitation;
 
 return [
@@ -11,6 +12,7 @@ return [
      * The notification-kit:sync command upserts their template definitions.
      */
     'manageables' => [
+        TicketReceived::class,
         UserInvitation::class,
     ],
 

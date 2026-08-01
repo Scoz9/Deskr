@@ -33,5 +33,17 @@
         "submit": "Invia la richiesta",
         "title": "Chiedi assistenza"
     },
+    "ticket": {
+        "readOnly": "Questa pagina è di sola lettura: per aggiungere qualcosa, rispondi alla nostra email.",
+        "status": {
+            "annullato": "Annullata",
+            "assegnato": "Presa in carico",
+            "chiuso": "Chiusa",
+            "in_attesa": "In attesa di una tua risposta",
+            "in_lavorazione": "In lavorazione",
+            "nuovo": "Ricevuta",
+            "risolto": "Risolta"
+        }
+    },
     "welcome": "Benvenuto, {{name}}!"
 }

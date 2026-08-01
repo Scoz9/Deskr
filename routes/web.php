@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
+use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,15 @@ Route::middleware('throttle:intake')->group(function () {
         ->middleware('throttle:intake-email')
         ->name('support.store');
 });
+
+/*
+ * The ticket as whoever asked sees it, opened by the signed link the
+ * confirmation email carries: the signature is the key, because a requester
+ * never registers and never logs in (§3).
+ */
+Route::get('assistenza/ticket/{ticket}', [SupportTicketController::class, 'show'])
+    ->middleware('signed')
+    ->name('support.ticket.show');
 
 /*
  * The bytes of an attachment, and the only way to them: the disk is private and
