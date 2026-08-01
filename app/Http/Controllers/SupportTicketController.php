@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tickets\PortalReply;
+use App\Actions\Tickets\ReplyFromPortal;
+use App\Http\Requests\Support\PortalReplyRequest;
 use App\Models\Attachment;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
@@ -48,11 +52,15 @@ class SupportTicketController extends Controller
         $ticket->load(['messages.author:id,name', 'messages.attachments']);
 
         return Inertia::render('support/ticket', [
+            // Only a portal session can reply (§3): the signature on the link
+            // carries no identity for a POST to authenticate against.
+            'canReply' => $request->user()?->getKey() === $ticket->requester_id,
             'ticket' => [
                 'reference' => $ticket->reference,
                 'subject' => $ticket->subject,
                 'status' => $ticket->status->value,
                 'openedAt' => $ticket->created_at?->toIso8601String(),
+                'replyUrl' => route('support.ticket.reply', $ticket),
                 // Neither the assignee nor the team nor the category travel
                 // here: who is working on the request, and how the helpdesk
                 // splits its work, is none of the requester's business.
@@ -74,5 +82,24 @@ class SupportTicketController extends Controller
                     ->all(),
             ],
         ]);
+    }
+
+    /**
+     * Answer on a ticket from the portal.
+     *
+     * What the reply does to the ticket depends on the status it finds — the
+     * portal never decides that itself, {@see ReplyFromPortal} does. The
+     * redirect follows wherever the reply landed: back on the same ticket, or
+     * on the follow-up a closed one fathers.
+     */
+    public function reply(PortalReplyRequest $request, Ticket $ticket): RedirectResponse
+    {
+        $result = app(ReplyFromPortal::class)(new PortalReply(
+            ticket: $ticket,
+            requester: $request->user(),
+            body: $request->string('body')->toString(),
+        ));
+
+        return to_route('support.ticket.show', $result);
     }
 }
