@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Tickets\InboundEmail;
+use App\Actions\Tickets\NewAttachment;
 use App\Actions\Tickets\ReceiveInboundEmail;
 use App\Enums\TicketChannel;
 use App\Enums\TicketStatus;
@@ -30,6 +31,7 @@ function inboundEmail(array $overrides = []): InboundEmail
         inReplyTo: $overrides['inReplyTo'] ?? null,
         references: $overrides['references'] ?? [],
         autoSubmitted: $overrides['autoSubmitted'] ?? false,
+        attachments: $overrides['attachments'] ?? [],
     );
 }
 
@@ -191,4 +193,44 @@ test('a sender past the rate limit is dropped', function () {
     expect($result)->toBeNull();
 
     assertDatabaseCount('tickets', ReceiveInboundEmail::MESSAGES_PER_SENDER_PER_MINUTE);
+});
+
+/*
+ * The files the adapter already decided are real attachments (step 30) land
+ * on the first message of a brand new ticket.
+ */
+test('the attachments of a first time email land on its first message', function () {
+    $ticket = receiveInboundEmail(inboundEmail([
+        'attachments' => [
+            new NewAttachment(
+                disk: 'attachments',
+                path: 'attachments/example.png',
+                originalName: 'errore.png',
+                mimeType: 'image/png',
+                size: 1234,
+            ),
+        ],
+    ]));
+
+    expect($ticket->messages->first()->attachments)->toHaveCount(1);
+});
+
+test('the attachments of a threaded reply land on the message it appends', function () {
+    $requester = User::factory()->requester()->create(['email' => 'anna.rossi@example.com']);
+    $ticket = Ticket::factory()->inLavorazione()->for($requester, 'requester')->create();
+
+    $result = receiveInboundEmail(inboundEmail([
+        'subject' => 'Re: ['.$ticket->reference.'] La stampante non risponde',
+        'attachments' => [
+            new NewAttachment(
+                disk: 'attachments',
+                path: 'attachments/example.png',
+                originalName: 'errore.png',
+                mimeType: 'image/png',
+                size: 1234,
+            ),
+        ],
+    ]));
+
+    expect($result->messages->last()->attachments)->toHaveCount(1);
 });

@@ -52,6 +52,7 @@ class ReceiveInboundEmail
                 body: $email->body,
                 channel: TicketChannel::Email,
                 externalMessageId: $email->externalMessageId,
+                attachments: $email->attachments,
             ));
         }
 
@@ -61,6 +62,7 @@ class ReceiveInboundEmail
             body: $email->body,
             channel: TicketChannel::Email,
             externalMessageId: $email->externalMessageId,
+            attachments: $email->attachments,
         ));
     }
 

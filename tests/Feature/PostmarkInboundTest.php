@@ -3,10 +3,12 @@
 use App\Enums\TicketChannel;
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
+use App\Models\Attachment;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
@@ -18,7 +20,39 @@ beforeEach(function () {
         'services.postmark.inbound.username' => 'postmark',
         'services.postmark.inbound.password' => 'secret',
     ]);
+
+    // The private disk is faked, so no test ever writes into the real one.
+    Storage::fake(Attachment::DISK);
 });
+
+/**
+ * A minimal, genuinely valid PNG — real bytes, so the whitelist sniffs it
+ * for what it is instead of trusting a made up `ContentType`.
+ */
+function fakePngContent(): string
+{
+    ob_start();
+    imagepng(imagecreatetruecolor(2, 2));
+
+    return ob_get_clean();
+}
+
+/**
+ * A Postmark attachment entry, base64-encoded the way the payload carries
+ * one.
+ *
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function postmarkAttachment(array $overrides = []): array
+{
+    return [
+        'Name' => 'errore.png',
+        'Content' => base64_encode(fakePngContent()),
+        'ContentType' => 'image/png',
+        ...$overrides,
+    ];
+}
 
 /**
  * A payload shaped the way Postmark's inbound webhook sends one.
@@ -212,4 +246,107 @@ test('the same webhook delivered twice opens only one ticket', function () {
     postToInboundWebhook($payload)->assertNoContent();
 
     assertDatabaseCount('tickets', 1);
+});
+
+/*
+ * `StrippedTextReply` is Postmark's own signature and quoted-text removal
+ * (step 30): used whenever it is there, rather than a heuristic this
+ * application would have to invent.
+ */
+test('the stripped reply is used over the raw text body when Postmark sends one', function () {
+    postToInboundWebhook(postmarkPayload([
+        'TextBody' => "Succede ancora.\n\nOn Mon, Anna wrote:\n> tutto il testo citato\n--\nAnna Rossi",
+        'StrippedTextReply' => 'Succede ancora.',
+    ]))->assertNoContent();
+
+    expect(Ticket::sole()->messages->first()->body)->toBe('Succede ancora.');
+});
+
+test('the raw text body is used when there is nothing to strip', function () {
+    postToInboundWebhook(postmarkPayload(['StrippedTextReply' => null]))->assertNoContent();
+
+    expect(Ticket::sole()->messages->first()->body)
+        ->toBe('Da stamattina la stampante del secondo piano non stampa.');
+});
+
+test('a real attachment lands on the first message', function () {
+    postToInboundWebhook(postmarkPayload([
+        'Attachments' => [postmarkAttachment()],
+    ]))->assertNoContent();
+
+    $attachment = Ticket::sole()->messages->first()->attachments->sole();
+
+    expect($attachment->original_name)->toBe('errore.png')
+        ->and($attachment->mime_type)->toBe('image/png')
+        ->and($attachment->disk)->toBe(Attachment::DISK);
+
+    Storage::disk(Attachment::DISK)->assertExists($attachment->path);
+});
+
+/*
+ * A `ContentID` marks a part embedded in the body — the logo of a signature,
+ * not a file the sender meant to send. Stripping the signature text (above)
+ * is only half the job if its image still turns into an attachment.
+ */
+test('an inline image embedded in the signature is not treated as an attachment', function () {
+    postToInboundWebhook(postmarkPayload([
+        'Attachments' => [postmarkAttachment(['ContentID' => 'logo@mail.example.com'])],
+    ]))->assertNoContent();
+
+    assertDatabaseCount('attachments', 0);
+});
+
+/*
+ * The whitelist asks what the file *is*, not what the email claims it is:
+ * the same rule the web form's `mimetypes` check follows.
+ */
+test('a type nobody sends to a helpdesk is left out, not bounced', function () {
+    postToInboundWebhook(postmarkPayload([
+        'Attachments' => [postmarkAttachment([
+            'Name' => 'script.php',
+            'Content' => base64_encode('<?php echo 1; ?>'),
+            'ContentType' => 'image/png',
+        ])],
+    ]))->assertNoContent();
+
+    assertDatabaseCount('tickets', 1);
+    assertDatabaseCount('attachments', 0);
+});
+
+test('an attachment heavier than the helpdesk accepts is left out, not bounced', function () {
+    postToInboundWebhook(postmarkPayload([
+        'Attachments' => [postmarkAttachment([
+            'Content' => base64_encode(str_repeat('a', (Attachment::MAX_KILOBYTES + 1) * 1024)),
+        ])],
+    ]))->assertNoContent();
+
+    assertDatabaseCount('attachments', 0);
+});
+
+test('only the first attachments up to the limit are kept', function () {
+    postToInboundWebhook(postmarkPayload([
+        'Attachments' => array_map(
+            fn (int $index): array => postmarkAttachment(['Name' => "errore-{$index}.png"]),
+            range(1, Attachment::MAX_PER_MESSAGE + 2),
+        ),
+    ]))->assertNoContent();
+
+    assertDatabaseCount('attachments', Attachment::MAX_PER_MESSAGE);
+});
+
+test('an attachment on a threaded reply lands on the message it appends', function () {
+    $requester = User::factory()->requester()->create(['email' => 'anna.rossi@example.com']);
+    $ticket = Ticket::factory()->inAttesa()->for($requester, 'requester')->create();
+
+    postToInboundWebhook(postmarkPayload([
+        'Subject' => 'Re: ['.$ticket->reference.'] La stampante non risponde',
+        'Headers' => [['Name' => 'Message-ID', 'Value' => '<reply-1@mail.example.com>']],
+        'Attachments' => [postmarkAttachment()],
+    ]))->assertNoContent();
+
+    assertDatabaseCount('tickets', 1);
+
+    $message = $ticket->fresh()->messages->last();
+
+    expect($message->attachments)->toHaveCount(1);
 });

@@ -33,5 +33,13 @@ class NewReply
          * inside the application.
          */
         public readonly ?string $externalMessageId = null,
+        /**
+         * The files that came in with this reply, already on disk (step 30).
+         * They hang from this message and not from the ticket's first one:
+         * every message can carry its own.
+         *
+         * @var list<NewAttachment>
+         */
+        public readonly array $attachments = [],
     ) {}
 }

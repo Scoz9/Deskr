@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Tickets\InboundEmail;
+use App\Actions\Tickets\NewAttachment;
 use App\Actions\Tickets\NewTicket;
 use App\Actions\Tickets\ReceiveInboundEmail;
 use App\Http\Requests\Support\PostmarkInboundRequest;
+use App\Models\Attachment;
+use finfo;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -37,11 +41,12 @@ class PostmarkInboundController extends Controller
             fromEmail: $validated['FromFull']['Email'],
             fromName: $this->fromNameFor($validated['FromFull']),
             subject: $this->subjectFor($validated['Subject'] ?? null),
-            body: $this->bodyFor($validated['TextBody'] ?? null),
+            body: $this->bodyFor($validated['TextBody'] ?? null, $validated['StrippedTextReply'] ?? null),
             externalMessageId: $headers->get('message-id'),
             inReplyTo: $headers->get('in-reply-to'),
             references: $this->referencesFrom($headers->get('references')),
             autoSubmitted: $this->isAutoSubmitted($headers),
+            attachments: $this->attachmentsFrom($validated['Attachments'] ?? []),
         ));
 
         return response()->noContent();
@@ -73,10 +78,16 @@ class PostmarkInboundController extends Controller
      * The description is the first message of the thread (§3), and a thread
      * cannot start with nothing in it: an email with no text body still
      * opens a ticket, it just says so.
+     *
+     * `StrippedTextReply` is Postmark's own signature and quoted-text
+     * removal (step 30) — the reply with everything below it already cut,
+     * rather than a heuristic this application would have to invent and
+     * maintain. It is only ever set when Postmark found a reply to strip, so
+     * a first message with nothing to strip falls back to `TextBody`.
      */
-    private function bodyFor(?string $body): string
+    private function bodyFor(?string $body, ?string $strippedTextReply): string
     {
-        $body = trim((string) $body);
+        $body = filled($strippedTextReply) ? trim($strippedTextReply) : trim((string) $body);
 
         return $body === '' ? '(nessun testo)' : $body;
     }
@@ -126,5 +137,64 @@ class PostmarkInboundController extends Controller
         $value = $headers->get('auto-submitted');
 
         return $value !== null && Str::lower(trim($value)) !== 'no';
+    }
+
+    /**
+     * The real attachments of the email, written to disk and described for
+     * the domain (step 30) — everything the whitelist and the size cap
+     * refuse is left out rather than losing the whole message over one file.
+     *
+     * @param  list<array{Name?: string, Content?: string, ContentType?: string, ContentID?: string}>  $attachments
+     * @return list<NewAttachment>
+     */
+    private function attachmentsFrom(array $attachments): array
+    {
+        return array_values(
+            (new Collection($attachments))
+                // A `ContentID` marks a part embedded in the body — the logo
+                // of a signature, not a file the sender meant to attach.
+                // Removing the signature (above) is only half the job if its
+                // image still shows up as an attachment.
+                ->reject(fn (array $attachment): bool => filled($attachment['ContentID'] ?? null))
+                ->map(fn (array $attachment): ?NewAttachment => $this->storeAttachment($attachment))
+                ->filter()
+                ->take(Attachment::MAX_PER_MESSAGE)
+                ->all(),
+        );
+    }
+
+    /**
+     * @param  array{Name?: string, Content?: string, ContentType?: string}  $attachment
+     */
+    private function storeAttachment(array $attachment): ?NewAttachment
+    {
+        $content = base64_decode((string) ($attachment['Content'] ?? ''), true);
+
+        if ($content === false || $content === '' || strlen($content) > Attachment::MAX_KILOBYTES * 1024) {
+            return null;
+        }
+
+        // Sniffed from the bytes and not trusted from `ContentType`: the
+        // whitelist asks what the file *is*, not what the email that carried
+        // it claims — the same rule the web form's `mimetypes` check follows.
+        $mimeType = (new finfo(FILEINFO_MIME_TYPE))->buffer($content);
+
+        if ($mimeType === false || ! in_array($mimeType, Attachment::ALLOWED_MIME_TYPES, true)) {
+            return null;
+        }
+
+        $path = Attachment::DIRECTORY.'/'.Str::random(40);
+
+        Storage::disk(Attachment::DISK)->put($path, $content);
+
+        $name = trim((string) ($attachment['Name'] ?? ''));
+
+        return new NewAttachment(
+            disk: Attachment::DISK,
+            path: $path,
+            originalName: $name === '' ? 'allegato' : $name,
+            mimeType: $mimeType,
+            size: strlen($content),
+        );
     }
 }

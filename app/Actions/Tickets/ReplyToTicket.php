@@ -36,6 +36,19 @@ class ReplyToTicket
                 'external_message_id' => $reply->externalMessageId,
             ]);
 
+            // Same transaction as the message they hang from, exactly like
+            // the intake of step 24: a row pointing at nothing is a broken
+            // link in the thread.
+            foreach ($reply->attachments as $attachment) {
+                $message->attachments()->create([
+                    'disk' => $attachment->disk,
+                    'path' => $attachment->path,
+                    'original_name' => $attachment->originalName,
+                    'mime_type' => $attachment->mimeType,
+                    'size' => $attachment->size,
+                ]);
+            }
+
             if ($this->startsTheResponseTime($reply)) {
                 // The timestamp of the message and not a second `now()`: the
                 // metric measures the reply that is in the thread, to the

@@ -41,5 +41,14 @@ class InboundEmail
          * protection can trust without guessing (§5).
          */
         public readonly bool $autoSubmitted = false,
+        /**
+         * The files that came in with the email, already on disk and
+         * filtered down to what the whitelist admits (step 30) — the adapter
+         * has already decided what counts as a real attachment and not a
+         * signature image embedded in the body.
+         *
+         * @var list<NewAttachment>
+         */
+        public readonly array $attachments = [],
     ) {}
 }

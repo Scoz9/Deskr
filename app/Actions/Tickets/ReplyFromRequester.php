@@ -50,6 +50,7 @@ class ReplyFromRequester
             category: $parent->category,
             parentTicket: $parent,
             externalMessageId: $request->externalMessageId,
+            attachments: $request->attachments,
         ));
     }
 
@@ -78,6 +79,7 @@ class ReplyFromRequester
             author: $request->requester,
             body: $request->body,
             externalMessageId: $request->externalMessageId,
+            attachments: $request->attachments,
         ));
 
         return $request->ticket;
