@@ -149,17 +149,18 @@ class PostmarkInboundController extends Controller
      */
     private function attachmentsFrom(array $attachments): array
     {
-        return (new Collection($attachments))
-            // A `ContentID` marks a part embedded in the body — the logo of a
-            // signature, not a file the sender meant to attach. Removing the
-            // signature (above) is only half the job if its image still
-            // shows up as an attachment.
-            ->reject(fn (array $attachment): bool => filled($attachment['ContentID'] ?? null))
-            ->map(fn (array $attachment): ?NewAttachment => $this->storeAttachment($attachment))
-            ->filter()
-            ->take(Attachment::MAX_PER_MESSAGE)
-            ->values()
-            ->all();
+        return array_values(
+            (new Collection($attachments))
+                // A `ContentID` marks a part embedded in the body — the logo
+                // of a signature, not a file the sender meant to attach.
+                // Removing the signature (above) is only half the job if its
+                // image still shows up as an attachment.
+                ->reject(fn (array $attachment): bool => filled($attachment['ContentID'] ?? null))
+                ->map(fn (array $attachment): ?NewAttachment => $this->storeAttachment($attachment))
+                ->filter()
+                ->take(Attachment::MAX_PER_MESSAGE)
+                ->all(),
+        );
     }
 
     /**
