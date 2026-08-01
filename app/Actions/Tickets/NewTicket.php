@@ -57,5 +57,11 @@ class NewTicket
          * is what it fathers instead.
          */
         public readonly ?Ticket $parentTicket = null,
+        /**
+         * The id of the email this ticket was opened from, when the channel
+         * is email (step 29) — what a later reply's `In-Reply-To` will match
+         * against. Null for every other channel.
+         */
+        public readonly ?string $externalMessageId = null,
     ) {}
 }

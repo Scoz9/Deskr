@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Tickets\PortalReply;
-use App\Actions\Tickets\ReplyFromPortal;
+use App\Actions\Tickets\ReplyFromRequester;
+use App\Actions\Tickets\RequesterReply;
 use App\Http\Requests\Support\PortalReplyRequest;
 use App\Models\Attachment;
 use App\Models\Ticket;
@@ -88,13 +88,13 @@ class SupportTicketController extends Controller
      * Answer on a ticket from the portal.
      *
      * What the reply does to the ticket depends on the status it finds — the
-     * portal never decides that itself, {@see ReplyFromPortal} does. The
+     * portal never decides that itself, {@see ReplyFromRequester} does. The
      * redirect follows wherever the reply landed: back on the same ticket, or
      * on the follow-up a closed one fathers.
      */
     public function reply(PortalReplyRequest $request, Ticket $ticket): RedirectResponse
     {
-        $result = app(ReplyFromPortal::class)(new PortalReply(
+        $result = app(ReplyFromRequester::class)(new RequesterReply(
             ticket: $ticket,
             requester: $request->user(),
             body: $request->string('body')->toString(),

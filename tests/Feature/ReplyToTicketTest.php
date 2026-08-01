@@ -13,13 +13,19 @@ use function Pest\Laravel\assertDatabaseCount;
  * Run the use case the way the console and the portal will: resolved from the
  * container and handed a DTO.
  */
-function replyToTicket(Ticket $ticket, User $author, string $body, bool $isInternal = false): TicketMessage
-{
+function replyToTicket(
+    Ticket $ticket,
+    User $author,
+    string $body,
+    bool $isInternal = false,
+    ?string $externalMessageId = null,
+): TicketMessage {
     return app(ReplyToTicket::class)(new NewReply(
         ticket: $ticket,
         author: $author,
         body: $body,
         isInternal: $isInternal,
+        externalMessageId: $externalMessageId,
     ));
 }
 
@@ -148,4 +154,21 @@ test('the reply and the metric it starts stand or fall together', function () {
     assertDatabaseCount('ticket_messages', 0);
 
     expect($ticket->fresh()->first_response_at)->toBeNull();
+});
+
+/*
+ * The id of a threaded inbound email is what a later reply's `In-Reply-To`
+ * will match against (step 29).
+ */
+test('a reply threaded from an email carries its id', function () {
+    $ticket = Ticket::factory()->inLavorazione()->create();
+
+    $message = replyToTicket(
+        $ticket,
+        $ticket->requester,
+        'Aggiungo un dettaglio via email.',
+        externalMessageId: '<abc123@mail.example.com>',
+    );
+
+    expect($message->external_message_id)->toBe('<abc123@mail.example.com>');
 });

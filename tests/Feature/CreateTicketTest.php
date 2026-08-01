@@ -216,3 +216,20 @@ test('two requests opened one after the other get their own reference', function
 
     expect($first->reference)->not->toBe($second->reference);
 });
+
+/*
+ * The id of an inbound email is what a later reply's `In-Reply-To` threads
+ * onto (step 29) — it has to survive from the DTO onto the first message of
+ * the thread it opened.
+ */
+test('the id of the email a ticket was opened from is written on its first message', function () {
+    $ticket = createTicket(new NewTicket(
+        requester: requester(),
+        subject: 'Richiesta via email',
+        body: 'Il problema descritto via email.',
+        channel: TicketChannel::Email,
+        externalMessageId: '<abc123@mail.example.com>',
+    ));
+
+    expect($ticket->messages->first()->external_message_id)->toBe('<abc123@mail.example.com>');
+});

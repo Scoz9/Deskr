@@ -26,5 +26,12 @@ class NewReply
          * internal note, so the default is the one they need.
          */
         public readonly bool $isInternal = false,
+        /**
+         * The id of the email this reply came in from, when it arrived
+         * threaded onto an existing ticket (step 29) — what a later reply's
+         * `In-Reply-To` will match against. Null for everything written
+         * inside the application.
+         */
+        public readonly ?string $externalMessageId = null,
     ) {}
 }
