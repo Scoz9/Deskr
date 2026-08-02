@@ -4,16 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Actions\Tickets\CreateTicket;
 use App\Actions\Tickets\NewTicket;
+use App\Concerns\FindsOrCreatesRequester;
 use App\Concerns\StoresAttachmentUploads;
 use App\Enums\TicketChannel;
-use App\Enums\UserRole;
 use App\Http\Requests\Support\SupportRequestStoreRequest;
 use App\Models\Attachment;
 use App\Models\Category;
-use App\Models\User;
 use App\Notifications\TicketReceived;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,7 +25,7 @@ use Inertia\Response;
  */
 class SupportRequestController extends Controller
 {
-    use StoresAttachmentUploads;
+    use FindsOrCreatesRequester, StoresAttachmentUploads;
 
     /**
      * No resource authorization here, and it is not an omission: the intake
@@ -109,28 +107,5 @@ class SupportRequestController extends Controller
         $requester->notify(new TicketReceived($ticket));
 
         return to_route('support.create')->with('reference', $ticket->reference);
-    }
-
-    /**
-     * The person behind the address, created if this is the first time they
-     * write.
-     *
-     * The name of an account that already exists is left alone: writing to the
-     * helpdesk opens a ticket, it does not rename somebody else. The password
-     * is random and never sent anywhere — the portal of step 26 is reached by
-     * magic link, and registration is off (§3).
-     */
-    private function requesterFor(string $name, string $email): User
-    {
-        $requester = User::query()->firstOrCreate(
-            ['email' => $email],
-            ['name' => $name, 'password' => Str::password()],
-        );
-
-        if ($requester->wasRecentlyCreated) {
-            $requester->assignRole(UserRole::Requester->value);
-        }
-
-        return $requester;
     }
 }

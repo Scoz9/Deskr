@@ -14,6 +14,12 @@ class ResizeObserverStub {
 
 global.ResizeObserver = ResizeObserverStub;
 
+// jsdom has neither: Radix Select needs both to open and to scroll its
+// listbox into view, regardless of whether a test drives that interaction.
+Element.prototype.hasPointerCapture ??= () => false;
+Element.prototype.releasePointerCapture ??= () => {};
+Element.prototype.scrollIntoView ??= () => {};
+
 afterEach(() => {
     cleanup();
 });
