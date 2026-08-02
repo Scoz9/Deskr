@@ -1,5 +1,6 @@
 import { Head, setLayoutProps } from '@inertiajs/react';
 import TicketActions from '@/components/tickets/ticket-actions';
+import TicketReplyForm from '@/components/tickets/ticket-reply-form';
 import {
     channelLabels,
     priorityLabels,
@@ -11,6 +12,7 @@ import type {
     TicketStatus,
 } from '@/components/tickets/tickets-table';
 import { Badge } from '@/components/ui/badge';
+import type { AttachmentLimits } from '@/lib/support-request';
 import { index as ticketsIndex, show as ticketShow } from '@/routes/tickets';
 
 type Attachment = {
@@ -46,6 +48,8 @@ type Props = {
     ticket: TicketDetail;
     nextStatuses: TicketStatus[];
     canUpdate: boolean;
+    canReply: boolean;
+    attachmentLimits: AttachmentLimits;
 };
 
 const dateFormatter = new Intl.DateTimeFormat('it-IT', {
@@ -63,7 +67,13 @@ const readableDate = (value: string | null): string =>
  * requester has already read (§4 — the portal page renders only the public
  * side of the same thread, and has nothing to distinguish).
  */
-export default function TicketShow({ ticket, nextStatuses, canUpdate }: Props) {
+export default function TicketShow({
+    ticket,
+    nextStatuses,
+    canUpdate,
+    canReply,
+    attachmentLimits,
+}: Props) {
     setLayoutProps({
         breadcrumbs: [
             { title: 'Ticket', href: ticketsIndex() },
@@ -155,6 +165,13 @@ export default function TicketShow({ ticket, nextStatuses, canUpdate }: Props) {
                         </li>
                     ))}
                 </ol>
+
+                {canReply && (
+                    <TicketReplyForm
+                        ticketId={ticket.id}
+                        attachmentLimits={attachmentLimits}
+                    />
+                )}
             </div>
         </>
     );

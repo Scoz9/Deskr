@@ -181,6 +181,12 @@ class TicketController extends Controller
                 TicketTransitions::allowedFrom($ticket->status),
             ),
             'canUpdate' => $request->user()->can('update', $ticket),
+            'canReply' => $request->user()->can('create', TicketMessage::class),
+            'attachmentLimits' => [
+                'maxFiles' => Attachment::MAX_PER_MESSAGE,
+                'maxBytes' => Attachment::MAX_KILOBYTES * 1024,
+                'mimeTypes' => Attachment::ALLOWED_MIME_TYPES,
+            ],
         ]);
     }
 

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Tickets\CreateTicket;
-use App\Actions\Tickets\NewAttachment;
 use App\Actions\Tickets\NewTicket;
+use App\Concerns\StoresAttachmentUploads;
 use App\Enums\TicketChannel;
 use App\Enums\UserRole;
 use App\Http\Requests\Support\SupportRequestStoreRequest;
@@ -13,7 +13,6 @@ use App\Models\Category;
 use App\Models\User;
 use App\Notifications\TicketReceived;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -28,6 +27,8 @@ use Inertia\Response;
  */
 class SupportRequestController extends Controller
 {
+    use StoresAttachmentUploads;
+
     /**
      * No resource authorization here, and it is not an omission: the intake
      * answers a guest by design, so there is neither a policy to consult nor a
@@ -100,7 +101,7 @@ class SupportRequestController extends Controller
             body: $validated['body'],
             channel: TicketChannel::Web,
             category: $category,
-            attachments: $this->storeAttachments($request->file('attachments', [])),
+            attachments: $this->storeAttachmentUploads($request->file('attachments', [])),
         ));
 
         // Queued, like every notification (§5): the ticket exists, and the
@@ -108,34 +109,6 @@ class SupportRequestController extends Controller
         $requester->notify(new TicketReceived($ticket));
 
         return to_route('support.create')->with('reference', $ticket->reference);
-    }
-
-    /**
-     * Write the picked files to the private disk and describe them for the
-     * Action.
-     *
-     * The stored name is generated, never the one that came in: a file name is
-     * input like any other, and one that decides where it lands is a file name
-     * that can land anywhere. What the sender called it travels on the row, and
-     * comes back only as the name of the download.
-     *
-     * @param  array<int, UploadedFile>|UploadedFile|null  $files
-     * @return list<NewAttachment>
-     */
-    private function storeAttachments(array|UploadedFile|null $files): array
-    {
-        $files = $files instanceof UploadedFile ? [$files] : ($files ?? []);
-
-        return array_map(
-            fn (UploadedFile $file): NewAttachment => new NewAttachment(
-                disk: Attachment::DISK,
-                path: (string) $file->store(Attachment::DIRECTORY, Attachment::DISK),
-                originalName: $file->getClientOriginalName(),
-                mimeType: (string) $file->getMimeType(),
-                size: (int) $file->getSize(),
-            ),
-            array_values($files),
-        );
     }
 
     /**

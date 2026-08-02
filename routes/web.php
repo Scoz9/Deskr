@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketMessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -93,6 +94,7 @@ Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::post('tickets/{ticket}/assign-to-me', [TicketController::class, 'assignToMe'])->name('tickets.assign-to-me');
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
     Route::patch('tickets/{ticket}/priority', [TicketController::class, 'updatePriority'])->name('tickets.update-priority');
+    Route::post('tickets/{ticket}/messages', [TicketMessageController::class, 'store'])->name('tickets.messages.store');
 
     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
 
