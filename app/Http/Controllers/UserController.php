@@ -6,6 +6,7 @@ use App\Http\Requests\Users\UserStoreRequest;
 use App\Http\Requests\Users\UserSuspendRequest;
 use App\Http\Requests\Users\UserUnsuspendRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
+use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\UserInvitation;
@@ -43,7 +44,7 @@ class UserController extends Controller
 
         return Inertia::render('users', [
             'users' => User::query()
-                ->with('roles:id,name,hierarchy_rank')
+                ->with(['roles:id,name,hierarchy_rank', 'organization:id,name'])
                 ->whereDoesntHave('roles', fn (Builder $query) => $query->where('name', 'superAdmin'))
                 ->orderBy('name')
                 ->get()
@@ -52,6 +53,7 @@ class UserController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->roles->first()?->only(['id', 'name']),
+                    'organization' => $user->organization?->only(['id', 'name']),
                     'is_suspended' => $user->isSuspended(),
                     'suspended_at' => $user->suspended_at,
                     'suspended_until' => $user->suspended_until,
@@ -67,6 +69,7 @@ class UserController extends Controller
                     ->where('hierarchy_rank', '>', $actor->hierarchyRank())
                     ->orderBy('hierarchy_rank')
                     ->get(['id', 'name', 'hierarchy_rank']),
+            'organizations' => Organization::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -83,6 +86,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'organization_id' => $validated['organization_id'] ?? null,
             'password' => Str::password(),
         ]);
 
@@ -109,6 +113,7 @@ class UserController extends Controller
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            ...array_key_exists('organization_id', $validated) ? ['organization_id' => $validated['organization_id']] : [],
             ...filled($validated['password'] ?? null) ? ['password' => $validated['password']] : [],
         ]);
 

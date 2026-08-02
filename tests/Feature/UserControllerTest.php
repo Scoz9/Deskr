@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\UserInvitation;
@@ -383,4 +384,153 @@ test('lifting a suspension is forbidden without user:suspend', function () {
         ->assertForbidden();
 
     expect($target->refresh()->isSuspended())->toBeTrue();
+});
+
+test('the index offers the organizations a user may belong to, by name', function () {
+    Organization::factory()->create(['name' => 'Beta SRL']);
+    Organization::factory()->create(['name' => 'Acme SRL']);
+
+    $this->actingAs(userWithPermissions(['user:viewAny']))
+        ->get(route('users.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where('organizations', fn ($organizations) => collect($organizations)->pluck('name')->all() === ['Acme SRL', 'Beta SRL'])
+        );
+});
+
+test('the index carries the organization each user belongs to', function () {
+    $organization = Organization::factory()->create(['name' => 'Acme SRL']);
+    User::factory()->for($organization)->create(['name' => 'Mario Rossi']);
+
+    $this->actingAs(userWithPermissions(['user:viewAny']))
+        ->get(route('users.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where('users', fn ($users) => collect($users)->firstWhere('name', 'Mario Rossi')['organization']['name'] === 'Acme SRL')
+        );
+});
+
+test('a user with no company at all still reaches the index', function () {
+    User::factory()->create(['name' => 'Luca Bianchi']);
+
+    $this->actingAs(userWithPermissions(['user:viewAny']))
+        ->get(route('users.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where('users', fn ($users) => collect($users)->firstWhere('name', 'Luca Bianchi')['organization'] === null)
+        );
+});
+
+test('a user can be created with an organization', function () {
+    Notification::fake();
+    Role::createOrFirst(['name' => 'redattore'], ['hierarchy_rank' => 10]);
+    $organization = Organization::factory()->create();
+
+    $this->actingAs(rankedUser(1, ['user:create']))
+        ->post(route('users.store'), [
+            'name' => 'Mario Rossi',
+            'email' => 'mario.rossi@example.com',
+            'role' => 'redattore',
+            'organization_id' => $organization->id,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect(User::where('email', 'mario.rossi@example.com')->first()->organization_id)
+        ->toBe($organization->id);
+});
+
+/*
+ * The company is optional: an agent works for the helpdesk and not for a
+ * customer (§4), so the field has to be leavable empty.
+ */
+test('a user can be created without an organization', function () {
+    Notification::fake();
+    Role::createOrFirst(['name' => 'redattore'], ['hierarchy_rank' => 10]);
+
+    $this->actingAs(rankedUser(1, ['user:create']))
+        ->post(route('users.store'), [
+            'name' => 'Mario Rossi',
+            'email' => 'mario.rossi@example.com',
+            'role' => 'redattore',
+            'organization_id' => null,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect(User::where('email', 'mario.rossi@example.com')->first()->organization_id)
+        ->toBeNull();
+});
+
+test('an organization that does not exist is refused on creation', function () {
+    Role::createOrFirst(['name' => 'redattore'], ['hierarchy_rank' => 10]);
+
+    $this->actingAs(rankedUser(1, ['user:create']))
+        ->post(route('users.store'), [
+            'name' => 'Mario Rossi',
+            'email' => 'mario.rossi@example.com',
+            'role' => 'redattore',
+            'organization_id' => 99999,
+        ])
+        ->assertSessionHasErrors('organization_id');
+
+    expect(User::where('email', 'mario.rossi@example.com')->exists())->toBeFalse();
+});
+
+test('a user can be moved to another organization', function () {
+    $target = rankedUser(10);
+    $target->organization()->associate(Organization::factory()->create())->save();
+    $other = Organization::factory()->create();
+
+    $this->actingAs(rankedUser(1, ['user:update']))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'organization_id' => $other->id,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect($target->refresh()->organization_id)->toBe($other->id);
+});
+
+test('a user can be detached from their organization', function () {
+    $target = rankedUser(10);
+    $target->organization()->associate(Organization::factory()->create())->save();
+
+    $this->actingAs(rankedUser(1, ['user:update']))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'organization_id' => null,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect($target->refresh()->organization_id)->toBeNull();
+});
+
+/*
+ * Leaving the field out is "do not touch the company", which is not the
+ * same request as sending it empty.
+ */
+test('an update that says nothing about the organization leaves it alone', function () {
+    $organization = Organization::factory()->create();
+    $target = rankedUser(10);
+    $target->organization()->associate($organization)->save();
+
+    $this->actingAs(rankedUser(1, ['user:update']))
+        ->put(route('users.update', $target), [
+            'name' => 'Nome Nuovo',
+            'email' => $target->email,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect($target->refresh()->organization_id)->toBe($organization->id)
+        ->and($target->name)->toBe('Nome Nuovo');
+});
+
+test('an organization that does not exist is refused on update', function () {
+    $target = rankedUser(10);
+
+    $this->actingAs(rankedUser(1, ['user:update']))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'organization_id' => 99999,
+        ])
+        ->assertSessionHasErrors('organization_id');
 });

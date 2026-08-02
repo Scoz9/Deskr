@@ -15,13 +15,16 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import OrganizationSelect from '@/components/users/organization-select';
 import RoleSelect from '@/components/users/role-select';
-import type { AssignableRole } from '@/types';
+import type { AssignableRole, Organization } from '@/types';
 
 export default function CreateUserDialog({
     roles,
+    organizations,
 }: {
     roles: AssignableRole[];
+    organizations: Organization[];
 }) {
     const [open, setOpen] = useState(false);
 
@@ -78,6 +81,17 @@ export default function CreateUserDialog({
                                     roles={roles}
                                 />
                                 <InputError message={errors.role} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="create-user-organization">
+                                    Organizzazione
+                                </Label>
+                                <OrganizationSelect
+                                    id="create-user-organization"
+                                    organizations={organizations}
+                                />
+                                <InputError message={errors.organization_id} />
                             </div>
 
                             <DialogFooter className="gap-2">

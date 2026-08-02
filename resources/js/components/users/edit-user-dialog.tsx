@@ -12,18 +12,21 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import OrganizationSelect from '@/components/users/organization-select';
 import RoleSelect from '@/components/users/role-select';
-import type { AssignableRole, ManagedUser } from '@/types';
+import type { AssignableRole, ManagedUser, Organization } from '@/types';
 
 type EditUserDialogProps = {
     user: ManagedUser | null;
     roles: AssignableRole[];
+    organizations: Organization[];
     onClose: () => void;
 };
 
 export default function EditUserDialog({
     user,
     roles,
+    organizations,
     onClose,
 }: EditUserDialogProps) {
     return (
@@ -97,6 +100,22 @@ export default function EditUserDialog({
                                             defaultValue={user.role?.name}
                                         />
                                         <InputError message={errors.role} />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="edit-user-organization">
+                                            Organizzazione
+                                        </Label>
+                                        <OrganizationSelect
+                                            id="edit-user-organization"
+                                            organizations={organizations}
+                                            defaultValue={
+                                                user.organization?.id ?? null
+                                            }
+                                        />
+                                        <InputError
+                                            message={errors.organization_id}
+                                        />
                                     </div>
 
                                     <DialogFooter className="gap-2">
