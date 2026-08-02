@@ -16,40 +16,37 @@ use Scrapkit\NotificationKit\Domain\Templates\Enums\TemplateType;
 use Scrapkit\NotificationKit\Notifications\Concerns\HasManagedContent;
 
 /**
- * The receipt of a request: it tells whoever wrote that the helpdesk has it,
- * and gives them the two things they leave with — the reference, and the link
- * that opens the ticket.
+ * Told to the requester when an operator answers publicly from the console
+ * (roadmap step 37). Without it the portal is a place nobody comes back to,
+ * and the `in attesa → risposta` cycle §4 counts on never starts — an
+ * internal note never reaches here, the same reason it never reaches the
+ * portal thread at all (§3).
  *
- * Queued, like every notification of this application (§5): an intake that
- * waits for the mail server is an intake that fails when the mail server does,
- * and a ticket that exists is worth more than a confirmation that arrives on
- * the same second.
+ * Queued, like every notification of this application (§5).
  */
-class TicketReceived extends Notification implements Manageable, ShouldQueue
+class TicketReplied extends Notification implements Manageable, ShouldQueue
 {
     use HasManagedContent, LinksToTicket, Queueable;
 
     public function __construct(public Ticket $ticket) {}
 
     /**
-     * The editable content behind this confirmation.
+     * The editable content behind this notification.
      */
     public static function template(): TemplateDefinition
     {
         return new TemplateDefinition(
-            key: 'tickets.received',
+            key: 'tickets.replied',
             type: TemplateType::Email,
-            name: 'Ticket received',
-            description: 'Sent to the requester when a request becomes a ticket, with its reference and the link that opens it.',
+            name: 'Ticket replied',
+            description: 'Sent to the requester when an operator posts a public reply on their ticket.',
             defaultSubject: '[{{ ticket.reference }}] {{ ticket.subject }}',
             defaultBody: <<<'MARKDOWN'
                 Hi {{ requester.name }},
 
-                We have your request and it is on our list as **{{ ticket.reference }}**.
+                There is a new reply on your request **{{ ticket.reference }}**.
 
-                [Follow your request]({{ action.url }})
-
-                Keep the reference at hand: it is what identifies your request when you write or call.
+                [Read the reply]({{ action.url }})
                 MARKDOWN,
             placeholders: [
                 new PlaceholderDefinition('requester.name', 'Name of whoever asked for help', 'Mario Rossi'),
@@ -79,10 +76,6 @@ class TicketReceived extends Notification implements Manageable, ShouldQueue
 
     /**
      * Get the mail representation of the notification.
-     *
-     * The reference goes in the subject because that is where a mailbox shows
-     * it: it is what the requester quotes on the phone, and what the inbound
-     * email of step 29 threads on.
      */
     public function toMail(User $notifiable): MailMessage
     {

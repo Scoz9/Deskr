@@ -695,6 +695,28 @@ li descrive per l'Action — identica byte per byte tra l'intake e la
 console — si sposta in un trait (`StoresAttachmentUploads`) invece di
 duplicarsi una seconda volta.
 
+Lo step 37 ha due trigger diversi perché sono due fatti diversi, e ognuno
+prende la strada che il codice già gli offriva:
+
+- **La risoluzione passa da un listener sull'evento di dominio.**
+  `App\Tickets\Events\TicketResolved` esiste dallo step 20 per il trail
+  d'audit, e il suo stesso docblock anticipava questo step ("The requester
+  is told at step 37"). `SendTicketResolvedNotification` è un secondo
+  ascoltatore sullo stesso evento — non tocca `RecordTicketEvent`, non sa
+  che esiste — e funziona per qualunque passaggio arrivi a `risolto`, dalla
+  console di oggi alla chiusura automatica dello step 42, senza che il
+  chiamante debba ricordarsi di notificare.
+- **La risposta pubblica passa da una chiamata diretta nel controller.**
+  Scrivere un messaggio non è un `TicketDomainEvent` — la lista dell'audit
+  trail copre solo transizioni e assegnazioni (§4) — quindi non c'è un
+  evento da ascoltare, ed è lo stesso motivo per cui non ce n'è mai stato
+  bisogno prima. `TicketMessageController::store` notifica solo se
+  `is_internal` è falso, esattamente come il thread del portale non mostra
+  mai una nota interna (§3).
+- **Il link firmato si sposta in un trait**, `LinksToTicket`: la stessa
+  procedura che la conferma dello step 25 già scriveva, e le due notifiche
+  di questo step avrebbero dovuto copiare identica altrove.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
