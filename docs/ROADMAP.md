@@ -671,6 +671,30 @@ di stato e non emette un evento: la lista dell'audit trail sul modello
 la prima volta che qualcosa oltre l'intake tocca `priority`, quindi resta
 un aggiornamento diretto del campo dietro alla sua validazione.
 
+Lo step 36 chiude il dettaglio con la composizione: un solo form per la
+risposta pubblica e la nota interna, un checkbox a distinguerle — la stessa
+lettura di `NewReply` (§4), "un fatto con un flag sopra", non due form da
+tenere allineati il giorno che uno dei due cresce un campo che serve anche
+all'altro. Dietro passa `ReplyToTicket`, lo stesso Action che già scrive il
+thread per il portale e per l'email in ingresso: comporre dalla console non
+aggiunge logica di dominio, aggiunge un terzo chiamante allo stesso Action.
+
+**`TicketMessageController` è un controller a sé, non un altro metodo su
+`TicketController`.** Le tre azioni dello step 35 condividono `ticket:update`
+perché sono tutte una forma di modificare il ticket che già esiste; scrivere
+un messaggio è creare una `TicketMessage`, un'abilità di classe
+(`ticketMessage:create`) che non ha un'istanza contro cui essere verificata
+finché il messaggio non esiste — la policy dello step 21 lo prevedeva già,
+solo senza una rotta che la raggiungesse.
+
+**Gli allegati riusano la stessa validazione dell'intake pubblico**, non
+una copia: `Attachment::MAX_PER_MESSAGE`, `MAX_KILOBYTES`,
+`ALLOWED_MIME_TYPES` erano già la fonte unica delle regole lato client e
+lato server dello step 24, e la logica che scrive i file scelti su disco e
+li descrive per l'Action — identica byte per byte tra l'intake e la
+console — si sposta in un trait (`StoresAttachmentUploads`) invece di
+duplicarsi una seconda volta.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
