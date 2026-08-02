@@ -50,3 +50,9 @@ export type AssignableRole = {
     name: string;
     hierarchy_rank: number;
 };
+
+export type Organization = {
+    id: number;
+    name: string;
+    users_count: number;
+};

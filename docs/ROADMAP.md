@@ -763,6 +763,30 @@ gli resta di una telefonata.
 difese di una porta che chiunque su internet raggiunge (§5), e questa la
 raggiunge solo un operatore autenticato con `ticket:create`.
 
+Lo step 40 arriva in due PR separate: prima la CRUD `Organization` da sola,
+poi l'estensione di `UserController` che la usa — spezzato su richiesta
+dell'umano perché le due superfici, pur collegate, sono abbastanza grandi da
+meritare una revisione separata.
+
+**`OrganizationController` ricalca `RoleController`**: stessa forma
+index/store/update/destroy, stesso `flash()->created/updated/deleted` al
+posto di `Inertia::flash('toast', ...)` — la differenza è che
+un'organizzazione non ha una riga protetta come `superAdmin` su `Role`, quindi
+`OrganizationPolicy` non ha nulla da sovrascrivere: esiste solo perché
+Laravel risolve `{Model}Policy` dal nome, e senza la classe
+`$authorizesResources` non avrebbe contro cosa autorizzare.
+
+**Il nome non è unico.** Il nome di un ruolo è un identificatore che il
+sistema dei permessi legge; il nome di un'organizzazione è un'etichetta
+scritta da una persona — due aziende reali con lo stesso nome non è un caso
+che l'helpdesk debba rifiutare, e la migration non porta infatti nessun
+vincolo di unicità.
+
+**La cancellazione si blocca se l'organizzazione ha ancora utenti**, stessa
+regola di `RoleController::destroy` sui ruoli assegnati: cancellare
+un'organizzazione dietro ai suoi richiedenti lascerebbe `organization_id`
+orfano su righe che nessuno intende toccare.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\PortalController;
 use App\Http\Controllers\PostmarkInboundController;
 use App\Http\Controllers\RoleController;
@@ -97,6 +98,8 @@ Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::post('tickets/{ticket}/messages', [TicketMessageController::class, 'store'])->name('tickets.messages.store');
 
     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::resource('organizations', OrganizationController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::resource('users', UserController::class)->only(['index', 'store', 'update']);
     Route::post('users/{user}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
