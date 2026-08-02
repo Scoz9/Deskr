@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Tickets\AssignTicket;
+use App\Actions\Tickets\CreateTicket;
+use App\Actions\Tickets\NewTicket;
 use App\Actions\Tickets\TicketAssignment;
 use App\Actions\Tickets\TicketTransitionRequest;
 use App\Actions\Tickets\TransitionTicket;
+use App\Concerns\FindsOrCreatesRequester;
 use App\Enums\TicketChannel;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Http\Requests\Tickets\TicketPriorityUpdateRequest;
 use App\Http\Requests\Tickets\TicketStatusUpdateRequest;
+use App\Http\Requests\Tickets\TicketStoreRequest;
 use App\Models\Attachment;
+use App\Models\Category;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
+use App\Notifications\TicketReceived;
 use App\Tickets\TicketActor;
 use App\Tickets\TicketTransitions;
 use Closure;
@@ -35,6 +41,8 @@ use Inertia\Response;
  */
 class TicketController extends Controller
 {
+    use FindsOrCreatesRequester;
+
     /**
      * How many rows a page of the console shows. Small on purpose: the demo
      * seeder's 300 tickets exist to make pagination bugs show up here, not
@@ -133,7 +141,52 @@ class TicketController extends Controller
                 'teams' => Team::query()->orderBy('name')->get(['id', 'name']),
                 'assignees' => $this->assignableUsers()->orderBy('name')->get(['id', 'name']),
             ],
+            'canCreate' => $request->user()->can('create', Ticket::class),
         ]);
+    }
+
+    /**
+     * The form an operator opens a ticket from, on behalf of whoever called
+     * or walked in (roadmap step 39).
+     */
+    public function create(): Response
+    {
+        return Inertia::render('tickets/create', [
+            'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    /**
+     * Turn the call into a ticket, through the same {@see CreateTicket} the
+     * web form and the inbound email already go through — the channel is
+     * the only thing that tells them apart, and `telefono` covers the desk
+     * too: nobody types a request in front of them any differently than
+     * they would over the phone.
+     */
+    public function store(TicketStoreRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $requester = $this->requesterFor($validated['name'], $validated['email']);
+        $category = Category::query()->whereKey($validated['category_id'])->firstOrFail();
+
+        $ticket = app(CreateTicket::class)(new NewTicket(
+            requester: $requester,
+            subject: $validated['subject'],
+            body: $validated['body'],
+            channel: TicketChannel::Telefono,
+            category: $category,
+            priority: TicketPriority::from($validated['priority']),
+        ));
+
+        // The requester has nothing else written down about this call: the
+        // same receipt the web form sends is what gives them the reference
+        // and the link to follow it, whichever door it came through.
+        $requester->notify(new TicketReceived($ticket));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Ticket created.')]);
+
+        return to_route('tickets.show', $ticket);
     }
 
     /**

@@ -90,7 +90,7 @@ Route::post('webhooks/postmark/inbound', [PostmarkInboundController::class, 'sto
 Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 
-    Route::resource('tickets', TicketController::class)->only(['index', 'show']);
+    Route::resource('tickets', TicketController::class)->only(['index', 'create', 'store', 'show']);
     Route::post('tickets/{ticket}/assign-to-me', [TicketController::class, 'assignToMe'])->name('tickets.assign-to-me');
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
     Route::patch('tickets/{ticket}/priority', [TicketController::class, 'updatePriority'])->name('tickets.update-priority');

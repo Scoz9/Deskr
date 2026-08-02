@@ -738,6 +738,31 @@ portale — la route autenticata del dettaglio (step 34) sostituisce il link
 firmato, perché un operatore accede con una password e non ha bisogno
 della chiave che serve a un richiedente (§3).
 
+Lo step 39 apre `TicketController::create`/`store` — resource già autorizzata
+da `ticket:create` (la mappa di default di scrapkit, mai riscritta) — e non
+scrive nessuna logica di intake nuova: costruisce lo stesso `NewTicket` che
+il form pubblico e l'email in ingresso già costruiscono, con `channel`
+fissato a `telefono`. **"Sportello" non è un canale a sé**: l'enum
+`TicketChannel` non guadagna un caso — chi si presenta di persona non digita
+la richiesta in modo diverso da chi chiama, quindi è la stessa release di
+`telefono`, non una feature in più.
+
+**A differenza del form pubblico, l'operatore sceglie la priorità.** `§3`
+la toglie all'intake pubblico perché "se sceglie il richiedente, tutto è
+urgente" — un motivo che non vale per chi prende la chiamata, ed è la
+differenza che il DTO `NewTicket` anticipava già dagli step 15-17
+("an agent opening a ticket on the phone does \[expose priority]").
+
+**`requesterFor` si sposta in un trait**, `FindsOrCreatesRequester`: la
+stessa ricerca-o-creazione dell'account che l'intake pubblico scrive dallo
+step 23, e il richiedente aperto per telefono riceve la stessa conferma via
+email (`TicketReceived`) di chi scrive dal form — è l'unica cosa scritta che
+gli resta di una telefonata.
+
+**Niente honeypot, niente limite di richieste aperte per indirizzo**: sono
+difese di una porta che chiunque su internet raggiunge (§5), e questa la
+raggiunge solo un operatore autenticato con `ticket:create`.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.

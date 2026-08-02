@@ -11,8 +11,12 @@ use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
+use App\Notifications\TicketReceived;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Support\Facades\Notification;
+
+use function Pest\Laravel\assertDatabaseCount;
 
 test('guests are redirected to the login page', function () {
     $this->get(route('tickets.index'))->assertRedirect(route('login'));
@@ -526,4 +530,98 @@ test('changing priority is refused without ticket:update', function () {
     $this->actingAs(userWithPermissions(['ticket:view']))
         ->patch(route('tickets.update-priority', $ticket), ['priority' => 'urgente'])
         ->assertForbidden();
+});
+
+test('the creation form is refused without ticket:create', function () {
+    $this->actingAs(userWithPermissions([]))
+        ->get(route('tickets.create'))
+        ->assertForbidden();
+});
+
+test('the creation form offers the categories to file a ticket under', function () {
+    $category = Category::factory()->create(['name' => 'Rete']);
+
+    $this->actingAs(userWithPermissions(['ticket:create']))
+        ->get(route('tickets.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('tickets/create')
+            ->where('categories.0.name', 'Rete')
+            ->where('categories.0.id', $category->id)
+        );
+});
+
+test('an operator opens a ticket on behalf of whoever called', function () {
+    Notification::fake();
+    $this->seed(RoleSeeder::class);
+    $category = Category::factory()->create();
+
+    $response = $this->actingAs(userWithPermissions(['ticket:create']))
+        ->post(route('tickets.store'), [
+            'name' => 'Mario Rossi',
+            'email' => 'mario.rossi@example.com',
+            'category_id' => $category->id,
+            'priority' => 'alta',
+            'subject' => 'Non riesco ad accedere',
+            'body' => 'Chiamata dal numero interno 204: password dimenticata.',
+        ]);
+
+    $ticket = Ticket::sole();
+
+    $response->assertRedirect(route('tickets.show', $ticket));
+
+    expect($ticket->channel)->toBe(TicketChannel::Telefono)
+        ->and($ticket->priority)->toBe(TicketPriority::Alta)
+        ->and($ticket->subject)->toBe('Non riesco ad accedere')
+        ->and($ticket->requester->name)->toBe('Mario Rossi')
+        ->and($ticket->requester->email)->toBe('mario.rossi@example.com')
+        ->and($ticket->requester->hasRole('requester'))->toBeTrue();
+
+    Notification::assertSentTo($ticket->requester, TicketReceived::class);
+});
+
+/*
+ * Writing to the helpdesk opens a ticket, it does not rename somebody else
+ * (§ FindsOrCreatesRequester) — a caller who already wrote in lands on the
+ * account that request created, phone or web.
+ */
+test('a second ticket from the same caller reuses the account', function () {
+    $category = Category::factory()->create();
+    $existing = User::factory()->requester()->create(['email' => 'anna@example.com']);
+
+    $this->actingAs(userWithPermissions(['ticket:create']))
+        ->post(route('tickets.store'), [
+            'name' => 'Anna Rossi',
+            'email' => 'anna@example.com',
+            'category_id' => $category->id,
+            'priority' => 'normale',
+            'subject' => 'Anche il monitor non si accende',
+            'body' => 'Stessa scrivania di ieri.',
+        ]);
+
+    expect(Ticket::sole()->requester_id)->toBe($existing->id)
+        ->and(User::query()->where('email', 'anna@example.com')->count())->toBe(1);
+});
+
+test('creating a ticket is refused without ticket:create', function () {
+    $category = Category::factory()->create();
+
+    $this->actingAs(userWithPermissions([]))
+        ->post(route('tickets.store'), [
+            'name' => 'Mario Rossi',
+            'email' => 'mario.rossi@example.com',
+            'category_id' => $category->id,
+            'priority' => 'normale',
+            'subject' => 'Oggetto',
+            'body' => 'Corpo del messaggio.',
+        ])
+        ->assertForbidden();
+
+    assertDatabaseCount('tickets', 0);
+});
+
+test('the required fields are refused when missing', function () {
+    $this->actingAs(userWithPermissions(['ticket:create']))
+        ->post(route('tickets.store'), [])
+        ->assertInvalid(['name', 'email', 'category_id', 'subject', 'body', 'priority']);
 });

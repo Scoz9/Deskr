@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import TicketsFilters from '@/components/tickets/tickets-filters';
 import type {
     FilterOption,
@@ -8,7 +8,11 @@ import TicketsSearch from '@/components/tickets/tickets-search';
 import TicketsTable from '@/components/tickets/tickets-table';
 import type { PaginatedTickets } from '@/components/tickets/tickets-table';
 import TicketsTableThemeProvider from '@/components/tickets/tickets-table-theme-provider';
-import { index as ticketsIndex } from '@/routes/tickets';
+import { Button } from '@/components/ui/button';
+import {
+    create as ticketsCreate,
+    index as ticketsIndex,
+} from '@/routes/tickets';
 
 type TicketsProps = {
     tickets: PaginatedTickets;
@@ -17,6 +21,7 @@ type TicketsProps = {
         teams: FilterOption[];
         assignees: FilterOption[];
     };
+    canCreate: boolean;
 };
 
 /**
@@ -66,6 +71,7 @@ export default function Tickets({
     tickets,
     filters,
     filterOptions,
+    canCreate,
 }: TicketsProps) {
     const visit = (query: Record<string, string | number>): void => {
         router.get(
@@ -93,17 +99,26 @@ export default function Tickets({
         <>
             <Head title="Ticket" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
-                <div className="flex flex-wrap items-end gap-3">
-                    <TicketsSearch
-                        value={filters.search}
-                        onChange={(search) => handleFilterChange({ search })}
-                    />
-                    <TicketsFilters
-                        filters={filters}
-                        teams={filterOptions.teams}
-                        assignees={filterOptions.assignees}
-                        onChange={handleFilterChange}
-                    />
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                    <div className="flex flex-wrap items-end gap-3">
+                        <TicketsSearch
+                            value={filters.search}
+                            onChange={(search) =>
+                                handleFilterChange({ search })
+                            }
+                        />
+                        <TicketsFilters
+                            filters={filters}
+                            teams={filterOptions.teams}
+                            assignees={filterOptions.assignees}
+                            onChange={handleFilterChange}
+                        />
+                    </div>
+                    {canCreate && (
+                        <Button asChild>
+                            <Link href={ticketsCreate.url()}>Nuovo ticket</Link>
+                        </Button>
+                    )}
                 </div>
                 <TicketsTableThemeProvider>
                     <TicketsTable
