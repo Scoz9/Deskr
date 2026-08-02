@@ -3,6 +3,7 @@
 use App\Enums\TicketChannel;
 use App\Enums\TicketPriority;
 use App\Http\Controllers\TicketController;
+use App\Models\Attachment;
 use App\Models\Category;
 use App\Models\Organization;
 use App\Models\Team;
@@ -332,4 +333,81 @@ test('a search with no match empties the backlog instead of erroring', function 
     $this->actingAs(userWithPermissions(['ticket:viewAny']))
         ->get(route('tickets.index', ['search' => 'inesistente']))
         ->assertInertia(fn ($page) => $page->has('tickets.data', 0));
+});
+
+test('the detail page is refused without ticket:view', function () {
+    $ticket = Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions([]))
+        ->get(route('tickets.show', $ticket))
+        ->assertForbidden();
+});
+
+/*
+ * The requester's own ticket is reachable through the policy's ownership
+ * clause (§ step 21), same as `view` already grants outside the console.
+ */
+test('a requester opens the detail of their own ticket', function () {
+    $this->seed([PermissionSeeder::class, RoleSeeder::class]);
+    $requester = User::factory()->requester()->create();
+    $ticket = Ticket::factory()->for($requester, 'requester')->create();
+
+    $this->actingAs($requester)
+        ->get(route('tickets.show', $ticket))
+        ->assertOk();
+});
+
+test('the thread shows every reply, oldest first, notes marked as internal', function () {
+    $ticket = Ticket::factory()->create();
+    $description = TicketMessage::factory()->for($ticket)->create(['body' => 'Descrizione iniziale']);
+    $reply = TicketMessage::factory()->for($ticket)->dellOperatore()->create(['body' => 'Risposta pubblica']);
+    $note = TicketMessage::factory()->for($ticket)->interna()->create(['body' => 'Nota per il team']);
+
+    $this->actingAs(userWithPermissions(['ticket:view']))
+        ->get(route('tickets.show', $ticket))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('tickets/show')
+            ->where('ticket.messages.0.id', $description->id)
+            ->where('ticket.messages.0.isInternal', false)
+            ->where('ticket.messages.1.id', $reply->id)
+            ->where('ticket.messages.1.isInternal', false)
+            ->where('ticket.messages.2.id', $note->id)
+            ->where('ticket.messages.2.isInternal', true)
+        );
+});
+
+test('the detail carries what an operator needs to read a ticket', function () {
+    $organization = Organization::factory()->create(['name' => 'Acme SRL']);
+    $requester = User::factory()->requester()->for($organization)->create(['name' => 'Mario Rossi']);
+    $team = Team::factory()->create(['name' => 'Rete']);
+    $assignee = User::factory()->agent()->create(['name' => 'Luca Bianchi']);
+    $ticket = Ticket::factory()
+        ->for($requester, 'requester')
+        ->for($team)
+        ->create(['assignee_id' => $assignee->id, 'subject' => 'Stampante offline']);
+
+    $this->actingAs(userWithPermissions(['ticket:view']))
+        ->get(route('tickets.show', $ticket))
+        ->assertInertia(fn ($page) => $page
+            ->where('ticket.reference', $ticket->reference)
+            ->where('ticket.subject', 'Stampante offline')
+            ->where('ticket.requester', 'Mario Rossi')
+            ->where('ticket.organization', 'Acme SRL')
+            ->where('ticket.team', 'Rete')
+            ->where('ticket.assignee', 'Luca Bianchi')
+        );
+});
+
+test('an attachment on a message carries a signed download link', function () {
+    $ticket = Ticket::factory()->create();
+    $message = TicketMessage::factory()->for($ticket)->create();
+    $message->attachments()->save(Attachment::factory()->make(['original_name' => 'schermata.png']));
+
+    $this->actingAs(userWithPermissions(['ticket:view']))
+        ->get(route('tickets.show', $ticket))
+        ->assertInertia(fn ($page) => $page
+            ->where('ticket.messages.0.attachments.0.name', 'schermata.png')
+            ->has('ticket.messages.0.attachments.0.url')
+        );
 });

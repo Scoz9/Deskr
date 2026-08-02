@@ -627,6 +627,25 @@ chiede alla lettera ("richiedente"), e un'email è un campo da confronto
 esatto più che da full-text — resta un'estensione naturale se servirà, non
 un buco di oggi.
 
+Lo step 34 apre il dettaglio: la riga cliccabile nella lista porta a
+`tickets/{ticket}`, dove `TicketController::show` carica l'intero thread
+tramite la relazione `Ticket::messages()` già ordinata (§4 dello step 31 —
+un thread ha un solo ordine di lettura, e non è compito del controller
+rifarlo). Non serve un filtro sulle note interne: la console è il posto
+dell'operatore, e la stessa policy `view` recuperata allo step 21 già
+decide chi arriva alla pagina.
+
+**Le note interne si distinguono visivamente, non si nascondono**: uno
+sfondo e un badge dedicati sulla stessa lista che mostra le risposte
+pubbliche, non due liste separate — è la lettura naturale di "thread con
+note interne visivamente distinte", ed è anche quello che tiene il
+componente uno solo invece di due varianti quasi identiche.
+
+Il link agli allegati usa `URL::signedRoute`, la stessa route già firmata
+che serve il portale (§3, `AttachmentController`): il disco è privato e la
+firma sull'URL resta l'unica cosa che dice che è stata l'applicazione a
+distribuirlo, che a chiederlo sia un operatore o un richiedente.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
