@@ -9,13 +9,19 @@ test('guest pages load without javascript errors', function () {
 });
 
 test('authenticated pages load without javascript errors', function () {
-    $this->actingAs(userWithPermissions(['role:viewAny', 'user:viewAny', 'organization:viewAny']));
+    $this->actingAs(userWithPermissions([
+        'role:viewAny',
+        'user:viewAny',
+        'organization:viewAny',
+        'team:viewAny',
+    ]));
 
     $pages = visit([
         '/dashboard',
         '/roles',
         '/users',
         '/organizations',
+        '/teams',
         '/settings/profile',
         '/settings/appearance',
         '/settings/security',

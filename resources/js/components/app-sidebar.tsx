@@ -8,6 +8,7 @@ import {
     Shield,
     Ticket,
     Users,
+    UsersRound,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
@@ -27,6 +28,7 @@ import { dashboard } from '@/routes';
 import { index as notificationsIndex } from '@/routes/notifications';
 import { index as organizationsIndex } from '@/routes/organizations';
 import { index as rolesIndex } from '@/routes/roles';
+import { index as teamsIndex } from '@/routes/teams';
 import { index as ticketsIndex } from '@/routes/tickets';
 import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
@@ -76,6 +78,12 @@ export function AppSidebar() {
             href: organizationsIndex(),
             icon: Building2,
             canView: can('organization:viewAny'),
+        },
+        {
+            title: 'Team',
+            href: teamsIndex(),
+            icon: UsersRound,
+            canView: can('team:viewAny'),
         },
         {
             title: 'Notifiche',

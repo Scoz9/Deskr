@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Category> $categories
  * @property-read Collection<int, User> $members
+ * @property-read Collection<int, Ticket> $tickets
  */
 #[Fillable(['name'])]
 class Team extends Model
@@ -48,5 +49,17 @@ class Team extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /**
+     * The tickets routed here. Written on the ticket at the intake and never
+     * re-read through the category (§4), so they outlive a re-routing — and
+     * the database refuses to delete a team that still has some.
+     *
+     * @return HasMany<Ticket, $this>
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
     }
 }

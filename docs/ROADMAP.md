@@ -806,6 +806,28 @@ campo è "non toccare l'azienda", mandarlo vuoto è "nessuna azienda" — due
 richieste diverse che un `nullable` da solo confonderebbe, cancellando
 l'organizzazione a ogni salvataggio che non la nomina.
 
+Anche lo step 41 arriva in due PR, per la stessa ragione del 40 più una
+dipendenza reale: il form di `Category` ha bisogno di scegliere un team,
+quindi la CRUD `Team` viene prima.
+
+**La cancellazione di un team ha due guardie, non una.** Il database porta
+già un `restrictOnDelete` sia su `categories.team_id` sia su
+`tickets.team_id`: senza controllo esplicito il rifiuto arriverebbe come un
+500 invece che come un errore accanto al bottone che l'ha chiesto — la
+stessa ragione per cui `RoleController` e `OrganizationController`
+controllano prima di cancellare. Le due guardie restano separate perché
+dicono due cose diverse a chi legge: "ci sono categorie instradate qui" non
+è "ci sono ancora ticket".
+
+**L'appartenenza al team non è una terza guardia.** Il pivot `team_user`
+fa `cascadeOnDelete`, ed è coerente con §4: l'appartenenza è un filtro sulla
+console, non un confine — un operatore che perde un team che copriva non è
+un ticket che perde dove era stato instradato.
+
+Le relazioni `Team::tickets()` e (nella seconda PR) `Category::tickets()`
+nascono qui, per le guardie: erano le uniche due direzioni del grafo che
+nessuno aveva ancora avuto bisogno di percorrere.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
