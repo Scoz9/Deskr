@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Notifications\PortalLink;
+use App\Notifications\TicketAssigned;
 use App\Notifications\TicketReceived;
 use App\Notifications\TicketReplied;
 use App\Notifications\TicketResolved;
@@ -16,6 +17,7 @@ return [
      */
     'manageables' => [
         PortalLink::class,
+        TicketAssigned::class,
         TicketReceived::class,
         TicketReplied::class,
         TicketResolved::class,

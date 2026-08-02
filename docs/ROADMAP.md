@@ -717,6 +717,27 @@ prende la strada che il codice già gli offriva:
   procedura che la conferma dello step 25 già scriveva, e le due notifiche
   di questo step avrebbero dovuto copiare identica altrove.
 
+Lo step 38 riusa lo stesso pattern a listener della risoluzione: un secondo
+ascoltatore su `App\Tickets\Events\TicketAssigned`, il cui stesso docblock
+("where the notification to the agent of step 38 hangs") anticipava questo
+step fin dagli step 15-17. **Ascolta solo `TicketAssigned` (l'uscita dal
+pool), non `TicketReassigned`**: oggi l'unica porta che tocca l'assegnazione
+è "assegna a me" dello step 35, e la riassegnazione a un collega non ha
+ancora un'interfaccia — agganciarla ora sarebbe notificare un percorso che
+nessuno può ancora percorrere. **Resta silenzioso sull'autoassegnazione**:
+il confronto è sull'attore rispetto al nuovo assegnatario, non sul
+chiamante, così la regola tiene anche il giorno che un'assegnazione arriva
+da qualcun altro. La condizione è per forza un fatto misurabile a runtime,
+non testabile end-to-end finché quell'interfaccia non esiste — coperta a
+livello di Action, come già fa `AssignTicketTest` per la riassegnazione
+stessa.
+
+**Il link non è firmato**: a differenza delle notifiche dello step 37, il
+destinatario qui è un account della console, non un visitatore del
+portale — la route autenticata del dettaglio (step 34) sostituisce il link
+firmato, perché un operatore accede con una password e non ha bisogno
+della chiave che serve a un richiedente (§3).
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
