@@ -7,6 +7,7 @@ use App\Actions\Tickets\ReplyToTicket;
 use App\Concerns\StoresAttachmentUploads;
 use App\Http\Requests\Tickets\TicketReplyRequest;
 use App\Models\Ticket;
+use App\Notifications\TicketReplied;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
@@ -31,13 +32,22 @@ class TicketMessageController extends Controller
      */
     public function store(TicketReplyRequest $request, Ticket $ticket): RedirectResponse
     {
+        $isInternal = $request->boolean('is_internal');
+
         app(ReplyToTicket::class)(new NewReply(
             ticket: $ticket,
             author: $request->user(),
             body: $request->string('body')->toString(),
-            isInternal: $request->boolean('is_internal'),
+            isInternal: $isInternal,
             attachments: $this->storeAttachmentUploads($request->file('attachments', [])),
         ));
+
+        // Only the reply the requester can actually read is worth telling
+        // them about (roadmap step 37) — a note is written for the team and
+        // never reaches the portal thread either (§3).
+        if (! $isInternal) {
+            $ticket->requester->notify(new TicketReplied($ticket));
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Message added.')]);
 
