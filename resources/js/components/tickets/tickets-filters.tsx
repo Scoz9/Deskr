@@ -23,6 +23,7 @@ export type TicketFilters = {
     channel: TicketChannel | null;
     teamId: number | null;
     assignee: number | 'unassigned' | null;
+    search: string | null;
 };
 
 export type FilterOption = {

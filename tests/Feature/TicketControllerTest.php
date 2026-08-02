@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Models\Ticket;
+use App\Models\TicketMessage;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\RoleSeeder;
@@ -250,4 +251,85 @@ test('an assignee that is not an agent or admin is refused', function () {
     $this->actingAs(userWithPermissions(['ticket:viewAny']))
         ->get(route('tickets.index', ['assignee' => $requester->id]))
         ->assertSessionHasErrors('assignee');
+});
+
+/*
+ * The reason the project runs on Postgres rather than MySQL in the first
+ * place (§3): full-text on Postgres' own dictionary, no search engine of
+ * its own.
+ */
+test('a search matches the subject', function () {
+    $ticket = Ticket::factory()->create(['subject' => 'La stampante non risponde']);
+    Ticket::factory()->create(['subject' => 'Accesso negato al gestionale']);
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['search' => 'stampante']))
+        ->assertInertia(fn ($page) => $page
+            ->has('tickets.data', 1)
+            ->where('tickets.data.0.reference', $ticket->reference)
+            ->where('filters.search', 'stampante')
+        );
+});
+
+test('a search matches a message in the thread', function () {
+    $ticket = Ticket::factory()->create();
+    TicketMessage::factory()->for($ticket)->create(['body' => 'Il problema riguarda la stampante laser dell\'ufficio.']);
+    Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['search' => 'laser']))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 1));
+});
+
+test('a search matches the requester\'s name', function () {
+    $requester = User::factory()->requester()->create(['name' => 'Anna Rossi']);
+    $ticket = Ticket::factory()->for($requester, 'requester')->create();
+    Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['search' => 'Rossi']))
+        ->assertInertia(fn ($page) => $page
+            ->has('tickets.data', 1)
+            ->where('tickets.data.0.reference', $ticket->reference)
+        );
+});
+
+test('a search matches the requester\'s organization', function () {
+    $organization = Organization::factory()->create(['name' => 'Acme SRL']);
+    $requester = User::factory()->requester()->for($organization)->create();
+    $ticket = Ticket::factory()->create([
+        'requester_id' => $requester->id,
+        'organization_id' => $organization->id,
+    ]);
+    Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['search' => 'Acme']))
+        ->assertInertia(fn ($page) => $page
+            ->has('tickets.data', 1)
+            ->where('tickets.data.0.reference', $ticket->reference)
+        );
+});
+
+test('a search combines with the other filters', function () {
+    $team = Team::factory()->create();
+    Ticket::factory()->nuovo()->create(['subject' => 'La stampante non risponde', 'team_id' => $team->id]);
+    Ticket::factory()->risolto()->create(['subject' => 'La stampante non risponde', 'team_id' => $team->id]);
+    Ticket::factory()->nuovo()->create(['subject' => 'La stampante non risponde']);
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', [
+            'search' => 'stampante',
+            'status' => 'nuovo',
+            'team_id' => $team->id,
+        ]))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 1));
+});
+
+test('a search with no match empties the backlog instead of erroring', function () {
+    Ticket::factory()->count(3)->create();
+
+    $this->actingAs(userWithPermissions(['ticket:viewAny']))
+        ->get(route('tickets.index', ['search' => 'inesistente']))
+        ->assertInertia(fn ($page) => $page->has('tickets.data', 0));
 });
