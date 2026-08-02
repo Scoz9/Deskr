@@ -6,12 +6,15 @@ use App\Enums\TicketChannel;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
+use App\Models\Attachment;
 use App\Models\Team;
 use App\Models\Ticket;
+use App\Models\TicketMessage;
 use App\Models\User;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -101,6 +104,49 @@ class TicketController extends Controller
             'filterOptions' => [
                 'teams' => Team::query()->orderBy('name')->get(['id', 'name']),
                 'assignees' => $this->assignableUsers()->orderBy('name')->get(['id', 'name']),
+            ],
+        ]);
+    }
+
+    /**
+     * The thread of a single ticket: the initial description, every reply
+     * and every internal note, oldest first — the order `Ticket::messages()`
+     * already reads in, so there is nothing left to sort here.
+     */
+    public function show(Ticket $ticket): Response
+    {
+        $ticket->load([
+            'requester.organization:id,name',
+            'team:id,name',
+            'assignee:id,name',
+            'messages.author:id,name',
+            'messages.attachments',
+        ]);
+
+        return Inertia::render('tickets/show', [
+            'ticket' => [
+                'id' => $ticket->id,
+                'reference' => $ticket->reference,
+                'subject' => $ticket->subject,
+                'status' => $ticket->status->value,
+                'priority' => $ticket->priority->value,
+                'channel' => $ticket->channel->value,
+                'requester' => $ticket->requester->name,
+                'organization' => $ticket->requester->organization?->name,
+                'team' => $ticket->team?->name,
+                'assignee' => $ticket->assignee?->name,
+                'openedAt' => $ticket->created_at?->toIso8601String(),
+                'messages' => $ticket->messages->map(fn (TicketMessage $message): array => [
+                    'id' => $message->id,
+                    'body' => $message->body,
+                    'isInternal' => $message->is_internal,
+                    'author' => $message->author->name,
+                    'writtenAt' => $message->created_at?->toIso8601String(),
+                    'attachments' => $message->attachments->map(fn (Attachment $attachment): array => [
+                        'name' => $attachment->original_name,
+                        'url' => URL::signedRoute('attachments.show', ['attachment' => $attachment]),
+                    ])->all(),
+                ])->all(),
             ],
         ]);
     }

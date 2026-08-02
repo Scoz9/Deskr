@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import {
     MaterialReactTable,
     useMaterialReactTable,
@@ -10,6 +11,7 @@ import type {
 import { MRT_Localization_IT } from 'material-react-table/locales/it';
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { show as ticketShow } from '@/routes/tickets';
 
 export type TicketStatus =
     | 'nuovo'
@@ -148,6 +150,14 @@ export default function TicketsTable({
             {
                 accessorKey: 'reference',
                 header: 'Riferimento',
+                Cell: ({ row }) => (
+                    <Link
+                        href={ticketShow.url(row.original.id)}
+                        className="underline underline-offset-4"
+                    >
+                        {row.original.reference}
+                    </Link>
+                ),
             },
             {
                 accessorKey: 'subject',

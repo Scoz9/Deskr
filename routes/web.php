@@ -89,7 +89,7 @@ Route::post('webhooks/postmark/inbound', [PostmarkInboundController::class, 'sto
 Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 
-    Route::resource('tickets', TicketController::class)->only(['index']);
+    Route::resource('tickets', TicketController::class)->only(['index', 'show']);
 
     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
 
