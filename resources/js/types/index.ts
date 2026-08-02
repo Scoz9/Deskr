@@ -57,3 +57,11 @@ export type Organization = {
     name: string;
     users_count: number;
 };
+
+export type Team = {
+    id: number;
+    name: string;
+    categories_count: number;
+    members_count: number;
+    tickets_count: number;
+};

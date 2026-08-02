@@ -7,6 +7,7 @@ use App\Http\Controllers\PostmarkInboundController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupportRequestController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketMessageController;
 use App\Http\Controllers\UserController;
@@ -100,6 +101,8 @@ Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::resource('organizations', OrganizationController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::resource('teams', TeamController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::resource('users', UserController::class)->only(['index', 'store', 'update']);
     Route::post('users/{user}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
