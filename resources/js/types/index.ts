@@ -36,6 +36,7 @@ export type ManagedUser = {
     name: string;
     email: string;
     role: { id: number; name: string } | null;
+    organization: { id: number; name: string } | null;
     is_suspended: boolean;
     suspended_at: string | null;
     suspended_until: string | null;

@@ -10,11 +10,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import CreateUserDialog from '@/components/users/create-user-dialog';
 import { useCan } from '@/hooks/use-can';
-import type { AssignableRole, ManagedUser } from '@/types';
+import type { AssignableRole, ManagedUser, Organization } from '@/types';
 
 type UsersTableProps = {
     users: ManagedUser[];
     roles: AssignableRole[];
+    organizations: Organization[];
     onEdit: (user: ManagedUser) => void;
     onSuspend: (user: ManagedUser) => void;
     onUnsuspend: (user: ManagedUser) => void;
@@ -40,6 +41,7 @@ function suspensionLabel(user: ManagedUser): string {
 export default function UsersTable({
     users,
     roles,
+    organizations,
     onEdit,
     onSuspend,
     onUnsuspend,
@@ -60,6 +62,11 @@ export default function UsersTable({
                 id: 'role',
                 accessorFn: (user) => user.role?.name ?? '—',
                 header: 'Ruolo',
+            },
+            {
+                id: 'organization',
+                accessorFn: (user) => user.organization?.name ?? '—',
+                header: 'Organizzazione',
             },
             {
                 id: 'status',
@@ -95,7 +102,9 @@ export default function UsersTable({
             columnPinning: { right: ['mrt-row-actions'] },
         },
         renderTopToolbarCustomActions: () =>
-            can('user:create') ? <CreateUserDialog roles={roles} /> : null,
+            can('user:create') ? (
+                <CreateUserDialog roles={roles} organizations={organizations} />
+            ) : null,
         renderRowActions: ({ row }) => (
             <div className="flex items-center">
                 {row.original.can_update && (

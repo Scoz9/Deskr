@@ -46,7 +46,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $suspended_until
  */
 #[Appends(['avatar'])]
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'organization_id', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token', 'avatar_path'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {

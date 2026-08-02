@@ -787,6 +787,25 @@ regola di `RoleController::destroy` sui ruoli assegnati: cancellare
 un'organizzazione dietro ai suoi richiedenti lascerebbe `organization_id`
 orfano su righe che nessuno intende toccare.
 
+La seconda PR estende il CRUD `User`. **La parte "tre ruoli di Deskr" era già
+fatta e non ha richiesto codice**: `RoleSeeder` semina admin, agent e
+requester dall'enum `UserRole`, e `UserController::index` li offre già
+filtrati per rango gerarchico — la riga di roadmap descriveva il risultato,
+non un lavoro rimasto. Quello che mancava era l'organizzazione.
+
+**Resta opzionale e slegata dal ruolo.** §4 la chiama "azienda del
+richiedente" e il modello `User` documenta che è nulla per operatori e
+admin, ma è una convenzione su cosa serve la colonna, non una regola che il
+CRUD debba far rispettare: nessuna query la legge per chi non è un
+richiedente, e una validazione incrociata `role` × `organization_id` sarebbe
+un vincolo che la roadmap non chiede. Lo dice il seeder demo, che le assegna
+solo ai richiedenti, senza che nulla glielo imponga.
+
+**In aggiornamento `sometimes` e non solo `nullable`**: lasciare fuori il
+campo è "non toccare l'azienda", mandarlo vuoto è "nessuna azienda" — due
+richieste diverse che un `nullable` da solo confonderebbe, cancellando
+l'organizzazione a ogni salvataggio che non la nomina.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.
