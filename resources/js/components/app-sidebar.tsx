@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     BookOpen,
+    Building2,
     FolderGit2,
     LayoutGrid,
     Mail,
@@ -24,6 +25,7 @@ import {
 import { useCan } from '@/hooks/use-can';
 import { dashboard } from '@/routes';
 import { index as notificationsIndex } from '@/routes/notifications';
+import { index as organizationsIndex } from '@/routes/organizations';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as ticketsIndex } from '@/routes/tickets';
 import { index as usersIndex } from '@/routes/users';
@@ -68,6 +70,12 @@ export function AppSidebar() {
             href: usersIndex(),
             icon: Users,
             canView: can('user:viewAny'),
+        },
+        {
+            title: 'Organizzazioni',
+            href: organizationsIndex(),
+            icon: Building2,
+            canView: can('organization:viewAny'),
         },
         {
             title: 'Notifiche',
