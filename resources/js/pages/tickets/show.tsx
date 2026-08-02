@@ -1,4 +1,5 @@
 import { Head, setLayoutProps } from '@inertiajs/react';
+import TicketActions from '@/components/tickets/ticket-actions';
 import {
     channelLabels,
     priorityLabels,
@@ -43,6 +44,8 @@ type TicketDetail = {
 
 type Props = {
     ticket: TicketDetail;
+    nextStatuses: TicketStatus[];
+    canUpdate: boolean;
 };
 
 const dateFormatter = new Intl.DateTimeFormat('it-IT', {
@@ -60,7 +63,7 @@ const readableDate = (value: string | null): string =>
  * requester has already read (§4 — the portal page renders only the public
  * side of the same thread, and has nothing to distinguish).
  */
-export default function TicketShow({ ticket }: Props) {
+export default function TicketShow({ ticket, nextStatuses, canUpdate }: Props) {
     setLayoutProps({
         breadcrumbs: [
             { title: 'Ticket', href: ticketsIndex() },
@@ -98,6 +101,14 @@ export default function TicketShow({ ticket }: Props) {
                             ` · aperto il ${readableDate(ticket.openedAt)}`}
                     </p>
                 </header>
+
+                {canUpdate && (
+                    <TicketActions
+                        ticketId={ticket.id}
+                        priority={ticket.priority}
+                        nextStatuses={nextStatuses}
+                    />
+                )}
 
                 <ol className="space-y-4">
                     {ticket.messages.map((message) => (

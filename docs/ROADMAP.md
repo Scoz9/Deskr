@@ -646,6 +646,31 @@ che serve il portale (§3, `AttachmentController`): il disco è privato e la
 firma sull'URL resta l'unica cosa che dice che è stata l'applicazione a
 distribuirlo, che a chiederlo sia un operatore o un richiedente.
 
+Lo step 35 mette le mani sul ticket dal dettaglio, ma non scrive nessuna
+logica di dominio nuova: "assegna a me" è `AssignTicket` degli step 15-17,
+"cambia stato" e "annulla" sono `TransitionTicket` sulla stessa tabella dei
+passaggi di `TicketTransitions` (§4) — annullare non è un caso a parte, è
+solo il passaggio verso `annullato` che l'interfaccia isola nel proprio
+bottone invece di lasciarlo dentro il menu degli stati, perché non è quello
+su cui un operatore deve poter scorrere per sbaglio. Il controller valida il
+passaggio scelto contro `TicketTransitions::allows()` prima di toccare il
+dominio: una richiesta con uno stato che la lista di partenza non ammette
+torna un 422, non l'eccezione `InvalidTicketTransition` che l'azione
+lancerebbe.
+
+**Le tre azioni condividono un solo permesso, `ticket:update`.** Il
+`PermissionSeeder` genera cinque abilità per modello, non una per bottone —
+inventarne una per "assegna", una per "cambia stato" e una per "cambia
+priorità" avrebbe distinto ruoli che la roadmap non chiede di distinguere:
+chi può toccare un ticket dal dettaglio lo può toccare in ogni modo che
+questo step offre.
+
+**Cambiare priorità non passa da `TicketTransitions`.** Non è un passaggio
+di stato e non emette un evento: la lista dell'audit trail sul modello
+`Ticket` — "ogni transizione e ogni assegnazione" — non la include, ed è
+la prima volta che qualcosa oltre l'intake tocca `priority`, quindi resta
+un aggiornamento diretto del campo dietro alla sua validazione.
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.

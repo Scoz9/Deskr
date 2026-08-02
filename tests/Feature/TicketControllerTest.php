@@ -2,6 +2,7 @@
 
 use App\Enums\TicketChannel;
 use App\Enums\TicketPriority;
+use App\Enums\TicketStatus;
 use App\Http\Controllers\TicketController;
 use App\Models\Attachment;
 use App\Models\Category;
@@ -410,4 +411,119 @@ test('an attachment on a message carries a signed download link', function () {
             ->where('ticket.messages.0.attachments.0.name', 'schermata.png')
             ->has('ticket.messages.0.attachments.0.url')
         );
+});
+
+test('the detail page carries the passages the ticket may take next', function () {
+    $ticket = Ticket::factory()->assegnato()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->get(route('tickets.show', $ticket))
+        ->assertInertia(fn ($page) => $page
+            ->where('canUpdate', true)
+            ->where('nextStatuses', ['in_lavorazione', 'in_attesa', 'nuovo', 'annullato'])
+        );
+});
+
+test('a requester viewing their own ticket cannot update it', function () {
+    $this->seed([PermissionSeeder::class, RoleSeeder::class]);
+    $requester = User::factory()->requester()->create();
+    $ticket = Ticket::factory()->for($requester, 'requester')->create();
+
+    $this->actingAs($requester)
+        ->get(route('tickets.show', $ticket))
+        ->assertInertia(fn ($page) => $page->where('canUpdate', false));
+});
+
+test('assigning to me is refused without ticket:update', function () {
+    $ticket = Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view']))
+        ->post(route('tickets.assign-to-me', $ticket))
+        ->assertForbidden();
+});
+
+test('an agent assigns an unassigned ticket to themselves', function () {
+    $this->seed([PermissionSeeder::class, RoleSeeder::class]);
+    $agent = User::factory()->agent()->create();
+    $ticket = Ticket::factory()->nuovo()->create();
+
+    $this->actingAs($agent)
+        ->post(route('tickets.assign-to-me', $ticket))
+        ->assertRedirect();
+
+    expect($ticket->fresh())
+        ->assignee_id->toBe($agent->id)
+        ->status->toBe(TicketStatus::Assegnato);
+});
+
+test('an unknown status is refused when changing status', function () {
+    $ticket = Ticket::factory()->assegnato()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->patch(route('tickets.update-status', $ticket), ['status' => 'non-esiste'])
+        ->assertInvalid(['status']);
+});
+
+test('a status the lifecycle does not admit from here is refused', function () {
+    $ticket = Ticket::factory()->nuovo()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->patch(route('tickets.update-status', $ticket), ['status' => 'risolto'])
+        ->assertInvalid(['status']);
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::Nuovo);
+});
+
+test('an admitted status change goes through the transition table', function () {
+    $ticket = Ticket::factory()->assegnato()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->patch(route('tickets.update-status', $ticket), ['status' => 'in_lavorazione'])
+        ->assertRedirect();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::InLavorazione);
+});
+
+test('cancelling from the detail page is the same transition as any other', function () {
+    $ticket = Ticket::factory()->assegnato()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->patch(route('tickets.update-status', $ticket), ['status' => 'annullato'])
+        ->assertRedirect();
+
+    expect($ticket->fresh()->status)->toBe(TicketStatus::Annullato);
+});
+
+test('changing status is refused without ticket:update', function () {
+    $ticket = Ticket::factory()->assegnato()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view']))
+        ->patch(route('tickets.update-status', $ticket), ['status' => 'in_lavorazione'])
+        ->assertForbidden();
+});
+
+test('an operator changes the priority', function () {
+    $ticket = Ticket::factory()->create(['priority' => TicketPriority::Normale]);
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->patch(route('tickets.update-priority', $ticket), ['priority' => 'urgente'])
+        ->assertRedirect();
+
+    expect($ticket->fresh()->priority)->toBe(TicketPriority::Urgente);
+});
+
+test('an unknown priority value is refused', function () {
+    $ticket = Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view', 'ticket:update']))
+        ->patch(route('tickets.update-priority', $ticket), ['priority' => 'catastrofica'])
+        ->assertInvalid(['priority']);
+});
+
+test('changing priority is refused without ticket:update', function () {
+    $ticket = Ticket::factory()->create();
+
+    $this->actingAs(userWithPermissions(['ticket:view']))
+        ->patch(route('tickets.update-priority', $ticket), ['priority' => 'urgente'])
+        ->assertForbidden();
 });

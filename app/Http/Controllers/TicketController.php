@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tickets\AssignTicket;
+use App\Actions\Tickets\TicketAssignment;
+use App\Actions\Tickets\TicketTransitionRequest;
+use App\Actions\Tickets\TransitionTicket;
 use App\Enums\TicketChannel;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
+use App\Http\Requests\Tickets\TicketPriorityUpdateRequest;
+use App\Http\Requests\Tickets\TicketStatusUpdateRequest;
 use App\Models\Attachment;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
+use App\Tickets\TicketActor;
+use App\Tickets\TicketTransitions;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
@@ -32,6 +41,25 @@ class TicketController extends Controller
      * to be hidden by a page large enough to fit them all on one screen.
      */
     public const PER_PAGE = 15;
+
+    /**
+     * The three actions of step 35 are all a form of updating a ticket, and
+     * the standard model abilities have nothing more granular than
+     * `ticket:update` (§ PermissionSeeder generates the same five for every
+     * model) — inventing a permission per button would buy a distinction
+     * nothing in the roadmap asks for.
+     *
+     * @return array<string, string>
+     */
+    protected static function resourceAbilityMap(): array
+    {
+        return [
+            ...parent::resourceAbilityMap(),
+            'assignToMe' => 'update',
+            'updateStatus' => 'update',
+            'updatePriority' => 'update',
+        ];
+    }
 
     /**
      * The backlog, newest first, one page at a time, narrowed by whichever
@@ -113,7 +141,7 @@ class TicketController extends Controller
      * and every internal note, oldest first — the order `Ticket::messages()`
      * already reads in, so there is nothing left to sort here.
      */
-    public function show(Ticket $ticket): Response
+    public function show(Request $request, Ticket $ticket): Response
     {
         $ticket->load([
             'requester.organization:id,name',
@@ -148,7 +176,64 @@ class TicketController extends Controller
                     ])->all(),
                 ])->all(),
             ],
+            'nextStatuses' => array_map(
+                fn (TicketStatus $status): string => $status->value,
+                TicketTransitions::allowedFrom($ticket->status),
+            ),
+            'canUpdate' => $request->user()->can('update', $ticket),
         ]);
+    }
+
+    /**
+     * Claim a ticket for whoever is asking. Reassigning to yourself a ticket
+     * you already hold is a no-op {@see AssignTicket} already absorbs — the
+     * console does not need to know that to offer the button unconditionally.
+     */
+    public function assignToMe(Request $request, Ticket $ticket): RedirectResponse
+    {
+        app(AssignTicket::class)(new TicketAssignment(
+            ticket: $ticket,
+            assignee: $request->user(),
+            actor: TicketActor::user($request->user()),
+        ));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Ticket assigned to you.')]);
+
+        return back();
+    }
+
+    /**
+     * Move the ticket along its lifecycle — including to `annullato`, which
+     * is a passage like any other in {@see TicketTransitions} and not a
+     * separate use case; the console gives it its own button, not its own
+     * endpoint.
+     */
+    public function updateStatus(TicketStatusUpdateRequest $request, Ticket $ticket): RedirectResponse
+    {
+        app(TransitionTicket::class)(new TicketTransitionRequest(
+            ticket: $ticket,
+            status: TicketStatus::from($request->validated('status')),
+            actor: TicketActor::user($request->user()),
+        ));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Ticket status updated.')]);
+
+        return back();
+    }
+
+    /**
+     * Change the priority. Not a lifecycle passage and not `TicketTransitions`'
+     * business — the ticket audit trail of §4 covers "every transition and
+     * every assignment", and a priority is neither.
+     */
+    public function updatePriority(TicketPriorityUpdateRequest $request, Ticket $ticket): RedirectResponse
+    {
+        $ticket->priority = TicketPriority::from($request->validated('priority'));
+        $ticket->save();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Ticket priority updated.')]);
+
+        return back();
     }
 
     /**
