@@ -828,6 +828,30 @@ Le relazioni `Team::tickets()` e (nella seconda PR) `Category::tickets()`
 nascono qui, per le guardie: erano le uniche due direzioni del grafo che
 nessuno aveva ancora avuto bisogno di percorrere.
 
+La seconda PR chiude la Fase 4 con la CRUD `Category`, e le due differenze
+rispetto a tutte le CRUD amministrative precedenti sono entrambe già scritte
+nella migration:
+
+**Il nome è unico**, a differenza di quello di un team o di
+un'organizzazione. `categories.name` porta l'indice, e la ragione è che
+questa è l'unica tassonomia che il modulo pubblico mostra a chi chiede
+aiuto: due righe che si leggono uguali sarebbero una scelta che nessuno può
+fare. In aggiornamento la regola ignora la riga stessa, altrimenti salvare
+una categoria senza rinominarla la rifiuterebbe come duplicato di sé.
+
+**Il team è obbligatorio**, e per lo stesso motivo per cui la colonna non è
+nullable: una categoria senza destinazione lascerebbe l'instradamento senza
+un posto dove andare. È l'unica differenza fra `TeamSelect` e
+l'`OrganizationSelect` dello step 40 — lì "Nessuna" è una scelta legittima,
+qui non esiste.
+
+**Ri-instradare una categoria non tocca i ticket già aperti sotto di lei.**
+L'intake scrive `team_id` sul ticket stesso (§4), quindi cambiare team
+decide dove finiranno i prossimi e non riscrive niente alle spalle — è la
+stessa decisione che `CreateTicket` prendeva dallo step 15, vista adesso dal
+lato di chi amministra. Il test lo fissa, perché è esattamente il genere di
+cosa che un refactoring distratto "aggiusterebbe".
+
 31. Layout autenticato e lista ticket paginata.
 32. Filtri: stato, priorità, assegnatario, team, canale.
 33. Ricerca full-text su oggetto, messaggi, richiedente e organizzazione.

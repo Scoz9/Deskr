@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\PortalController;
 use App\Http\Controllers\PostmarkInboundController;
@@ -103,6 +104,8 @@ Route::middleware(['auth', 'verified', 'not-suspended'])->group(function () {
     Route::resource('organizations', OrganizationController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::resource('teams', TeamController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::resource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::resource('users', UserController::class)->only(['index', 'store', 'update']);
     Route::post('users/{user}/suspend', [UserController::class, 'suspend'])->name('users.suspend');

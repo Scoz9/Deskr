@@ -3,6 +3,7 @@ import {
     BookOpen,
     Building2,
     FolderGit2,
+    FolderTree,
     LayoutGrid,
     Mail,
     Shield,
@@ -25,6 +26,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useCan } from '@/hooks/use-can';
 import { dashboard } from '@/routes';
+import { index as categoriesIndex } from '@/routes/categories';
 import { index as notificationsIndex } from '@/routes/notifications';
 import { index as organizationsIndex } from '@/routes/organizations';
 import { index as rolesIndex } from '@/routes/roles';
@@ -84,6 +86,12 @@ export function AppSidebar() {
             href: teamsIndex(),
             icon: UsersRound,
             canView: can('team:viewAny'),
+        },
+        {
+            title: 'Categorie',
+            href: categoriesIndex(),
+            icon: FolderTree,
+            canView: can('category:viewAny'),
         },
         {
             title: 'Notifiche',
