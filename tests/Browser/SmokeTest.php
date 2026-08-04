@@ -14,6 +14,7 @@ test('authenticated pages load without javascript errors', function () {
         'user:viewAny',
         'organization:viewAny',
         'team:viewAny',
+        'category:viewAny',
     ]));
 
     $pages = visit([
@@ -22,6 +23,7 @@ test('authenticated pages load without javascript errors', function () {
         '/users',
         '/organizations',
         '/teams',
+        '/categories',
         '/settings/profile',
         '/settings/appearance',
         '/settings/security',

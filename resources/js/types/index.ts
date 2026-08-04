@@ -65,3 +65,16 @@ export type Team = {
     members_count: number;
     tickets_count: number;
 };
+
+/** A team as a category's form offers it: just enough to pick one. */
+export type RoutableTeam = {
+    id: number;
+    name: string;
+};
+
+export type Category = {
+    id: number;
+    name: string;
+    team: RoutableTeam;
+    tickets_count: number;
+};
